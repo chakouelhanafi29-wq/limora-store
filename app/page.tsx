@@ -1,24 +1,16 @@
 export const dynamic = "force-dynamic";
 
 import type { Metadata } from "next";
-import AnnouncementBar from "./components/AnnouncementBar";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Products from "./components/Products";
-import WhyLimora from "./components/WhyLimora";
-import RealResults from "./components/RealResults";
-import Testimonials from "./components/Testimonials";
-import FAQ from "./components/FAQ";
-import AboutUs from "./components/AboutUs";
-import {
-  getActiveReviews,
-  getFeaturedProducts,
-  getSettings,
-} from "@/lib/supabase/queries";
+import ConfigurableHomePage from "@/app/components/home/ConfigurableHomePage";
+import { testimonials as staticTestimonials } from "@/app/lib/data";
+import { getHomePageConfig } from "@/lib/home-builder/queries";
 import { getSiteConfig } from "@/lib/site/config";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import {
-  getAnnouncements,
+  getActiveReviews,
+  getFeaturedProducts,
+} from "@/lib/supabase/queries";
+import {
   mapFeaturedProducts,
   mapHomeReviews,
 } from "@/lib/storefront";
@@ -33,29 +25,23 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [settings, featuredProducts, reviews] = await Promise.all([
-    getSettings(),
+  const [pageConfig, featuredProducts, reviews] = await Promise.all([
+    getHomePageConfig("home"),
     getFeaturedProducts(),
     getActiveReviews(),
   ]);
 
-  const announcements = getAnnouncements(settings);
   const products = mapFeaturedProducts(featuredProducts);
-  const testimonials = mapHomeReviews(reviews);
+  const dynamicReviews = mapHomeReviews(reviews);
+  const testimonials = dynamicReviews.items.length
+    ? dynamicReviews
+    : staticTestimonials;
 
   return (
-    <>
-      <AnnouncementBar announcements={announcements} />
-      <Navbar />
-      <main>
-        <Hero />
-        <Products products={products} />
-        <WhyLimora />
-        <RealResults />
-        <Testimonials testimonials={testimonials} />
-        <FAQ />
-        <AboutUs />
-      </main>
-    </>
+    <ConfigurableHomePage
+      config={pageConfig}
+      products={products}
+      testimonials={testimonials}
+    />
   );
 }
