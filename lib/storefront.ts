@@ -38,6 +38,7 @@ export type StorefrontProduct = {
   name: string;
   nameEn: string;
   subtitle: string;
+  emotionalHook?: string;
   rating: number;
   reviewCount: number;
   bullets: string[];

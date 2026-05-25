@@ -24,12 +24,17 @@ function Stars({ rating }: { rating: number }) {
 export default function ProductInfo({ product }: Props) {
   return (
     <div className="flex flex-col">
-      <p className="mb-2 text-xs tracking-[0.25em] text-champagne uppercase">
+      <p className="mb-2 text-xs tracking-[0.25em] uppercase" style={{ color: "var(--builder-accent, var(--champagne))" }}>
         {product.nameEn}
       </p>
-      <h1 className="mb-3 font-serif text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl">
+      <h1 className="mb-2 font-serif text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl">
         {product.name}
       </h1>
+      {product.emotionalHook ? (
+        <p className="mb-2 text-sm font-semibold text-rose-gold/90">
+          {product.emotionalHook}
+        </p>
+      ) : null}
       <p className="mb-5 text-lg font-medium text-rose-gold">
         {product.subtitle}
       </p>

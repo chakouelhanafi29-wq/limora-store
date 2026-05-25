@@ -70,7 +70,7 @@ function renderSection(section: PageSection, theme: ProductPageTheme) {
               label={String(content.label ?? "")}
               title={String(content.title ?? "")}
             />
-            <div className="mb-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mb-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {problems.map((p) => (
                 <div key={p.title} className="rounded-2xl border border-champagne/10 bg-beige/40 p-5 sm:p-6">
                   <h3 className="mb-2 text-sm font-bold sm:text-base">{p.title}</h3>
@@ -385,6 +385,7 @@ export function heroToStorefrontProduct(
     name: hero.nameAr,
     nameEn: hero.nameEn,
     subtitle: hero.subtitle,
+    emotionalHook: hero.emotionalHook,
     rating: hero.rating,
     reviewCount: hero.reviewCount,
     bullets: hero.bullets,

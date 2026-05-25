@@ -102,11 +102,13 @@ export default function ProductPageClient({
   }, []);
 
   const heroGradient =
-    pageConfig.theme.heroGradient === "soft"
-      ? "bg-gradient-to-b from-beige/80 to-ivory"
-      : pageConfig.theme.heroGradient === "minimal"
-        ? "bg-ivory"
-        : "luxury-gradient";
+    pageConfig.theme.heroGradient === "pink"
+      ? "luxury-pink-gradient"
+      : pageConfig.theme.heroGradient === "soft"
+        ? "bg-gradient-to-b from-beige/80 to-ivory"
+        : pageConfig.theme.heroGradient === "minimal"
+          ? "bg-ivory"
+          : "luxury-gradient";
 
   const aspectClass =
     pageConfig.mobile.imageAspect === "portrait"
@@ -120,8 +122,8 @@ export default function ProductPageClient({
         enabled={pageConfig.stickyBar.enabled}
       />
 
-      {!preview && (
-        <header className="border-b border-champagne/10 bg-ivory/80 backdrop-blur-xl">
+        {!preview && (
+        <header className="border-b border-rose-200/40 bg-[#fff9fb]/90 backdrop-blur-xl">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
             <a
               href="/"

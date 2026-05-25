@@ -32,23 +32,22 @@ export const hero = {
     { value: "21", label: "يوم لفرق ملموس" },
   ],
   floatCard1: { title: "إشراقة تُلاحظ", subtitle: "من الأسبوع الأول" },
-  floatCard2: { label: "الأكثر طلباً", title: "Limora Glow" },
+  floatCard2: { label: "الأكثر طلباً", title: "Collagen Glow" },
 };
 
 export const featuredProducts = [
   {
     id: "glow",
-    name: "ليمورا جلو",
-    nameEn: "Limora Glow",
-    benefit: "بشرة متوهجة… كأنها تُضيء من الداخل",
+    name: "LIMORA Collagen Glow",
+    nameEn: "LIMORA Collagen Glow",
+    benefit: "بشرة متوهجة… مرونة وشباب من الداخل",
     description:
-      "كولاجين بحري + فيتامين C — لإشراقة فورية ونعومة لا تُقاوم.",
-    price: "289",
-    originalPrice: "349",
+      "كولاجين بحري فاخر + هيالورونيك أسيد — لإشراقة، ترطيب، ومظهر أكثر شبابًا.",
+    price: "199",
+    originalPrice: "289",
     badge: "الأكثر طلباً",
-    image:
-      "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800&q=80",
-    cta: "اختاري Glow",
+    image: "/products/collagen-glow/hero.png",
+    cta: "اختاري Collagen Glow",
   },
   {
     id: "hair",
@@ -158,7 +157,7 @@ export const testimonials = {
     {
       name: "نورة العتيبي",
       location: "الرياض",
-      product: "Limora Glow",
+      product: "LIMORA Collagen Glow",
       rating: 5,
       text: "ما كنت أتوقع إن مكمل يغيّر بشرتي بهالطريقة. الإشراقة ظهرت خلال أسبوعين — واليوم أخرج بدون تغطية وأحس إني كاملة.",
       image:

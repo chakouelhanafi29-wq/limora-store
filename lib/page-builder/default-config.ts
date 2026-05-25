@@ -93,7 +93,7 @@ function buildDefaultConfig(slug: string): ProductPageConfig {
     {
       id: createId(),
       type: "related_products",
-      enabled: true,
+      enabled: false,
       order: 9,
       content: { label: "YOU MAY ALSO LOVE", title: "منتجات قد تعجبكِ", items: relatedProducts },
     },
@@ -105,6 +105,7 @@ function buildDefaultConfig(slug: string): ProductPageConfig {
       nameAr: product.name,
       nameEn: product.nameEn,
       subtitle: product.subtitle,
+      emotionalHook: product.emotionalHook,
       rating: product.rating,
       reviewCount: product.reviewCount,
       bullets: [...product.bullets],
@@ -137,15 +138,16 @@ function buildDefaultConfig(slug: string): ProductPageConfig {
     stickyBar: {
       enabled: true,
       messages: [
+        "LIMORA Collagen Glow — كولاجين بحري فاخر ✨",
         "شحن مجاني + الدفع عند الاستلام",
-        "ضمان الجودة على جميع منتجات LIMORA",
+        "جمالك يبدأ من الداخل",
       ],
     },
     sections,
     theme: {
-      accentColor: "#C4A574",
+      accentColor: "#D4899A",
       buttonStyle: "rounded-full",
-      heroGradient: "luxury",
+      heroGradient: "pink",
       sectionSpacing: "normal",
       sectionBackground: "ivory",
     },

@@ -342,13 +342,13 @@ end $$;
 insert into products (slug, name_ar, name_en, subtitle, description, price, original_price, badge, is_featured, bullets, urgency_text)
 values (
   'glow',
-  'ليمورا جلو',
-  'Limora Glow',
-  'بشرة متوهجة… ثقة تُولَد من الداخل',
-  'تركيبة بودر فاخرة غنية بالكولاجين البحري وفيتامين C.',
-  289, 349, 'الأكثر طلباً', true,
-  '["إشراقة طبيعية خلال 14 يوم","تركيبة بودر فاخرة","كولاجين بحري + فيتامين C","معتمد SFDA"]'::jsonb,
-  '⚡ كمية محدودة — يتبقى 23 عبوة فقط'
+  'LIMORA Collagen Glow',
+  'LIMORA Collagen Glow',
+  'كولاجين بحري فاخر لبشرة أكثر إشراقًا، مرونة وشبابًا ✨',
+  'كولاجين بحري فاخر غني بالهيالورونيك أسيد والبيوتين — لبشرة متوهجة، مرنة، وأكثر شبابًا.',
+  199, 289, 'الأكثر طلباً', true,
+  '["جمالك يبدأ من الداخل","بشرة أكثر إشراقًا ونضارة","تركيبة بحرية فاخرة","سهل الاستخدام يومياً"]'::jsonb,
+  '✨ العرض الأقوى — الأكثر طلباً: عرض قطعتين بـ 249 ر.س'
 ) on conflict (slug) do nothing;
 
 insert into product_offers (product_id, label, display_label, quantity, price, badge, is_recommended, sort_order)
@@ -370,7 +370,7 @@ and not exists (
 );
 
 insert into product_offers (product_id, label, display_label, quantity, price, badge, is_recommended, sort_order)
-select id, '3 قطع', 'عرض 3 قطع', 3, 299, 'الأكثر توفيراً', false, 3
+select id, '3 قطع', 'عرض 3 قطع', 3, 299, 'أفضل قيمة', false, 3
 from products where slug = 'glow'
 and not exists (
   select 1 from product_offers po
@@ -381,7 +381,7 @@ and not exists (
 -- Seed homepage reviews
 insert into reviews (customer_name, location, product_label, rating, content, image_url, sort_order)
 select * from (values
-  ('نورة العتيبي', 'الرياض', 'Limora Glow', 5, 'بشرتي صارت أهدى وأنقى… الإشراقة طبيعية مو مبالغ فيها. أحس بثقة مختلفة كل صباح.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80', 1),
+  ('نورة العتيبي', 'الرياض', 'LIMORA Collagen Glow', 5, 'بشرتي صارت أهدأ وأكثر إشراقًا… الإشراقة طبيعية مو مبالغ فيها. أحس بثقة مختلفة كل صباح.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80', 1),
   ('ريم الشمري', 'جدة', 'Limora Hair', 5, 'شعري صار أقوى وأكثف… والأهم إني حسيت إنه من الداخل مو بس من الخارج.', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80', 2),
   ('دانة القحطاني', 'الدمام', 'Limora Radiance', 5, 'تفتيح طبيعي بدون مبالغة… بشرتي موحّدة وناعمة. LIMORA فعلاً مختلفة.', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80', 3)
 ) as seed(customer_name, location, product_label, rating, content, image_url, sort_order)

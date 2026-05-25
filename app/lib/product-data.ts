@@ -1,30 +1,32 @@
 export const productAnnouncements = [
   "شحن مجاني + الدفع عند الاستلام داخل السعودية",
-  "ضمان الجودة على جميع منتجات LIMORA",
-  "تخفيضات حصرية لفترة محدودة",
+  "LIMORA Collagen Glow — كولاجين بحري فاخر",
+  "نتائج طبيعية… جمال يبدأ من الداخل",
 ];
 
 export const product = {
   id: "glow",
-  name: "ليمورا جلو",
-  nameEn: "Limora Glow",
-  subtitle: "بشرة متوهجة… ثقة تُولَد من الداخل",
+  name: "LIMORA Collagen Glow",
+  nameEn: "LIMORA Collagen Glow",
+  subtitle:
+    "كولاجين بحري فاخر لبشرة أكثر إشراقًا، مرونة وشبابًا ✨",
+  emotionalHook: "جمالك يبدأ من الداخل",
   rating: 4.9,
-  reviewCount: 2847,
+  reviewCount: 3241,
   bullets: [
-    "إشراقة طبيعية خلال 14 يوم",
-    "تركيبة بودر فاخرة — امتصاص أسرع",
-    "كولاجين بحري + فيتامين C",
-    "معتمد SFDA · مكونات نقية 100%",
+    "جمالك يبدأ من الداخل",
+    "بشرة أكثر إشراقًا ونضارة",
+    "تركيبة بحرية فاخرة — كولاجين + هيالورونيك",
+    "سهل الاستخدام يومياً — نتائج طبيعية ومتدرجة",
   ],
-  urgency: "⚡ كمية محدودة — يتبقى 23 عبوة فقط",
+  urgency: "✨ العرض الأقوى — الأكثر طلباً: عرض قطعتين بـ 249 ر.س",
   images: [
-    "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=900&q=80",
-    "https://images.unsplash.com/photo-1612817288484-6f916006177a?w=900&q=80",
-    "https://images.unsplash.com/photo-1570175170871-a067510462a?w=900&q=80",
-    "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=900&q=80",
+    "/products/collagen-glow/hero.png",
+    "/products/collagen-glow/lifestyle.png",
+    "/products/collagen-glow/benefits.png",
+    "/products/collagen-glow/transformation.png",
   ],
-  codTrust: ["شحن مجاني", "دفع عند الاستلام", "ضمان الجودة"],
+  codTrust: ["شحن مجاني", "دفع عند الاستلام", "ضمان الجودة", "دعم العملاء"],
 };
 
 export const offers = [
@@ -52,7 +54,7 @@ export const offers = [
     label: "3 قطع",
     price: 299,
     unitPrice: 99.7,
-    badge: "الأكثر توفيراً",
+    badge: "أفضل قيمة",
     recommended: false,
   },
 ];
@@ -63,7 +65,7 @@ export function getOfferDisplayLabel(offer: Offer): string {
   return `عرض ${offer.quantity} قطع`;
 }
 
-export const productOrderName = "LIMORA Beauty Powder";
+export const productOrderName = "LIMORA Collagen Glow";
 
 export const saudiCities = [
   "الرياض",
@@ -94,7 +96,7 @@ export const trustBadges = [
   },
   {
     icon: "🚚",
-    title: "شحن سريع",
+    title: "شحن مجاني",
     description: "2–4 أيام داخل السعودية",
   },
   {
@@ -109,111 +111,109 @@ export const trustBadges = [
   },
   {
     icon: "✦",
-    title: "ضمان الرضا",
-    description: "30 يوماً — بدون أسئلة",
+    title: "ضمان الجودة",
+    description: "30 يوماً — رضاكِ أولاً",
   },
 ];
 
 export const problemSolution = {
-  label: "THE TRANSFORMATION",
+  label: "SKIN CONCERNS",
   title: "هل تعانين من هذه المشاكل؟",
   problems: [
     {
-      title: "بهتان البشرة وفقدان النضارة",
-      description:
-        "تستيقظين على بشرة بلا حياة — وتقضين ساعات أمام المرآة تحاولين إخفاء ما تشعرين به من تعب.",
+      title: "بهتان البشرة",
+      description: "بشرة بلا حياة… وتوهج يختفي مع ضغط الأيام.",
     },
     {
-      title: "تساقط الشعر وضعفه",
-      description:
-        "كل يوم تلاحظين شعراً أكثر على الوسادة — وكثافة أقل في المرآة، رغم كل المنتجات التي جربتِها.",
+      title: "الخطوط الدقيقة والتجاعيد",
+      description: "علامات التعب تظهر قبل وقتها — وتقلقين كل صباح.",
     },
     {
-      title: "ضعف الأظافر وتكسرها",
-      description:
-        "أظافر هشة تتقصف بسرعة — تُخفيها بالطلاء بدلاً من أن تشعرين بالأناقة في كل تفصيل.",
+      title: "جفاف البشرة",
+      description: "ترطيب سطحي لا يكفي… والبشرة تطلب عناية أعمق.",
     },
     {
-      title: "فقدان الثقة بسبب مشاكل الجمال",
-      description:
-        "عندما لا تعكس المرآة من أنتِ — يبدأ الجمال بالشعور كعبء، لا كقوة تُزدان بها.",
+      title: "فقدان المرونة",
+      description: "مرونة البشرة تضعف… والمظهر يفقد شبابه الطبيعي.",
     },
     {
-      title: "صعوبة الحصول على إشراقة طبيعية",
-      description:
-        "تبحثين عن ذلك التوهج الذي ترينه على الآخرين — وتتساءلين: لماذا لا يحدث لكِ؟",
+      title: "مسام واسعة",
+      description: "ملمس غير متجانس يقلّل ثقتكِ بنفسك.",
+    },
+    {
+      title: "عدم توحد لون البشرة",
+      description: "بقع وبهتان يمنعان الإشراقة الطبيعية.",
+    },
+    {
+      title: "ضعف الشعر والأظافر",
+      description: "جمالكِ يحتاج دعماً من الداخل — لا من الخارج فقط.",
     },
   ],
   solution: {
-    title: "LIMORA Glow يغيّر المعادلة",
+    title: "LIMORA Collagen Glow يعيد إشراقة بشرتكِ",
     description:
-      "تركيبة بودر فاخرة تغذّي بشرتكِ من الداخل — كولاجين بحري، فيتامين C، وحمض الهيالورونيك. ليس قناعاً على المشكلة… بل حلٌ يبدأ من جذور الجمال.",
+      "كولاجين بحري فاخر غني بالهيالورونيك أسيد والبيوتين — تركيبة مصممة لبشرة أكثر إشراقًا، مرونة وشبابًا. جمالك يبدأ من الداخل.",
     highlights: [
-      "إشراقة تُلاحظ خلال 14 يوم",
-      "نعومة كالحرير — بدون فلاتر",
-      "ثقة تعود… طبيعياً",
+      "إشراقة طبيعية ومتدرجة",
+      "ترطيب عميق ومرونة أفضل",
+      "ثقة أنثوية تعود… من الداخل",
     ],
   },
 };
 
 export const productBenefits = {
-  label: "YOUR BENEFITS",
+  label: "YOUR GLOW",
   title: "ما الذي ستحصلين عليه؟",
-  subtitle: "تركيبة LIMORA Glow — مصممة لتحولٍ أنثوي حقيقي.",
+  subtitle: "LIMORA Collagen Glow — لبشرة تتوهج بثقة هادئة.",
   items: [
     {
       icon: "✨",
-      title: "بشرة متوهجة",
-      description: "إشراقة طبيعية تُلاحظ من الأسبوع الأول",
+      title: "بشرة أكثر إشراقًا ونضارة",
+      description: "توهج طبيعي يُلاحظ مع الاستمرار اليومي",
     },
     {
-      icon: "💫",
-      title: "شعر أقوى",
-      description: "تغذية من الداخل لكثافة ولمعان أفضل",
-    },
-    {
-      icon: "💅",
-      title: "أظافر صحية",
-      description: "قوة ولامعان — من الداخل",
-    },
-    {
-      icon: "👑",
-      title: "ثقة أنثوية",
-      description: "عندما تتوهج بشرتكِ — يتغيّر كل شيء",
+      icon: "💧",
+      title: "ترطيب عميق للبشرة",
+      description: "هيالورونيك أسيد لنعومة وامتلاء أفضل",
     },
     {
       icon: "🌸",
-      title: "جمال من الداخل",
-      description: "لأن الجمال الحقيقي يُغذّى… لا يُغطّى",
+      title: "تحسين مرونة البشرة",
+      description: "كولاجين بحري فاخر لدعم مرونة البشرة",
     },
     {
-      icon: "🕊️",
-      title: "عناية ذاتية فاخرة",
-      description: "طقس يومي من الحب… لنفسكِ",
+      icon: "💫",
+      title: "تقليل الخطوط الدقيقة",
+      description: "مظهر أكثر شبابًا… بانتظام وصبر",
+    },
+    {
+      icon: "💅",
+      title: "دعم صحة الشعر والأظافر",
+      description: "بيوتين وزنك لجمال متكامل من الداخل",
+    },
+    {
+      icon: "👑",
+      title: "مظهر أكثر شبابًا",
+      description: "ثقة أنثوية… تبدأ من الداخل",
     },
   ],
 };
 
 export const transformation = {
   label: "REAL RESULTS",
-  title: "تحولٌ حقيقي… في 21 يوم",
-  subtitle:
-    "نساء سعوديات وثقن بـ LIMORA Glow — وهذا ما شاركنه معنا.",
+  title: "تحولٌ حقيقي… بشرة تتوهج",
+  subtitle: "نساء خليجيات وثقن بـ LIMORA Collagen Glow — وهذا ما شاركنه.",
   beforeAfter: [
     {
-      before:
-        "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&q=80",
-      after:
-        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=500&q=80",
-      quote: "بشرتي صارت تتوهج بدون مكياج — الرياض",
+      before: "/products/collagen-glow/transformation.png",
+      after: "/products/collagen-glow/lifestyle.png",
+      quote: "بشرتي صارت أهدأ وأكثر إشراقًا — الرياض",
       days: "21 يوم",
     },
     {
-      before:
-        "https://images.unsplash.com/photo-1492106087820-71f1a00d2b11?w=500&q=80",
-      after:
-        "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=500&q=80",
-      quote: "إشراقة ونعومة ما توقعتها — جدة",
+      before: "/products/collagen-glow/hero.png",
+      after: "/products/collagen-glow/benefits.png",
+      quote: "مرونة وترطيب حسيت فيهم من الأسبوع الثاني — جدة",
       days: "14 يوم",
     },
   ],
@@ -221,39 +221,15 @@ export const transformation = {
 
 export const comparison = {
   label: "WHY LIMORA",
-  title: "LIMORA vs المنتجات الأخرى",
-  subtitle: "الفرق واضح — في كل تفصيل.",
+  title: "لماذا LIMORA Collagen Glow؟",
+  subtitle: "تركيبة فاخرة… مصممة للمرأة التي تستحق الأفضل.",
   rows: [
-    {
-      feature: "مكونات فاخرة",
-      limora: true,
-      others: false,
-    },
-    {
-      feature: "امتصاص أسرع (بودر)",
-      limora: true,
-      others: false,
-    },
-    {
-      feature: "تركيبة آمنة SFDA",
-      limora: true,
-      others: false,
-    },
-    {
-      feature: "جودة فاخرة",
-      limora: true,
-      others: false,
-    },
-    {
-      feature: "مصمم للمرأة السعودية",
-      limora: true,
-      others: false,
-    },
-    {
-      feature: "نتائج ملموسة خلال 21 يوم",
-      limora: true,
-      others: false,
-    },
+    { feature: "تركيبة بحرية فاخرة", limora: true, others: false },
+    { feature: "كولاجين عالي الجودة", limora: true, others: false },
+    { feature: "غني بالبيوتين والهيالورونيك أسيد", limora: true, others: false },
+    { feature: "سهل الذوبان والاستخدام", limora: true, others: false },
+    { feature: "مناسب للاستخدام اليومي", limora: true, others: false },
+    { feature: "نتائج طبيعية ومتدرجة", limora: true, others: false },
   ],
 };
 
@@ -265,7 +241,7 @@ export const productReviews = {
       name: "نورة العتيبي",
       location: "الرياض",
       rating: 5,
-      text: "ما كنت أتوقع إن مكمل يغيّر بشرتي. الإشراقة ظهرت خلال أسبوعين — واليوم أخرج بدون تغطية وأحس إني كاملة. الدفع عند الاستلام خلّاني أجرب بدون تردد.",
+      text: "Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة وأحس بثقة مختلفة. الدفع عند الاستلام خلّاني أجرب بدون تردد.",
       image:
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80",
     },
@@ -273,7 +249,7 @@ export const productReviews = {
       name: "سارة الحربي",
       location: "جدة",
       rating: 5,
-      text: "طلبت قطعتين بالعرض — وفعلاً وفرت. بشرتي صارت ناعمة ومتوهجة، والتغليف فخم يحسسك إنكِ تستحقين الأفضل.",
+      text: "طلبت عرض قطعتين — وفعلاً الأفضل. بشرتي صارت أكثر مرونة وترطيب، والخطوط الدقيقة أهدأ. التغليف فخم يحسسك إنكِ تستحقين الأفضل.",
       image:
         "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&q=80",
     },
@@ -281,7 +257,7 @@ export const productReviews = {
       name: "لمى الشمري",
       location: "الدمام",
       rating: 5,
-      text: "جربت منتجات كثيرة — LIMORA Glow أول واحد حسّيت فيه فرق حقيقي. الشحن سريع والدفع عند الباب راح بالي.",
+      text: "جربت منتجات كثيرة — Collagen Glow أول واحد حسّيت فيه فرق حقيقي في الإشراقة والنعومة. الشحن سريع والدفع عند الباب راح بالي.",
       image:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
     },
@@ -289,32 +265,48 @@ export const productReviews = {
       name: "هند الزهراني",
       location: "مكة",
       rating: 5,
-      text: "كنت مترددة — لكن الضمان وCOD خلّاني أطلب. بعد 3 أسابيع بشرتي مختلفة تماماً. أنصح فيه بقوة.",
+      text: "كنت مترددة — لكن الضمان وCOD خلّاني أطلب. بعد 3 أسابيع بشرتي مختلفة: أكثر إشراقًا ومرونة. أنصح فيه بقوة.",
       image:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+    },
+    {
+      name: "ريم القحطاني",
+      location: "الخبر",
+      rating: 5,
+      text: "الذوبان سهل جداً — أضيفه لسموثي كل صباح. شعري وأظافري صاروا أقوى، وبشرتي توهج طبيعي مو مصطنع.",
+      image:
+        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80",
+    },
+    {
+      name: "دانة المطيري",
+      location: "الطائف",
+      rating: 5,
+      text: "منتج فاخر بكل معنى الكلمة. جفاف بشرتي اختفى تقريباً، ولونها صار أكثر توحّد. LIMORA Collagen Glow صار جزء من روتيني اليومي.",
+      image:
+        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80",
     },
   ],
 };
 
 export const howToUse = {
   label: "HOW TO USE",
-  title: "طريقة الاستخدام",
+  title: "طريقة الاستعمال",
   subtitle: "بسيطة… فاخرة… فعّالة.",
   steps: [
     {
       step: "01",
-      title: "ذوبي",
-      description: "ملعقة واحدة من البودر في كوب ماء أو عصير طبيعي",
+      title: "ملعقة واحدة",
+      description: "يومياً مع الماء أو العصير أو السموثي",
     },
     {
       step: "02",
-      title: "اشربي",
-      description: "يومياً صباحاً — على معدة فارغة للامتصاص الأمثل",
+      title: "استمري",
+      description: "الاستمرار اليومي = نتائج طبيعية ومتدرجة",
     },
     {
       step: "03",
       title: "استمتعي",
-      description: "اجعليها طقساً يومياً — النتائج تُحبّ الاستمرار",
+      description: "اجعليها طقس جمالي… جمالك يبدأ من الداخل",
     },
   ],
 };
@@ -325,28 +317,31 @@ export const productIngredients = {
   subtitle: "كل مكون مختار بعناية — لجمالكِ من الداخل.",
   items: [
     {
-      name: "الكولاجين البحري",
-      benefit: "مرونة البشرة ومكافحة التجاعيد",
-      image:
-        "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=400&q=80",
+      name: "Marine Collagen",
+      benefit: "مرونة البشرة ومكافحة علامات التقدّم",
+      image: "/products/collagen-glow/hero.png",
     },
     {
-      name: "فيتامين C",
-      benefit: "إشراقة طبيعية وتفتيح أنيق",
-      image:
-        "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400&q=80",
-    },
-    {
-      name: "حمض الهيالورونيك",
+      name: "Hyaluronic Acid",
       benefit: "ترطيب عميق ونعومة فائقة",
-      image:
-        "https://images.unsplash.com/photo-1570175170871-a067510462a?w=400&q=80",
+      image: "/products/collagen-glow/benefits.png",
     },
     {
-      name: "البيوتين",
+      name: "Vitamin C",
+      benefit: "إشراقة طبيعية ونضارة",
+      image: "/products/collagen-glow/lifestyle.png",
+    },
+    {
+      name: "Biotin",
       benefit: "دعم الشعر والأظافر من الداخل",
       image:
         "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=400&q=80",
+    },
+    {
+      name: "Zinc",
+      benefit: "صحة البشرة والتوازن الطبيعي",
+      image:
+        "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400&q=80",
     },
   ],
 };
@@ -362,28 +357,26 @@ export const productFaqs = {
     },
     {
       question: "كم يستغرق التوصيل؟",
-      answer:
-        "الشحن مجاني — عادة 2–4 أيام عمل داخل السعودية.",
+      answer: "الشحن مجاني — عادة 2–4 أيام عمل داخل السعودية.",
     },
     {
-      question: "هل المنتج آمن؟",
+      question: "كيف أستخدم Collagen Glow؟",
       answer:
-        "LIMORA Glow معتمد SFDA، ومكوناته طبيعية 100%.",
+        "ملعقة واحدة يومياً مع الماء أو العصير أو السموثي — للاستخدام اليومي.",
     },
     {
       question: "متى ألاحظ النتائج؟",
       answer:
-        "معظم العميلات يلاحظن إشراقة خلال 7–14 يوم. التحول الكامل خلال 21–30 يوم.",
+        "معظم العميلات يلاحظن تحسناً في الترطيب والإشراقة خلال 2–3 أسابيع. النتائج تتدرج مع الاستمرار.",
     },
     {
-      question: "كيف أستخدم المنتج؟",
+      question: "هل المنتج آمن للاستخدام اليومي؟",
       answer:
-        "ملعقة واحدة يومياً في ماء أو عصير — صباحاً على معدة فارغة.",
+        "نعم — تركيبة LIMORA Collagen Glow مصممة للاستخدام اليومي بمكونات فاخرة ومدروسة.",
     },
     {
       question: "ماذا لو لم أكن راضية؟",
-      answer:
-        "ضمان 30 يوماً — نسترد مبلغكِ كاملاً بدون أسئلة.",
+      answer: "ضمان الجودة — فريق الدعم جاهز لمساعدتكِ.",
     },
   ],
 };
@@ -394,24 +387,24 @@ export const guarantee = {
   subtitle: "نثق في منتجاتنا — لذلك نضمن راحتكِ.",
   points: [
     {
-      icon: "✦",
-      title: "ضمان جودة المنتج",
-      description: "كل عبوة مختبرة ومطابقة لمعايير SFDA",
+      icon: "🚚",
+      title: "شحن مجاني",
+      description: "توصيل سريع داخل السعودية",
     },
     {
-      icon: "◈",
-      title: "رضا العميل أولاً",
-      description: "30 يوماً لاسترداد كامل — بدون تعقيد",
-    },
-    {
-      icon: "❋",
-      title: "طلب COD آمن",
+      icon: "💵",
+      title: "الدفع عند الاستلام",
       description: "ادفعي فقط عند استلام طلبكِ",
     },
     {
-      icon: "✧",
-      title: "دعم متواصل",
-      description: "فريقنا جاهز لمساعدتكِ — الأحد إلى الخميس",
+      icon: "✦",
+      title: "ضمان الجودة",
+      description: "كل عبوة بمعايير فاخرة وموثوقة",
+    },
+    {
+      icon: "💬",
+      title: "دعم العملاء",
+      description: "فريقنا جاهز لمساعدتكِ",
     },
   ],
 };
@@ -419,32 +412,29 @@ export const guarantee = {
 export const relatedProducts = [
   {
     id: "hair",
-    name: "ليمورا هير",
-    nameEn: "Limora Hair",
+    name: "LIMORA Hair",
+    nameEn: "LIMORA Hair",
     benefit: "شعرٌ أكثف… وثقة تُزدان",
     price: "299",
-    image:
-      "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=600&q=80",
+    image: "/products/collagen-glow/lifestyle.png",
     href: "/product",
   },
   {
     id: "radiance",
-    name: "ليمورا راديance",
-    nameEn: "Limora Radiance",
+    name: "LIMORA Radiance",
+    nameEn: "LIMORA Radiance",
     benefit: "تفتيح أنثوي… بأناقة طبيعية",
     price: "319",
-    image:
-      "https://images.unsplash.com/photo-1612817288484-6f916006177a?w=600&q=80",
+    image: "/products/collagen-glow/benefits.png",
     href: "/product",
   },
   {
     id: "nail",
-    name: "ليمورا نيل",
-    nameEn: "Limora Nail",
+    name: "LIMORA Nail",
+    nameEn: "LIMORA Nail",
     benefit: "أظافر قوية… بأناقة طبيعية",
     price: "249",
-    image:
-      "https://images.unsplash.com/photo-1608245448919-77528928c9f9?w=600&q=80",
+    image: "/products/collagen-glow/hero.png",
     href: "/product",
   },
 ];

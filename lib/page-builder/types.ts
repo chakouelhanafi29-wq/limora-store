@@ -21,7 +21,7 @@ export type PageSection = {
 export type ProductPageTheme = {
   accentColor: string;
   buttonStyle: "rounded-full" | "rounded-xl";
-  heroGradient: "luxury" | "soft" | "minimal";
+  heroGradient: "luxury" | "soft" | "minimal" | "pink";
   sectionSpacing: "compact" | "normal" | "spacious";
   sectionBackground: "ivory" | "beige" | "white";
 };
@@ -37,6 +37,7 @@ export type ProductPageHero = {
   nameAr: string;
   nameEn: string;
   subtitle: string;
+  emotionalHook?: string;
   rating: number;
   reviewCount: number;
   bullets: string[];
