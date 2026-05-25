@@ -48,6 +48,15 @@ export default async function AdminSetupPage() {
           }
         />
         <StatusCard
+          title="محرّرات الصفحات"
+          ok={health.builderTablesReady}
+          detail={
+            health.builderTablesReady
+              ? "جداول home_page_configs و product_page_configs جاهزة"
+              : "شغّلي supabase/ensure-migrations.sql في SQL Editor"
+          }
+        />
+        <StatusCard
           title="حساب Admin"
           ok={health.tables.admins === true}
           detail={
@@ -76,6 +85,35 @@ export default async function AdminSetupPage() {
         </div>
       </div>
 
+      {health.connected && !health.builderTablesReady && (
+        <div className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6">
+          <h2 className="mb-3 font-semibold text-blue-900">
+            تفعيل محرّر الرئيسية ومحرّر المنتج
+          </h2>
+          <ol className="list-decimal space-y-2 pr-5 text-sm text-blue-900/90">
+            <li>
+              افتحي{" "}
+              <a
+                href="https://supabase.com/dashboard/project/yhrtnilxwmaterzaefxu/sql/new"
+                target="_blank"
+                rel="noreferrer"
+                className="font-medium underline"
+              >
+                Supabase SQL Editor
+              </a>
+            </li>
+            <li>
+              انسخي محتوى <code>supabase/ensure-migrations.sql</code> واضغطي Run
+            </li>
+            <li>
+              أو أضيفي <code dir="ltr">DATABASE_URL</code> إلى{" "}
+              <code dir="ltr">.env.local</code> ثم شغّلي{" "}
+              <code dir="ltr">npm run ensure:supabase</code>
+            </li>
+          </ol>
+        </div>
+      )}
+
       {health.connected && (
         <div className="mt-8 rounded-2xl border border-champagne/10 bg-white p-6 luxury-shadow">
           <h2 className="mb-3 font-semibold">نشر Vercel + النطاق المخصص</h2>
@@ -96,8 +134,8 @@ export default async function AdminSetupPage() {
             </li>
             <li>
               شغّلي{" "}
-              <code dir="ltr">supabase/site-settings-migration.sql</code> إذا
-              لم تُحدّث جدول settings
+              <code dir="ltr">supabase/ensure-migrations.sql</code> لتفعيل
+              محرّرات الصفحات
             </li>
           </ol>
         </div>

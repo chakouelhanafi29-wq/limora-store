@@ -12,18 +12,22 @@ export async function getProductPageConfig(
     return getDefaultProductPageConfig(slug);
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("product_page_configs")
-    .select("config")
-    .eq("slug", slug)
-    .maybeSingle();
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("product_page_configs")
+      .select("config")
+      .eq("slug", slug)
+      .maybeSingle();
 
-  if (error || !data?.config) {
+    if (error || !data?.config) {
+      return getDefaultProductPageConfig(slug);
+    }
+
+    return mergeProductPageConfig(data.config as ProductPageConfig, slug);
+  } catch {
     return getDefaultProductPageConfig(slug);
   }
-
-  return mergeProductPageConfig(data.config as ProductPageConfig, slug);
 }
 
 export async function saveProductPageConfig(

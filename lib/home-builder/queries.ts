@@ -10,16 +10,20 @@ export async function getHomePageConfig(slug = "home"): Promise<HomePageConfig> 
     return getDefaultHomePageConfig(slug);
   }
 
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("home_page_configs")
-    .select("config")
-    .eq("slug", slug)
-    .maybeSingle();
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("home_page_configs")
+      .select("config")
+      .eq("slug", slug)
+      .maybeSingle();
 
-  if (error || !data?.config) {
+    if (error || !data?.config) {
+      return getDefaultHomePageConfig(slug);
+    }
+
+    return mergeHomePageConfig(data.config as HomePageConfig, slug);
+  } catch {
     return getDefaultHomePageConfig(slug);
   }
-
-  return mergeHomePageConfig(data.config as HomePageConfig, slug);
 }

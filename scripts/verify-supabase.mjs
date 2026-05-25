@@ -16,6 +16,22 @@ function loadEnvLocal() {
   }
 }
 
+async function fetchWithRetry(url, options, retries = 3) {
+  let lastError;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      const res = await fetch(url, options);
+      return res;
+    } catch (error) {
+      lastError = error;
+      if (attempt < retries) {
+        await new Promise((resolveDelay) => setTimeout(resolveDelay, 1000 * attempt));
+      }
+    }
+  }
+  throw lastError;
+}
+
 loadEnvLocal();
 
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -33,7 +49,7 @@ const headers = {
   Authorization: `Bearer ${key}`,
 };
 
-const tables = [
+const coreTables = [
   "settings",
   "products",
   "product_images",
@@ -44,31 +60,50 @@ const tables = [
   "analytics_events",
 ];
 
+const builderTables = ["product_page_configs", "home_page_configs"];
+const tables = [...coreTables, ...builderTables];
+
 console.log("Checking Supabase:", url);
 
-let ready = true;
+const missing = [];
 
 for (const table of tables) {
-  const res = await fetch(`${url}/rest/v1/${table}?select=*&limit=1`, {
+  const res = await fetchWithRetry(`${url}/rest/v1/${table}?select=*&limit=1`, {
     headers,
   });
   const ok = res.ok;
   console.log(`${ok ? "OK" : "MISSING"}  ${table} (${res.status})`);
-  if (!ok) ready = false;
+  if (!ok) missing.push(table);
 }
 
-const storageRes = await fetch(`${url}/storage/v1/bucket/product-images`, {
+const storageRes = await fetchWithRetry(`${url}/storage/v1/bucket/product-images`, {
   headers,
 });
 console.log(
   `${storageRes.ok ? "OK" : "MISSING"}  storage/product-images (${storageRes.status})`,
 );
-if (!storageRes.ok) ready = false;
+if (!storageRes.ok) missing.push("storage/product-images");
 
-if (ready) {
+if (missing.length === 0) {
   console.log("\nSupabase is fully connected.");
-} else {
-  console.log("\nRun supabase/schema.sql in your Supabase SQL Editor:");
-  console.log("https://supabase.com/dashboard/project/yhrtnilxwmaterzaefxu/sql/new");
-  process.exit(1);
+  process.exit(0);
 }
+
+console.log("\nMissing resources:");
+for (const item of missing) {
+  console.log(`- ${item}`);
+}
+
+const missingCore = missing.filter((item) => coreTables.includes(item));
+const missingBuilder = missing.filter((item) => builderTables.includes(item));
+
+if (missingCore.length > 0) {
+  console.log("\nRun supabase/schema.sql in your Supabase SQL Editor:");
+} else if (missingBuilder.length > 0) {
+  console.log("\nCore tables exist. Run supabase/ensure-migrations.sql for page builders:");
+} else {
+  console.log("\nRun supabase/schema.sql if storage is missing:");
+}
+
+console.log("https://supabase.com/dashboard/project/yhrtnilxwmaterzaefxu/sql/new");
+process.exit(1);

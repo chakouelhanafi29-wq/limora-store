@@ -69,6 +69,26 @@ export default async function AdminDashboardPage() {
         </div>
       )}
 
+      {health.connected && !health.builderTablesReady && (
+        <div className="mb-8 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+          <p className="font-semibold text-blue-900">
+            محرّر الصفحات يحتاج جداول إضافية
+          </p>
+          <p className="mt-1 text-sm text-blue-900/80">
+            شغّلي <code>supabase/ensure-migrations.sql</code> في SQL Editor لتفعيل
+            محرّر الرئيسية ومحرّر المنتج. أو نفّذي{" "}
+            <code dir="ltr">npm run ensure:supabase</code> إذا كان DATABASE_URL
+            مضبوطاً.
+          </p>
+          <Link
+            href="/admin/setup"
+            className="mt-3 inline-block text-sm font-medium text-champagne hover:underline"
+          >
+            تفاصيل الإعداد ←
+          </Link>
+        </div>
+      )}
+
       <div className="mb-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map((card) => (
           <div

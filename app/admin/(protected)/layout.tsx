@@ -1,12 +1,18 @@
 import { requireAdmin } from "@/lib/supabase/admin-auth";
 import AdminShell from "../AdminShell";
+import SchemaSetupBanner from "../components/SchemaSetupBanner";
 
 export default async function ProtectedAdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await requireAdmin();
+  const session = await requireAdmin();
 
-  return <AdminShell>{children}</AdminShell>;
+  return (
+    <AdminShell>
+      {session.schemaIncomplete && <SchemaSetupBanner />}
+      {children}
+    </AdminShell>
+  );
 }

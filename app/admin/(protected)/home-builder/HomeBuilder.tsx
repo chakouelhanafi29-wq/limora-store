@@ -76,7 +76,10 @@ export default function HomeBuilder({
     );
     setSaving(false);
     if (error) {
-      alert(error.message);
+      const message = error.message.includes("home_page_configs")
+        ? "جدول home_page_configs غير موجود. شغّلي supabase/ensure-migrations.sql في Supabase SQL Editor."
+        : error.message;
+      alert(message);
       return;
     }
     setSaved(true);
