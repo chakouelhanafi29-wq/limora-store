@@ -10,7 +10,8 @@
     "lint": "eslint",
     "clean": "node -e \"try{require('fs').rmSync('.next',{recursive:true,force:true})}catch(e){}\"",
     "verify:supabase": "node scripts/verify-supabase.mjs",
-    "ensure:supabase": "node scripts/ensure-supabase.mjs"
+    "ensure:supabase": "node scripts/ensure-supabase.mjs",
+    "optimize:product-images": "node scripts/optimize-product-images.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.10.3",
@@ -27,6 +28,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "pg": "^8.16.3",
+    "sharp": "^0.34.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

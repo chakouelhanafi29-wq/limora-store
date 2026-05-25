@@ -378,6 +378,7 @@ export function heroToStorefrontProduct(
   hero: ProductPageConfig["hero"],
   slug: string,
   orderName: string,
+  galleryImages?: string[],
 ) {
   return {
     id: slug,
@@ -390,7 +391,7 @@ export function heroToStorefrontProduct(
     reviewCount: hero.reviewCount,
     bullets: hero.bullets,
     urgency: hero.urgency,
-    images: hero.images,
+    images: galleryImages?.length ? galleryImages : hero.images,
     orderName,
   };
 }

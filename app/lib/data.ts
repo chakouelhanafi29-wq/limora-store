@@ -1,3 +1,5 @@
+import { COLLAGEN_GLOW_PRIMARY_IMAGE } from "@/lib/product-images";
+
 export const brand = {
   name: "LIMORA",
   nameAr: "ليمورا",
@@ -46,7 +48,7 @@ export const featuredProducts = [
     price: "199",
     originalPrice: "289",
     badge: "الأكثر طلباً",
-    image: "/products/collagen-glow/hero.png",
+    image: COLLAGEN_GLOW_PRIMARY_IMAGE,
     cta: "اختاري Collagen Glow",
   },
   {

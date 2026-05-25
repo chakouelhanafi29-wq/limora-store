@@ -1,4 +1,8 @@
 import {
+  resolvePrimaryProductImage,
+  sortProductImages,
+} from "@/lib/product-images";
+import {
   announcements as staticAnnouncements,
   featuredProducts as staticFeaturedProducts,
   testimonials as staticTestimonials,
@@ -10,6 +14,7 @@ import {
   productOrderName as staticOrderName,
   type Offer,
 } from "@/app/lib/product-data";
+import type { ProductImageRecord } from "@/lib/product-images";
 import type {
   Product,
   ProductOffer,
@@ -73,12 +78,13 @@ export function mapFeaturedProducts(
   }
 
   return products.map((product) => {
-    const images = (product as Product & { product_images?: { url: string }[] })
+    const images = (product as Product & { product_images?: ProductImageRecord[] })
       .product_images;
-    const image =
-      images?.[0]?.url ??
+    const image = resolvePrimaryProductImage(
+      images,
       staticFeaturedProducts.find((item) => item.id === product.slug)?.image ??
-      staticProduct.images[0];
+        staticProduct.images[0],
+    );
 
     return {
       id: product.id,
@@ -139,7 +145,7 @@ export function mapProductPageData(product: ProductWithRelations | null) {
   }
 
   const images = product.product_images.length
-    ? product.product_images.map((image) => image.url)
+    ? sortProductImages(product.product_images).map((image) => image.url)
     : staticProduct.images;
 
   const offers = product.product_offers.length

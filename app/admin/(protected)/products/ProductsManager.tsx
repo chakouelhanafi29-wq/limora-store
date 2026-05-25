@@ -1,12 +1,13 @@
 "use client";
 
+import { sortProductImages } from "@/lib/product-images";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { Product, ProductOffer } from "@/lib/types/database";
 
 type ProductWithRelations = Product & {
-  product_images?: { id: string; url: string }[];
+  product_images?: { id: string; url: string; sort_order?: number; is_primary?: boolean }[];
   product_offers?: ProductOffer[];
 };
 
@@ -210,12 +211,14 @@ export default function ProductsManager({
 
               {product.product_images?.length ? (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {product.product_images.slice(0, 4).map((image) => (
+                  {sortProductImages(product.product_images)
+                    .slice(0, 4)
+                    .map((image) => (
                     <img
                       key={image.id}
                       src={image.url}
                       alt=""
-                      className="h-16 w-16 rounded-xl object-cover"
+                      className="h-16 w-16 rounded-xl border border-champagne/10 bg-beige/40 object-contain p-1"
                     />
                   ))}
                 </div>

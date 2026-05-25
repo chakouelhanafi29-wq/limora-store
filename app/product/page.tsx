@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { resolvePrimaryProductImage, resolveProductGalleryImages } from "@/lib/product-images";
 import { getProductBySlug } from "@/lib/supabase/queries";
 import { getProductPageConfig } from "@/lib/page-builder/queries";
 import { getSiteConfig } from "@/lib/site/config";
@@ -27,11 +28,10 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     dbProduct?.subtitle ||
     pageConfig.hero.subtitle ||
     site.seo.description;
-  const primaryImage =
-    dbProduct?.product_images?.find((img) => img.is_primary)?.url ||
-    dbProduct?.product_images?.[0]?.url ||
-    pageConfig.hero.images[0] ||
-    null;
+  const primaryImage = resolvePrimaryProductImage(
+    dbProduct?.product_images,
+    pageConfig.hero.images[0],
+  );
 
   return buildPageMetadata(site, {
     title: `${title} — ${site.name}`,
@@ -52,6 +52,10 @@ export default async function ProductPage({ searchParams }: Props) {
     <ProductPageClient
       pageConfig={pageConfig}
       productId={dbProduct?.id}
+      galleryImages={resolveProductGalleryImages(
+        dbProduct?.product_images,
+        pageConfig.hero.images,
+      )}
     />
   );
 }

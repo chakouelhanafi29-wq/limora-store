@@ -39,7 +39,7 @@ export default function Products({ products }: Props) {
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                  className="object-contain bg-beige/30 p-3 transition-transform duration-700 group-hover:scale-105"
                   sizes="(max-width: 768px) 100vw, 33vw"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent" />

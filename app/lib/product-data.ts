@@ -1,3 +1,8 @@
+import {
+  COLLAGEN_GLOW_GALLERY,
+  COLLAGEN_GLOW_PRIMARY_IMAGE,
+} from "@/lib/product-images";
+
 export const productAnnouncements = [
   "شحن مجاني + الدفع عند الاستلام داخل السعودية",
   "LIMORA Collagen Glow — كولاجين بحري فاخر",
@@ -20,12 +25,7 @@ export const product = {
     "سهل الاستخدام يومياً — نتائج طبيعية ومتدرجة",
   ],
   urgency: "✨ العرض الأقوى — الأكثر طلباً: عرض قطعتين بـ 249 ر.س",
-  images: [
-    "/products/collagen-glow/hero.png",
-    "/products/collagen-glow/lifestyle.png",
-    "/products/collagen-glow/benefits.png",
-    "/products/collagen-glow/transformation.png",
-  ],
+  images: [...COLLAGEN_GLOW_GALLERY],
   codTrust: ["شحن مجاني", "دفع عند الاستلام", "ضمان الجودة", "دعم العملاء"],
 };
 
@@ -205,14 +205,14 @@ export const transformation = {
   subtitle: "نساء خليجيات وثقن بـ LIMORA Collagen Glow — وهذا ما شاركنه.",
   beforeAfter: [
     {
-      before: "/products/collagen-glow/transformation.png",
-      after: "/products/collagen-glow/lifestyle.png",
+      before: COLLAGEN_GLOW_GALLERY[0],
+      after: COLLAGEN_GLOW_GALLERY[3],
       quote: "بشرتي صارت أهدأ وأكثر إشراقًا — الرياض",
       days: "21 يوم",
     },
     {
-      before: "/products/collagen-glow/hero.png",
-      after: "/products/collagen-glow/benefits.png",
+      before: COLLAGEN_GLOW_GALLERY[0],
+      after: COLLAGEN_GLOW_GALLERY[1],
       quote: "مرونة وترطيب حسيت فيهم من الأسبوع الثاني — جدة",
       days: "14 يوم",
     },
@@ -319,17 +319,17 @@ export const productIngredients = {
     {
       name: "Marine Collagen",
       benefit: "مرونة البشرة ومكافحة علامات التقدّم",
-      image: "/products/collagen-glow/hero.png",
+      image: COLLAGEN_GLOW_GALLERY[0],
     },
     {
       name: "Hyaluronic Acid",
       benefit: "ترطيب عميق ونعومة فائقة",
-      image: "/products/collagen-glow/benefits.png",
+      image: COLLAGEN_GLOW_GALLERY[2],
     },
     {
       name: "Vitamin C",
       benefit: "إشراقة طبيعية ونضارة",
-      image: "/products/collagen-glow/lifestyle.png",
+      image: COLLAGEN_GLOW_GALLERY[1],
     },
     {
       name: "Biotin",
@@ -416,7 +416,7 @@ export const relatedProducts = [
     nameEn: "LIMORA Hair",
     benefit: "شعرٌ أكثف… وثقة تُزدان",
     price: "299",
-    image: "/products/collagen-glow/lifestyle.png",
+    image: COLLAGEN_GLOW_GALLERY[1],
     href: "/product",
   },
   {
@@ -425,7 +425,7 @@ export const relatedProducts = [
     nameEn: "LIMORA Radiance",
     benefit: "تفتيح أنثوي… بأناقة طبيعية",
     price: "319",
-    image: "/products/collagen-glow/benefits.png",
+    image: COLLAGEN_GLOW_GALLERY[2],
     href: "/product",
   },
   {
@@ -434,7 +434,7 @@ export const relatedProducts = [
     nameEn: "LIMORA Nail",
     benefit: "أظافر قوية… بأناقة طبيعية",
     price: "249",
-    image: "/products/collagen-glow/hero.png",
+    image: COLLAGEN_GLOW_GALLERY[3],
     href: "/product",
   },
 ];

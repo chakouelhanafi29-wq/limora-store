@@ -62,11 +62,11 @@ export default function ProductGallery({
           src={images[activeIndex]}
           alt={`${product.name} — صورة ${activeIndex + 1}`}
           fill
-          className={`object-cover transition-transform duration-700 ease-out ${
-            zoom ? "scale-110" : "scale-100"
+          className={`object-contain p-2 transition-transform duration-700 ease-out ${
+            zoom ? "scale-105" : "scale-100"
           }`}
           sizes="(max-width: 1024px) 100vw, 50vw"
-          priority
+          priority={activeIndex === 0}
         />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-foreground/10 via-transparent to-transparent" />
 
@@ -117,7 +117,7 @@ export default function ProductGallery({
               src={img}
               alt={`${product.name} — مصغّر ${i + 1}`}
               fill
-              className="object-cover"
+              className="object-contain p-1"
               sizes="120px"
             />
           </button>
