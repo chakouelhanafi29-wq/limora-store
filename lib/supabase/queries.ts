@@ -1,3 +1,4 @@
+import { OFFICIAL_PRODUCT_SLUGS } from "@/lib/product-images";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import type {
   AnalyticsStats,
@@ -41,11 +42,12 @@ export async function getProductBySlug(
   slug: string,
 ): Promise<ProductWithRelations | null> {
   if (!isSupabaseConfigured()) return null;
+  const resolvedSlug = slug === "glow" ? "collagen-glow" : slug;
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")
     .select("*, product_images(*), product_offers(*)")
-    .eq("slug", slug)
+    .eq("slug", resolvedSlug)
     .eq("is_active", true)
     .single();
   if (!data) return null;
@@ -67,7 +69,7 @@ export async function getProductById(
 }
 
 export async function getActiveProductSlugs(): Promise<string[]> {
-  if (!isSupabaseConfigured()) return ["glow"];
+  if (!isSupabaseConfigured()) return [...OFFICIAL_PRODUCT_SLUGS];
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")
@@ -75,7 +77,7 @@ export async function getActiveProductSlugs(): Promise<string[]> {
     .eq("is_active", true)
     .order("sort_order");
   const slugs = data?.map((row) => row.slug as string).filter(Boolean) ?? [];
-  return slugs.length ? slugs : ["glow"];
+  return slugs.length ? slugs : [...OFFICIAL_PRODUCT_SLUGS];
 }
 
 export async function getActiveReviews(): Promise<Review[]> {

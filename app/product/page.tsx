@@ -7,6 +7,7 @@ type Props = {
 };
 
 export default async function LegacyProductPage({ searchParams }: Props) {
-  const { slug = "glow" } = await searchParams;
-  redirect(`/product/${encodeURIComponent(slug)}`);
+  const { slug = "collagen-glow" } = await searchParams;
+  const resolved = slug === "glow" ? "collagen-glow" : slug;
+  redirect(`/product/${encodeURIComponent(resolved)}`);
 }

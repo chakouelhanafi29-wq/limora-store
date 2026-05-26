@@ -10,7 +10,7 @@ export const productAnnouncements = [
 ];
 
 export const product = {
-  id: "glow",
+  id: "collagen-glow",
   name: "LIMORA Collagen Glow",
   nameEn: "LIMORA Collagen Glow",
   subtitle:
@@ -206,7 +206,7 @@ export const transformation = {
   beforeAfter: [
     {
       before: COLLAGEN_GLOW_GALLERY[0],
-      after: COLLAGEN_GLOW_GALLERY[3],
+      after: COLLAGEN_GLOW_GALLERY[1],
       quote: "بشرتي صارت أهدأ وأكثر إشراقًا — الرياض",
       days: "21 يوم",
     },
@@ -324,7 +324,7 @@ export const productIngredients = {
     {
       name: "Hyaluronic Acid",
       benefit: "ترطيب عميق ونعومة فائقة",
-      image: COLLAGEN_GLOW_GALLERY[2],
+      image: COLLAGEN_GLOW_GALLERY[1],
     },
     {
       name: "Vitamin C",
@@ -411,31 +411,22 @@ export const guarantee = {
 
 export const relatedProducts = [
   {
-    id: "hair",
-    name: "LIMORA Hair",
-    nameEn: "LIMORA Hair",
-    benefit: "شعرٌ أكثف… وثقة تُزدان",
-    price: "299",
-    image: COLLAGEN_GLOW_GALLERY[1],
-    href: "/product",
-  },
-  {
-    id: "radiance",
-    name: "LIMORA Radiance",
-    nameEn: "LIMORA Radiance",
-    benefit: "تفتيح أنثوي… بأناقة طبيعية",
-    price: "319",
-    image: COLLAGEN_GLOW_GALLERY[2],
-    href: "/product",
-  },
-  {
-    id: "nail",
-    name: "LIMORA Nail",
-    nameEn: "LIMORA Nail",
-    benefit: "أظافر قوية… بأناقة طبيعية",
+    id: "hair-revive",
+    name: "LIMORA Hair Revive",
+    nameEn: "LIMORA Hair Revive",
+    benefit: "شعرٌ أكثف… وقوة من الجذور",
     price: "249",
-    image: COLLAGEN_GLOW_GALLERY[3],
-    href: "/product",
+    image: "/products/hair-revive/hero.webp",
+    href: "/product/hair-revive",
+  },
+  {
+    id: "detox-cleanse",
+    name: "LIMORA Detox Cleanse",
+    nameEn: "LIMORA Detox Cleanse",
+    benefit: "توازن داخلي… وبطن أخف",
+    price: "229",
+    image: "/products/detox-cleanse/hero.webp",
+    href: "/product/detox-cleanse",
   },
 ];
 

@@ -1,6 +1,7 @@
 import {
   resolvePrimaryProductImage,
   sortProductImages,
+  getPrimaryImageBySlug,
 } from "@/lib/product-images";
 import {
   announcements as staticAnnouncements,
@@ -83,7 +84,7 @@ export function mapFeaturedProducts(
     const image = resolvePrimaryProductImage(
       images,
       staticFeaturedProducts.find((item) => item.id === product.slug)?.image ??
-        staticProduct.images[0],
+        getPrimaryImageBySlug(product.slug),
     );
 
     return {

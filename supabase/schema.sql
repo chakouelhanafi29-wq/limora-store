@@ -402,73 +402,82 @@ begin
   end if;
 end $$;
 
--- Seed default product
-insert into products (slug, name_ar, name_en, subtitle, description, price, original_price, badge, is_featured, bullets, urgency_text)
-values (
-  'glow',
-  'LIMORA Collagen Glow',
-  'LIMORA Collagen Glow',
-  'كولاجين بحري فاخر لبشرة أكثر إشراقًا، مرونة وشبابًا ✨',
-  'كولاجين بحري فاخر غني بالهيالورونيك أسيد والبيوتين — لبشرة متوهجة، مرنة، وأكثر شبابًا.',
-  199, 289, 'الأكثر طلباً', true,
-  '["جمالك يبدأ من الداخل","بشرة أكثر إشراقًا ونضارة","تركيبة بحرية فاخرة","سهل الاستخدام يومياً"]'::jsonb,
-  '✨ العرض الأقوى — الأكثر طلباً: عرض قطعتين بـ 249 ر.س'
-) on conflict (slug) do nothing;
+-- Seed official LIMORA products
+insert into products (slug, name_ar, name_en, subtitle, description, price, original_price, badge, is_featured, sort_order, bullets, urgency_text)
+values
+  (
+    'collagen-glow',
+    'LIMORA Collagen Glow',
+    'LIMORA Collagen Glow',
+    'كولاجين بحري فاخر — لبشرة متوهجة، أكثر تماسكاً وشباباً ✨',
+    'كولاجين بحري فاخر + فيتامين C + بيوتين + هيالورونيك أسيد — لبشرة متوهجة، مرنة، وأكثر شباباً.',
+    199, 289, 'الأكثر طلباً', true, 1,
+    '["بشرة متوهجة ومرنة","كولاجين بحري فاخر","فيتامين C + بيوتين + هيالورونيك","سهل الاستخدام يومياً"]'::jsonb,
+    '✨ العرض الأقوى — عرض قطعتين بـ 249 ر.س + شحن مجاني'
+  ),
+  (
+    'hair-revive',
+    'LIMORA Hair Revive',
+    'LIMORA Hair Revive',
+    'تركيبة لنمو الشعر وتقويته — لشعر أكثر كثافة، قوة وصحة',
+    'كولاجين + بيوتين + كيراتين + زنك + سيليكا + فيتامين E — لنمو الشعر وتقويته.',
+    249, 329, 'الأكثر مبيعاً', true, 2,
+    '["تحفيز نمو الشعر","شعر أقوى وأقل تساقطاً","كثافة ولمعان طبيعي","كولاجين + بيوتين + كيراتين"]'::jsonb,
+    '✨ عرض قطعتين بـ 349 ر.س + شحن مجاني'
+  ),
+  (
+    'detox-cleanse',
+    'LIMORA Detox Cleanse',
+    'LIMORA Detox Cleanse',
+    'دعم يومي للتخلص من السموم والانتفاخ — لبطن مسطح وتوازن داخلي',
+    'خليط أخضر + بريبيوتيك + ألياف + إنزيمات + فيتامينات — للتخلص من السموم وتقليل الانتفاخ.',
+    229, 299, 'حصري', true, 3,
+    '["تنظيف الجسم بلطف","تقليل الانتفاخ","تحسين الهضم","خليط أخضر + بريبيوتيك"]'::jsonb,
+    '✨ عرض قطعتين بـ 329 ر.س + شحن مجاني'
+  )
+on conflict (slug) do nothing;
 
 insert into product_images (product_id, url, storage_path, sort_order, is_primary)
-select
-  p.id,
-  v.url,
-  v.storage_path,
-  v.sort_order,
-  v.is_primary
+select p.id, v.url, v.storage_path, v.sort_order, v.is_primary
 from products p
 cross join (
   values
-    ('/products/collagen-glow/01-before-after-hero.webp', 'products/collagen-glow/01-before-after-hero.webp', 1, true),
-    ('/products/collagen-glow/02-lifestyle-hijabi.webp', 'products/collagen-glow/02-lifestyle-hijabi.webp', 2, false),
-    ('/products/collagen-glow/03-benefits-infographic.webp', 'products/collagen-glow/03-benefits-infographic.webp', 3, false),
-    ('/products/collagen-glow/04-transformation.webp', 'products/collagen-glow/04-transformation.webp', 4, false)
-) as v(url, storage_path, sort_order, is_primary)
-where p.slug = 'glow'
+    ('collagen-glow', '/products/collagen-glow/hero.webp', 'products/collagen-glow/hero.webp', 1, true),
+    ('collagen-glow', '/products/collagen-glow/01-before-after-hero.webp', 'products/collagen-glow/01-before-after-hero.webp', 2, false),
+    ('hair-revive', '/products/hair-revive/hero.webp', 'products/hair-revive/hero.webp', 1, true),
+    ('detox-cleanse', '/products/detox-cleanse/hero.webp', 'products/detox-cleanse/hero.webp', 1, true)
+) as v(slug, url, storage_path, sort_order, is_primary)
+where p.slug = v.slug
 and not exists (
-  select 1 from product_images pi
-  join products pr on pr.id = pi.product_id
-  where pr.slug = 'glow'
+  select 1 from product_images pi where pi.product_id = p.id
 );
 
 insert into product_offers (product_id, label, display_label, quantity, price, badge, is_recommended, sort_order)
-select id, 'قطعة واحدة', 'عرض قطعة واحدة', 1, 199, null, false, 1
-from products where slug = 'glow'
+select p.id, v.label, v.display_label, v.quantity, v.price, v.badge, v.is_recommended, v.sort_order
+from products p
+cross join (
+  values
+    ('collagen-glow', 'قطعة واحدة', 'عرض قطعة واحدة', 1, 199, null::text, false, 1),
+    ('collagen-glow', 'قطعتان', 'عرض قطعتين', 2, 249, 'الأكثر طلباً', true, 2),
+    ('collagen-glow', '3 قطع', 'عرض 3 قطع', 3, 299, 'أفضل قيمة', false, 3),
+    ('hair-revive', 'قطعة واحدة', 'عرض قطعة واحدة', 1, 249, null::text, false, 1),
+    ('hair-revive', 'قطعتان', 'عرض قطعتين', 2, 349, 'الأكثر طلباً', true, 2),
+    ('hair-revive', '3 قطع', 'عرض 3 قطع', 3, 449, 'أفضل قيمة', false, 3),
+    ('detox-cleanse', 'قطعة واحدة', 'عرض قطعة واحدة', 1, 229, null::text, false, 1),
+    ('detox-cleanse', 'قطعتان', 'عرض قطعتين', 2, 329, 'الأكثر طلباً', true, 2),
+    ('detox-cleanse', '3 قطع', 'عرض 3 قطع', 3, 429, 'أفضل قيمة', false, 3)
+) as v(slug, label, display_label, quantity, price, badge, is_recommended, sort_order)
+where p.slug = v.slug
 and not exists (
   select 1 from product_offers po
-  join products p on p.id = po.product_id
-  where p.slug = 'glow' and po.quantity = 1
-);
-
-insert into product_offers (product_id, label, display_label, quantity, price, badge, is_recommended, sort_order)
-select id, 'قطعتان', 'عرض قطعتين', 2, 249, 'الأكثر طلباً', true, 2
-from products where slug = 'glow'
-and not exists (
-  select 1 from product_offers po
-  join products p on p.id = po.product_id
-  where p.slug = 'glow' and po.quantity = 2
-);
-
-insert into product_offers (product_id, label, display_label, quantity, price, badge, is_recommended, sort_order)
-select id, '3 قطع', 'عرض 3 قطع', 3, 299, 'أفضل قيمة', false, 3
-from products where slug = 'glow'
-and not exists (
-  select 1 from product_offers po
-  join products p on p.id = po.product_id
-  where p.slug = 'glow' and po.quantity = 3
+  where po.product_id = p.id and po.quantity = v.quantity
 );
 
 -- Seed homepage reviews
 insert into reviews (customer_name, location, product_label, rating, content, image_url, sort_order)
 select * from (values
-  ('نورة العتيبي', 'الرياض', 'LIMORA Collagen Glow', 5, 'بشرتي صارت أهدأ وأكثر إشراقًا… الإشراقة طبيعية مو مبالغ فيها. أحس بثقة مختلفة كل صباح.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80', 1),
-  ('ريم الشمري', 'جدة', 'Limora Hair', 5, 'شعري صار أقوى وأكثف… والأهم إني حسيت إنه من الداخل مو بس من الخارج.', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80', 2),
-  ('دانة القحطاني', 'الدمام', 'Limora Radiance', 5, 'تفتيح طبيعي بدون مبالغة… بشرتي موحّدة وناعمة. LIMORA فعلاً مختلفة.', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80', 3)
+  ('نورة العتيبي', 'الرياض', 'LIMORA Collagen Glow', 5, 'Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80', 1),
+  ('فاطمة الدوسري', 'جدة', 'LIMORA Hair Revive', 5, 'تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80', 2),
+  ('مريم القحطاني', 'الدمام', 'LIMORA Detox Cleanse', 5, 'Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. المجموعة الثلاثية صارت روتيني الكامل.', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80', 3)
 ) as seed(customer_name, location, product_label, rating, content, image_url, sort_order)
 where not exists (select 1 from reviews limit 1);

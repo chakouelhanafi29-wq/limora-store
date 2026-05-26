@@ -1,14 +1,18 @@
 import {
   about,
   announcements,
+  emotionalMessage,
   faqs,
+  finalCta,
   footer,
   hero,
+  limoraBundle,
   navLinks,
   realResults,
   testimonials,
   whyLimora,
 } from "@/app/lib/data";
+import { COLLAGEN_GLOW_PRIMARY_IMAGE } from "@/lib/product-images";
 import type { HomePageConfig, HomeSection } from "./types";
 
 function createId() {
@@ -36,19 +40,26 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
       order: 1,
       content: {
         ...clone(hero),
-        image:
-          "https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=80",
+        image: COLLAGEN_GLOW_PRIMARY_IMAGE,
       },
+    },
+    {
+      id: createId(),
+      type: "brand_story",
+      enabled: true,
+      order: 2,
+      content: clone(emotionalMessage),
     },
     {
       id: createId(),
       type: "products",
       enabled: true,
-      order: 2,
+      order: 3,
       content: {
         label: "FEATURED COLLECTION",
         title: "مختارات LIMORA الفاخرة",
-        subtitle: "ثلاث تركيبات… ثلاثة تحولات. اختاري ما يليق بجمالكِ.",
+        subtitle:
+          "Collagen Glow · Hair Revive · Detox Cleanse — ثلاث تركيبات… ثلاثة تحولات.",
         useDynamicProducts: true,
       },
     },
@@ -56,21 +67,21 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
       id: createId(),
       type: "before_after",
       enabled: true,
-      order: 3,
+      order: 4,
       content: clone(realResults),
     },
     {
       id: createId(),
       type: "benefits",
       enabled: true,
-      order: 4,
+      order: 5,
       content: clone(whyLimora),
     },
     {
       id: createId(),
       type: "reviews",
       enabled: true,
-      order: 5,
+      order: 6,
       content: {
         ...clone(testimonials),
         useDynamicReviews: true,
@@ -78,23 +89,33 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
     },
     {
       id: createId(),
+      type: "promo_banner",
+      enabled: true,
+      order: 7,
+      content: {
+        ...clone(limoraBundle),
+        backgroundColor: "linear-gradient(135deg, #2a201e, #3d2e2a)",
+      },
+    },
+    {
+      id: createId(),
       type: "faq",
       enabled: true,
-      order: 6,
+      order: 8,
       content: clone(faqs),
     },
     {
       id: createId(),
-      type: "brand_story",
+      type: "promo_banner",
       enabled: true,
-      order: 7,
-      content: clone(about),
+      order: 9,
+      content: clone(finalCta),
     },
     {
       id: createId(),
       type: "footer",
       enabled: true,
-      order: 8,
+      order: 10,
       content: {
         brandName: "LIMORA",
         ...clone(footer),
@@ -107,7 +128,7 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
     navbar: {
       brandName: "LIMORA",
       ctaLabel: "اطلبي الآن",
-      ctaHref: "/product",
+      ctaHref: "/product/collagen-glow",
       links: clone(navLinks),
     },
     sections,

@@ -38,7 +38,7 @@ export default function OrderModal({
   offer,
   product,
   productId,
-  productSlug = "glow",
+  productSlug = "collagen-glow",
   offerLabels = {},
   orderModal,
   codTrust = [],

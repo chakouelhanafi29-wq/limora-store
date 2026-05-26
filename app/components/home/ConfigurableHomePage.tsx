@@ -114,7 +114,7 @@ function renderSection(
               <p className="mb-8 text-sm text-champagne">{String(content.trustLine ?? "")}</p>
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
                 <a
-                  href="/product"
+                  href="/product/collagen-glow"
                   className={`${btn} bg-foreground px-10 py-4 text-base font-medium text-ivory transition-all hover:shadow-xl hover:shadow-champagne/20`}
                 >
                   {String(content.ctaPrimary ?? "")}
@@ -301,20 +301,71 @@ function renderSection(
         </section>
       );
     }
-    case "promo_banner":
+    case "promo_banner": {
+      const productItems =
+        (content.products as { name: string; image: string; href?: string }[]) ??
+        [];
       return (
-        <section key={section.id} className={pad} style={{ background: String(content.backgroundColor ?? "linear-gradient(135deg, #3d2e2a, #2a201e)") }}>
-          <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 text-center text-ivory sm:px-6 lg:flex-row lg:text-right">
-            <div className="flex-1">
-              <h2 className="font-serif text-3xl font-semibold">{String(content.title ?? "")}</h2>
-              <p className="mt-2 text-ivory/70">{String(content.subtitle ?? "")}</p>
+        <section
+          key={section.id}
+          className={pad}
+          style={{
+            background: String(
+              content.backgroundColor ??
+                "linear-gradient(135deg, #3d2e2a, #2a201e)",
+            ),
+          }}
+        >
+          <div className="mx-auto max-w-7xl px-4 text-center text-ivory sm:px-6">
+            {productItems.length > 0 && (
+              <div className="mb-10 flex flex-wrap items-end justify-center gap-4 sm:gap-6">
+                {productItems.map((item) => (
+                  <Link
+                    key={item.name}
+                    href={item.href ?? "#products"}
+                    className="group flex flex-col items-center gap-3 transition hover:-translate-y-1"
+                  >
+                    <div className="relative h-32 w-24 overflow-hidden rounded-2xl bg-white/10 ring-1 ring-ivory/20 sm:h-40 sm:w-28">
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                        sizes="112px"
+                      />
+                    </div>
+                    <span className="text-xs font-medium text-ivory/80">
+                      {item.name}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
+            <div className="flex flex-col items-center gap-6 lg:flex-row lg:text-right">
+              <div className="flex-1">
+                <h2 className="font-serif text-3xl font-semibold">
+                  {String(content.title ?? "")}
+                </h2>
+                <p className="mt-2 text-ivory/70">
+                  {String(content.subtitle ?? "")}
+                </p>
+                {content.priceNote ? (
+                  <p className="mt-3 text-sm font-medium text-champagne-light">
+                    {String(content.priceNote)}
+                  </p>
+                ) : null}
+              </div>
+              <a
+                href={String(content.ctaHref ?? "/product/collagen-glow")}
+                className={`${btn} bg-champagne px-8 py-3 text-sm font-medium text-white`}
+              >
+                {String(content.ctaLabel ?? "اطلبي الآن")}
+              </a>
             </div>
-            <a href={String(content.ctaHref ?? "/product")} className={`${btn} bg-champagne px-8 py-3 text-sm font-medium text-white`}>
-              {String(content.ctaLabel ?? "اطلبي الآن")}
-            </a>
           </div>
         </section>
       );
+    }
     case "countdown_banner":
       return (
         <section key={section.id} className="bg-champagne/10 py-6 text-center">

@@ -1,4 +1,8 @@
-import { COLLAGEN_GLOW_PRIMARY_IMAGE } from "@/lib/product-images";
+import {
+  COLLAGEN_GLOW_PRIMARY_IMAGE,
+  DETOX_CLEANSE_PRIMARY_IMAGE,
+  HAIR_REVIVE_PRIMARY_IMAGE,
+} from "@/lib/product-images";
 
 export const brand = {
   name: "LIMORA",
@@ -7,13 +11,14 @@ export const brand = {
 };
 
 export const announcements = [
-  "ضمان متوفر على جميع منتجاتنا",
+  "ضمان متوفر على جميع منتجات LIMORA",
   "شحن مجاني + الدفع عند الاستلام داخل السعودية",
-  "تخفيضات حصرية تصل حتى 50%",
+  "مجموعة LIMORA للجمال الطبيعي من الداخل — عرض حصري",
 ];
 
 export const navLinks = [
   { href: "#products", label: "المنتجات" },
+  { href: "#results", label: "التحول" },
   { href: "#reviews", label: "آراء العملاء" },
   { href: "#faq", label: "الأسئلة الشائعة" },
   { href: "/about", label: "من نحن" },
@@ -24,7 +29,7 @@ export const hero = {
   headline: "أنتِ تستحقين",
   headlineAccent: "أن تتوهجي كل يوم",
   subheadline:
-    "مكملات بودر فاخرة — لبشرة مشرقة، شعرٍ أكثر كثافة، وثقة أنثوية لا تُخطَأ. لأن الجمال الحقيقي لا يُرى في المرآة فقط… بل يُشعّ من داخلكِ.",
+    "ثلاث تركيبات فاخرة — Collagen Glow، Hair Revive، Detox Cleanse — لبشرة متوهجة، شعرٍ أكثر كثافة، وتوازن داخلي. لأن الجمال الحقيقي يُشعّ من داخلكِ.",
   trustLine: "✦ معتمد SFDA · ضمان على جميع المنتجات · دفع عند الاستلام",
   ctaPrimary: "اختاري LIMORA الآن",
   ctaSecondary: "اكتشفي تحولكِ",
@@ -37,14 +42,32 @@ export const hero = {
   floatCard2: { label: "الأكثر طلباً", title: "Collagen Glow" },
 };
 
+export const emotionalMessage = {
+  label: "BEAUTY FROM WITHIN",
+  title: "جمالٌ يُولَد من الداخل",
+  subtitle:
+    "LIMORA ليست مجرد مكملات — بل نظام جمال أنثوي متكامل. بشرة، شعر، وتوازن… في روتين واحد فاخر صُمم للمرأة السعودية التي تستحق الأفضل.",
+  paragraphs: [
+    "نؤمن أن الجمال الحقيقي لا يُغطّى — بل يُغذّى. كل تركيبة من LIMORA وُلدت لامرأة تعرف أن العناية الحقيقية تبدأ من الداخل.",
+    "Collagen Glow للبشرة المتوهجة، Hair Revive للشعر الأقوى، Detox Cleanse للتوازن الداخلي — ثلاثة منتجات، تحول واحد.",
+    "مع LIMORA… أنتِ لا تشتري منتجاً — بل تختارين نفسكِ.",
+  ],
+  values: [
+    { label: "معتمد SFDA", icon: "❋" },
+    { label: "مكونات فاخرة", icon: "✦" },
+    { label: "دفع عند الاستلام", icon: "✧" },
+  ],
+  image: COLLAGEN_GLOW_PRIMARY_IMAGE,
+};
+
 export const featuredProducts = [
   {
-    id: "glow",
+    id: "collagen-glow",
     name: "LIMORA Collagen Glow",
     nameEn: "LIMORA Collagen Glow",
     benefit: "بشرة متوهجة… مرونة وشباب من الداخل",
     description:
-      "كولاجين بحري فاخر + هيالورونيك أسيد — لإشراقة، ترطيب، ومظهر أكثر شبابًا.",
+      "كولاجين بحري فاخر + فيتامين C + بيوتين + هيالورونيك — لإشراقة، تماسك، ومظهر أكثر شباباً.",
     price: "199",
     originalPrice: "289",
     badge: "الأكثر طلباً",
@@ -52,46 +75,78 @@ export const featuredProducts = [
     cta: "اختاري Collagen Glow",
   },
   {
-    id: "hair",
-    name: "ليمورا هير",
-    nameEn: "Limora Hair",
-    benefit: "شعرٌ أكثف… وثقة تُزدان",
+    id: "hair-revive",
+    name: "LIMORA Hair Revive",
+    nameEn: "LIMORA Hair Revive",
+    benefit: "شعرٌ أكثف… وقوة من الجذور",
     description:
-      "بيوتين + أحماض أمينية — لتغذية الجذور وكثافة تُلاحظ.",
-    price: "299",
-    originalPrice: "369",
+      "كولاجين + بيوتين + كيراتين + زنك — لنمو الشعر، كثافة، وقوة تُلاحظ.",
+    price: "249",
+    originalPrice: "329",
     badge: "الأكثر مبيعاً",
-    image:
-      "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=800&q=80",
-    cta: "اختاري Hair",
+    image: HAIR_REVIVE_PRIMARY_IMAGE,
+    cta: "اختاري Hair Revive",
   },
   {
-    id: "radiance",
-    name: "ليمورا راديance",
-    nameEn: "Limora Radiance",
-    benefit: "تفتيح أنثوي… بأناقة طبيعية",
+    id: "detox-cleanse",
+    name: "LIMORA Detox Cleanse",
+    nameEn: "LIMORA Detox Cleanse",
+    benefit: "توازن داخلي… وبطن أخف",
     description:
-      "تركيبة حصرية — لبشرة موحّدة، ناعمة، ومتوهجة بثقة هادئة.",
-    price: "319",
-    originalPrice: "399",
+      "خليط أخضر + بريبيوتيك + ألياف + إنزيمات — للتخلص من السموم وتقليل الانتفاخ.",
+    price: "229",
+    originalPrice: "299",
     badge: "حصري",
-    image:
-      "https://images.unsplash.com/photo-1612817288484-6f916006177a?w=800&q=80",
-    cta: "اختاري Radiance",
+    image: DETOX_CLEANSE_PRIMARY_IMAGE,
+    cta: "اختاري Detox Cleanse",
   },
 ];
+
+export const limoraBundle = {
+  title: "مجموعة LIMORA للجمال الطبيعي من الداخل",
+  subtitle:
+    "Collagen Glow + Hair Revive + Detox Cleanse — نظام جمال متكامل: بشرة، شعر، وتوازن… في مجموعة واحدة فاخرة.",
+  priceNote: "599 ر.س بدلاً من 677 ر.س — شحن مجاني + الدفع عند الاستلام",
+  ctaLabel: "اطلبي المجموعة الآن",
+  ctaHref: "/product/collagen-glow",
+  products: [
+    {
+      name: "Collagen Glow",
+      image: COLLAGEN_GLOW_PRIMARY_IMAGE,
+      href: "/product/collagen-glow",
+    },
+    {
+      name: "Hair Revive",
+      image: HAIR_REVIVE_PRIMARY_IMAGE,
+      href: "/product/hair-revive",
+    },
+    {
+      name: "Detox Cleanse",
+      image: DETOX_CLEANSE_PRIMARY_IMAGE,
+      href: "/product/detox-cleanse",
+    },
+  ],
+};
+
+export const finalCta = {
+  title: "ابدئي تحولكِ اليوم",
+  subtitle: "جمالٌ يُولَد من الداخل — مع LIMORA. اختاري منتجكِ واطلبي بثقة.",
+  ctaLabel: "اختاري منتجكِ الآن",
+  ctaHref: "#products",
+  backgroundColor: "linear-gradient(135deg, #3d2e2a, #2a201e)",
+};
 
 export const whyLimora = {
   label: "THE LIMORA DIFFERENCE",
   title: "لماذا LIMORA مختلفة؟",
   subtitle:
-    "لأننا لا نبيع وعوداً — نصنع تحولاً. كل تركيبة من LIMORA وُلدت لامرأة سعودية تعرف أن العناية الحقيقية تبدأ من الداخل.",
+    "ثلاث تركيبات فاخرة — Collagen Glow، Hair Revive، Detox Cleanse — مصممة لامرأة سعودية تعرف أن العناية الحقيقية تبدأ من الداخل.",
   pillars: [
     {
       icon: "✦",
       title: "مكونات فاخرة… بمعايير عالمية",
       description:
-        "نختار أندر المكونات الطبيعية — كولاجين بحري، فيتامين C، بيوتين — بتركيزات مدروسة وفعالية مثبتة.",
+        "كولاجين بحري، بيوتين، كيراتين، خليط أخضر، بريبيوتيك — بتركيزات مدروسة وفعالية مثبتة.",
     },
     {
       icon: "◈",
@@ -103,7 +158,7 @@ export const whyLimora = {
       icon: "❋",
       title: "عناية أنثوية… بفهم عميق",
       description:
-        "صُممت لاحتياجات المرأة السعودية والخليجية — إشراقة، تفتيح، شعر، وثقة… في روتين واحد أنيق.",
+        "صُممت لاحتياجات المرأة السعودية والخليجية — إشراقة، شعر، توازن… في نظام جمال واحد.",
     },
     {
       icon: "✧",
@@ -118,32 +173,29 @@ export const realResults = {
   label: "REAL TRANSFORMATIONS",
   title: "تحولٌ حقيقي… تستحقينه",
   subtitle:
-    "وراء كل إشراقة امرأة اختارت نفسها. LIMORA لا تغيّر مظهركِ فقط — بل تُعيد إليكِ ثقتكِ.",
+    "وراء كل إشراقة وكل خصلة شعر وكل توازن داخلي — امرأة اختارت LIMORA. هذا ما شاركنه.",
   transformations: [
     {
       title: "بشرة تتوهج",
       description:
-        "إشراقة طبيعية ونعومة كالحرير — بدون فلاتر، بدون مكياج ثقيل. فقط أنتِ… بأجمل نسخة.",
-      image:
-        "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?w=600&q=80",
+        "Collagen Glow — إشراقة طبيعية ونعومة كالحرير. بشرة أكثر تماسكاً وشباباً من الداخل.",
+      image: COLLAGEN_GLOW_PRIMARY_IMAGE,
       stat: "92%",
       statLabel: "لاحظن إشراقة خلال 14 يوم",
     },
     {
       title: "شعرٌ أكثر حياة",
       description:
-        "كثافة، لمعان، وقوة من الجذور — لشعر يُعبّر عن أناقتكِ في كل مناسبة.",
-      image:
-        "https://images.unsplash.com/photo-1522338242992-e1a54906a8da?w=600&q=80",
+        "Hair Revive — كثافة، لمعان، وقوة من الجذور. شعر أقوى وأقل تساقطاً.",
+      image: HAIR_REVIVE_PRIMARY_IMAGE,
       stat: "88%",
       statLabel: "لاحظن فرقاً في الكثافة",
     },
     {
-      title: "ثقة أنثوية",
+      title: "توازن داخلي",
       description:
-        "عندما تتوهج بشرتكِ ويتجدد شعركِ — تتغيّر طريقة مشيكِ، نظرتكِ، وشعوركِ بنفسكِ.",
-      image:
-        "https://images.unsplash.com/photo-1519741497674-611481863552?w=600&q=80",
+        "Detox Cleanse — بطن أخف وتوازن يومي. تنظيف الجسم بلطف وتقليل الانتفاخ.",
+      image: DETOX_CLEANSE_PRIMARY_IMAGE,
       stat: "21",
       statLabel: "يوماً لتحول ملموس",
     },
@@ -154,32 +206,32 @@ export const testimonials = {
   label: "CUSTOMER LOVE",
   title: "آراء العملاء",
   subtitle:
-    "نساء من الرياض وجدة والدمام… يشاركن تجربتهن مع LIMORA بصدق وثقة.",
+    "نساء من الرياض وجدة والدمام… يشاركن تجربتهن مع LIMORA Collagen Glow، Hair Revive، وDetox Cleanse.",
   items: [
     {
       name: "نورة العتيبي",
       location: "الرياض",
       product: "LIMORA Collagen Glow",
       rating: 5,
-      text: "ما كنت أتوقع إن مكمل يغيّر بشرتي بهالطريقة. الإشراقة ظهرت خلال أسبوعين — واليوم أخرج بدون تغطية وأحس إني كاملة.",
+      text: "Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة وأحس بثقة مختلفة.",
       image:
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80",
     },
     {
       name: "فاطمة الدوسري",
       location: "جدة",
-      product: "Limora Hair",
+      product: "LIMORA Hair Revive",
       rating: 5,
-      text: "تساقط شعري كان يقلقني. LIMORA Hair خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.",
+      text: "تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.",
       image:
         "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&q=80",
     },
     {
       name: "مريم القحطاني",
       location: "الدمام",
-      product: "Limora Radiance",
+      product: "LIMORA Detox Cleanse",
       rating: 5,
-      text: "التفتيح الطبيعي اللي كنت أدور عليه من سنين — لقيته هنا. بشرتي صارت موحّدة وناعمة، والتغليف نفسه يحسسك إنكِ تستحقين الأفضل.",
+      text: "Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. المجموعة الثلاثية مع Collagen Glow وHair Revive صارت روتيني الكامل.",
       image:
         "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
     },
@@ -189,7 +241,7 @@ export const testimonials = {
 export const faqs = {
   label: "FAQ",
   title: "الأسئلة الشائعة",
-  subtitle: "كل ما تحتاجين معرفته — بشفافية ووضوح.",
+  subtitle: "كل ما تحتاجين معرفته عن LIMORA Collagen Glow، Hair Revive، وDetox Cleanse.",
   items: [
     {
       question: "هل الدفع عند الاستلام متاح؟",
@@ -209,7 +261,7 @@ export const faqs = {
     {
       question: "متى ألاحظ النتائج؟",
       answer:
-        "معظم عميلاتنا يلاحظن إشراقة ونعومة خلال 7–14 يوماً. التحول الكامل يظهر عادة بعد 21–30 يوماً من الاستخدام المنتظم.",
+        "معظم عميلاتنا يلاحظن فرقاً خلال 7–21 يوماً حسب المنتج. Collagen Glow للإشراقة، Hair Revive للكثافة، Detox Cleanse للتوازن الداخلي.",
     },
     {
       question: "كيف أستخدم المكملات؟",
@@ -217,9 +269,9 @@ export const faqs = {
         "ذوبي ملعقة واحدة من البودر في كوب ماء أو عصير طبيعي — يومياً صباحاً على معدة فارغة. اجعليها طقساً يومياً من العناية بنفسكِ.",
     },
     {
-      question: "ما هو الضمان؟",
+      question: "هل يمكن طلب المجموعة الثلاثية؟",
       answer:
-        "ضمان متوفر على جميع منتجاتنا. إذا لم تشعري بالفرق خلال 30 يوماً — نسترد مبلغكِ كاملاً، بدون أسئلة.",
+        "نعم — مجموعة LIMORA للجمال الطبيعي من الداخل تضم Collagen Glow + Hair Revive + Detox Cleanse بعرض حصري وشحن مجاني.",
     },
   ],
 };
@@ -230,7 +282,7 @@ export const about = {
   subtitle: "LIMORA — حيث يلتقي الجمال بالثقة",
   paragraphs: [
     "وُلدت LIMORA في قلب المملكة — من رؤية بسيطة: المرأة السعودية تستحق مكملات تجميلية بمستوى فندقي، لا منتجات عادية.",
-    "نختار أندر المكونات، نصنع بمعايير SFDA، ونقدّم تجربة تسوق فاخرة — شحن مجاني، دفع عند الاستلام، وضمان على كل منتج.",
+    "Collagen Glow، Hair Revive، Detox Cleanse — ثلاث تركيبات فاخرة تشكّل نظام جمال متكامل من الداخل.",
     "LIMORA ليست مجرد علامة — بل وعد. وعد بأن كل امرأة تستحق أن تتوهج… من الداخل.",
   ],
   values: [
@@ -239,13 +291,12 @@ export const about = {
     { label: "ضمان شامل", icon: "◈" },
     { label: "دفع عند الاستلام", icon: "✧" },
   ],
-  image:
-    "https://images.unsplash.com/photo-1570175170871-a067510462a?w=800&q=80",
+  image: COLLAGEN_GLOW_PRIMARY_IMAGE,
 };
 
 export const footer = {
   tagline:
-    "العلامة الأولى لمكملات التجميل الفاخرة في المملكة — جمالٌ يُولَد من الداخل.",
+    "العلامة الأولى لمكملات التجميل الفاخرة في المملكة — Collagen Glow، Hair Revive، Detox Cleanse.",
   location: "الرياض - المملكة العربية السعودية",
   quickLinks: [
     { href: "/about", label: "من نحن" },

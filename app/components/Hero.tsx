@@ -31,7 +31,7 @@ export default function Hero() {
 
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
             <a
-              href="/product"
+              href="/product/collagen-glow"
               className="group relative overflow-hidden rounded-full bg-foreground px-10 py-4 text-base font-medium text-ivory transition-all hover:shadow-xl hover:shadow-champagne/20"
             >
               <span className="relative z-10">{hero.ctaPrimary}</span>

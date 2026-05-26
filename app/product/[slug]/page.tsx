@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import {
   buildProductPageMetadata,
   loadProductPage,
 } from "@/lib/page-builder/load-product-page";
+import { isOfficialProductSlug } from "@/lib/products/catalog";
 import { resolvePrimaryProductImage } from "@/lib/product-images";
 import { getSiteConfig } from "@/lib/site/config";
 import { buildProductJsonLd, jsonLdScript } from "@/lib/seo/structured-data";
@@ -22,13 +23,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function ProductSlugPage({ params }: Props) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  if (rawSlug === "glow") {
+    redirect("/product/collagen-glow");
+  }
+
+  const slug = rawSlug;
   const [site, { pageConfig, dbProduct, galleryImages }] = await Promise.all([
     getSiteConfig(),
     loadProductPage(slug),
   ]);
 
-  if (!dbProduct && slug !== "glow") {
+  if (!dbProduct && !isOfficialProductSlug(slug)) {
     notFound();
   }
 

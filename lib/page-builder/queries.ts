@@ -1,5 +1,6 @@
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import { getProductBySlug } from "@/lib/supabase/queries";
+import { resolveProductSlug } from "@/lib/products/catalog";
 import {
   getDefaultProductPageConfig,
   mergeProductPageConfig,
@@ -12,16 +13,17 @@ type ProductPageConfigOptions = {
 };
 
 export async function getProductPageConfig(
-  slug = "glow",
+  slug = "collagen-glow",
   options?: ProductPageConfigOptions,
 ): Promise<ProductPageConfig> {
+  const resolvedSlug = resolveProductSlug(slug);
   const product =
     options?.product !== undefined
       ? options.product
-      : await getProductBySlug(slug);
+      : await getProductBySlug(resolvedSlug);
 
   if (!isSupabaseConfigured()) {
-    return getDefaultProductPageConfig(slug, product);
+    return getDefaultProductPageConfig(resolvedSlug, product);
   }
 
   try {
@@ -29,20 +31,20 @@ export async function getProductPageConfig(
     const { data, error } = await supabase
       .from("product_page_configs")
       .select("config")
-      .eq("slug", slug)
+      .eq("slug", resolvedSlug)
       .maybeSingle();
 
     if (error || !data?.config) {
-      return getDefaultProductPageConfig(slug, product);
+      return getDefaultProductPageConfig(resolvedSlug, product);
     }
 
     return mergeProductPageConfig(
       data.config as ProductPageConfig,
-      slug,
+      resolvedSlug,
       product,
     );
   } catch {
-    return getDefaultProductPageConfig(slug, product);
+    return getDefaultProductPageConfig(resolvedSlug, product);
   }
 }
 
@@ -51,10 +53,11 @@ export async function saveProductPageConfig(
   config: ProductPageConfig,
   productId?: string,
 ) {
+  const resolvedSlug = resolveProductSlug(slug);
   const supabase = await createClient();
   const row: Record<string, unknown> = {
-    slug,
-    config: { ...config, slug },
+    slug: resolvedSlug,
+    config: { ...config, slug: resolvedSlug },
   };
   if (productId) {
     row.product_id = productId;

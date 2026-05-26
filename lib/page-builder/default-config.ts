@@ -1,5 +1,5 @@
 import { buildProductPageConfigFromProduct } from "./product-seed";
-import { buildStaticTemplateConfig } from "./section-templates";
+import { getStaticProductPageConfig } from "@/lib/products/catalog";
 import type { ProductWithRelations } from "@/lib/types/database";
 import type { PageSection, ProductPageConfig } from "./types";
 
@@ -33,19 +33,23 @@ function createPlaceholderProduct(slug: string): ProductWithRelations {
 }
 
 export function getDefaultProductPageConfig(
-  slug = "glow",
+  slug = "collagen-glow",
   product?: ProductWithRelations | null,
 ): ProductPageConfig {
+  const resolvedSlug = slug === "glow" ? "collagen-glow" : slug;
   let config: ProductPageConfig;
   if (product) {
-    config = buildProductPageConfigFromProduct(product, slug);
-  } else if (slug === "glow") {
-    config = buildStaticTemplateConfig(slug);
+    config = buildProductPageConfigFromProduct(product, resolvedSlug);
   } else {
-    config = buildProductPageConfigFromProduct(
-      createPlaceholderProduct(slug),
-      slug,
-    );
+    const staticConfig = getStaticProductPageConfig(resolvedSlug);
+    if (staticConfig) {
+      config = staticConfig;
+    } else {
+      config = buildProductPageConfigFromProduct(
+        createPlaceholderProduct(resolvedSlug),
+        resolvedSlug,
+      );
+    }
   }
 
   if (typeof structuredClone === "function") {
@@ -56,14 +60,15 @@ export function getDefaultProductPageConfig(
 
 export function mergeProductPageConfig(
   saved: Partial<ProductPageConfig> | null,
-  slug = "glow",
+  slug = "collagen-glow",
   product?: ProductWithRelations | null,
 ): ProductPageConfig {
-  const defaults = getDefaultProductPageConfig(slug, product);
+  const resolvedSlug = slug === "glow" ? "collagen-glow" : slug;
+  const defaults = getDefaultProductPageConfig(resolvedSlug, product);
   if (!saved) return defaults;
 
   return {
-    slug,
+    slug: resolvedSlug,
     hero: { ...defaults.hero, ...saved.hero },
     offers: saved.offers?.length ? saved.offers : defaults.offers,
     orderModal: { ...defaults.orderModal, ...saved.orderModal },
