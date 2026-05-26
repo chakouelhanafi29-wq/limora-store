@@ -89,6 +89,8 @@ export type ProductPageConfig = {
   stickyBar: StickyBarConfig;
   finalCta: FinalCtaConfig;
   sections: PageSection[];
+  /** Full page flow order — system blocks + section ids. Null uses hero → offers → sections → final CTA. */
+  pageLayoutOrder?: string[] | null;
   theme: ProductPageTheme;
   mobile: ProductPageMobile;
 };

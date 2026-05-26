@@ -63,7 +63,7 @@ function ReviewStars({ rating }: { rating: number }) {
   );
 }
 
-function renderSection(
+export function renderProductSection(
   section: PageSection,
   theme: ProductPageTheme,
   cta?: { onOrder: () => void; ctaLabel: string; price: number },
@@ -730,7 +730,7 @@ export default function ConfigurableProductSections({
           : {}),
       }}
     >
-      {sections.map((section) => renderSection(section, config.theme, cta))}
+      {sections.map((section) => renderProductSection(section, config.theme, cta))}
     </div>
   );
 }

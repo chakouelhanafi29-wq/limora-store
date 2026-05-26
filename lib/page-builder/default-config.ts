@@ -1,4 +1,10 @@
 import { createDefaultFinalCta } from "./default-final-cta";
+import {
+  buildDefaultPageLayoutOrder,
+  getResolvedPageLayoutOrder,
+  isPageSystemBlock,
+  reconcilePageLayoutOrder,
+} from "./page-layout";
 import { buildProductPageConfigFromProduct } from "./product-seed";
 import { getStaticProductPageConfig } from "@/lib/products/catalog";
 import type { ProductWithRelations } from "@/lib/types/database";
@@ -118,6 +124,19 @@ export function mergeProductPageConfig(
           ? saved.sections
           : defaults.sections
         : defaults.sections,
+      pageLayoutOrder: Array.isArray(saved.pageLayoutOrder)
+        ? saved.pageLayoutOrder.length
+          ? reconcilePageLayoutOrder(saved.pageLayoutOrder, {
+              ...defaults,
+              ...saved,
+              sections: Array.isArray(saved.sections)
+                ? saved.sections.length
+                  ? saved.sections
+                  : defaults.sections
+                : defaults.sections,
+            } as ProductPageConfig)
+          : defaults.pageLayoutOrder ?? buildDefaultPageLayoutOrder(defaults)
+        : defaults.pageLayoutOrder ?? buildDefaultPageLayoutOrder(defaults),
       theme: saved.theme ? { ...defaults.theme, ...saved.theme } : defaults.theme,
       mobile: saved.mobile ? { ...defaults.mobile, ...saved.mobile } : defaults.mobile,
     };
@@ -133,6 +152,17 @@ export function mergeProductPageConfig(
       ? { ...defaults.finalCta, ...saved.finalCta }
       : defaults.finalCta,
     sections: saved.sections?.length ? saved.sections : defaults.sections,
+    pageLayoutOrder:
+      Array.isArray(saved.pageLayoutOrder) && saved.pageLayoutOrder.length
+        ? reconcilePageLayoutOrder(saved.pageLayoutOrder, {
+            ...defaults,
+            ...saved,
+            sections: saved.sections?.length ? saved.sections : defaults.sections,
+          } as ProductPageConfig)
+        : buildDefaultPageLayoutOrder({
+            ...defaults,
+            sections: saved.sections?.length ? saved.sections : defaults.sections,
+          }),
     theme: { ...defaults.theme, ...saved.theme },
     mobile: { ...defaults.mobile, ...saved.mobile },
   };
@@ -142,20 +172,19 @@ export function getOrderedSections(
   config: ProductPageConfig,
   mobile = false,
 ) {
-  const enabled = config.sections
+  const layout = getResolvedPageLayoutOrder(config, mobile);
+  const orderMap = new Map(
+    layout
+      .filter((id) => !isPageSystemBlock(id))
+      .map((id, index) => [id, index]),
+  );
+
+  return config.sections
     .filter((section) => section.enabled)
-    .sort((a, b) => a.order - b.order);
-
-  if (mobile && config.mobile.sectionOrder?.length) {
-    const orderMap = new Map(
-      config.mobile.sectionOrder.map((id, index) => [id, index]),
+    .sort(
+      (a, b) =>
+        (orderMap.get(a.id) ?? a.order) - (orderMap.get(b.id) ?? b.order),
     );
-    return [...enabled].sort(
-      (a, b) => (orderMap.get(a.id) ?? a.order) - (orderMap.get(b.id) ?? b.order),
-    );
-  }
-
-  return enabled;
 }
 
 export function duplicateSection(section: PageSection): PageSection {

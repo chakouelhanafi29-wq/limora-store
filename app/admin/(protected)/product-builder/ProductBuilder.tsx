@@ -10,9 +10,17 @@ import {
   duplicateSection,
   normalizeSectionOrders,
 } from "@/lib/page-builder/default-config";
+import {
+  appendSectionToPageLayout,
+  getResolvedPageLayoutOrder,
+  reconcilePageLayoutOrder,
+  removeSectionFromPageLayout,
+  syncSectionOrdersFromLayout,
+} from "@/lib/page-builder/page-layout";
 import type { ProductPageConfig, SectionType } from "@/lib/page-builder/types";
 import { SECTION_LABELS } from "@/lib/page-builder/types";
 import ProductPageClient from "@/app/product/ProductPageClient";
+import PageFlowEditor, { type PageFlowEditorTab } from "./PageFlowEditor";
 import SectionEditor, { createBlankSection } from "./SectionEditor";
 
 type Tab = "hero" | "offers" | "sections" | "finalCta" | "theme" | "mobile" | "popup";
@@ -41,7 +49,6 @@ export default function ProductBuilder({
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [dragId, setDragId] = useState<string | null>(null);
   const [previewMobile, setPreviewMobile] = useState(false);
 
   const selectedSection = config.sections.find((s) => s.id === selectedSectionId);
@@ -99,15 +106,18 @@ export default function ProductBuilder({
     });
   };
 
-  const reorderSections = (fromId: string, toId: string) => {
-    const sorted = [...config.sections].sort((a, b) => a.order - b.order);
-    const fromIndex = sorted.findIndex((s) => s.id === fromId);
-    const toIndex = sorted.findIndex((s) => s.id === toId);
-    if (fromIndex < 0 || toIndex < 0) return;
-    const [moved] = sorted.splice(fromIndex, 1);
-    sorted.splice(toIndex, 0, moved);
-    updateConfig({ sections: normalizeSectionOrders(sorted) });
-  };
+  const applyLayoutChange = useCallback((layoutOrder: string[]) => {
+    setConfig((prev) => {
+      const reconciled = reconcilePageLayoutOrder(layoutOrder, prev);
+      return {
+        ...prev,
+        pageLayoutOrder: reconciled,
+        sections: syncSectionOrdersFromLayout(prev.sections, reconciled),
+        mobile: { ...prev.mobile, sectionOrder: null },
+      };
+    });
+    setSaved(false);
+  }, []);
 
   const tabs: { id: Tab; label: string }[] = [
     { id: "hero", label: "Hero" },
@@ -411,81 +421,68 @@ export default function ProductBuilder({
 
           {tab === "sections" && (
             <div className="space-y-4">
-              <div className="space-y-2">
-                {[...config.sections]
-                  .sort((a, b) => a.order - b.order)
-                  .map((section) => (
-                    <div
-                      key={section.id}
-                      draggable
-                      onDragStart={() => setDragId(section.id)}
-                      onDragOver={(e) => e.preventDefault()}
-                      onDrop={() => {
-                        if (dragId) reorderSections(dragId, section.id);
-                        setDragId(null);
-                      }}
-                      className={`flex items-center gap-2 rounded-xl border p-3 ${
-                        selectedSectionId === section.id
-                          ? "border-champagne bg-champagne/10"
-                          : "border-champagne/10"
-                      }`}
-                    >
-                      <span className="cursor-grab text-muted">⋮⋮</span>
-                      <button
-                        type="button"
-                        onClick={() => setSelectedSectionId(section.id)}
-                        className="flex-1 text-right text-sm"
-                      >
-                        {SECTION_LABELS[section.type]}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateConfig({
-                            sections: config.sections.map((s) =>
-                              s.id === section.id
-                                ? { ...s, enabled: !s.enabled }
-                                : s,
-                            ),
-                          })
-                        }
-                        className={`text-xs ${section.enabled ? "text-emerald-600" : "text-muted"}`}
-                      >
-                        {section.enabled ? "ON" : "OFF"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateConfig({
-                            sections: normalizeSectionOrders([
-                              ...config.sections,
-                              duplicateSection(section),
-                            ]),
-                          })
-                        }
-                        className="text-xs text-champagne"
-                      >
-                        نسخ
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          updateConfig({
-                            sections: config.sections.filter(
-                              (s) => s.id !== section.id,
-                            ),
-                          });
-                          if (selectedSectionId === section.id) {
-                            setSelectedSectionId(null);
-                          }
-                        }}
-                        className="text-xs text-red-500"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-              </div>
+              <PageFlowEditor
+                config={config}
+                selectedSectionId={selectedSectionId}
+                onSelectSection={setSelectedSectionId}
+                onOpenTab={(nextTab: PageFlowEditorTab) => setTab(nextTab)}
+                onLayoutChange={applyLayoutChange}
+                onToggleSection={(sectionId) =>
+                  updateConfig({
+                    sections: config.sections.map((section) =>
+                      section.id === sectionId
+                        ? { ...section, enabled: !section.enabled }
+                        : section,
+                    ),
+                  })
+                }
+                onDuplicateSection={(sectionId) => {
+                  const section = config.sections.find(
+                    (item) => item.id === sectionId,
+                  );
+                  if (!section) return;
+                  const duplicated = duplicateSection(section);
+                  const layout = getResolvedPageLayoutOrder(config);
+                  const sourceIndex = layout.indexOf(sectionId);
+                  const nextLayout = [...layout];
+                  nextLayout.splice(sourceIndex + 1, 0, duplicated.id);
+                  updateConfig({
+                    sections: normalizeSectionOrders([
+                      ...config.sections,
+                      duplicated,
+                    ]),
+                    pageLayoutOrder: nextLayout,
+                    mobile: { ...config.mobile, sectionOrder: null },
+                  });
+                  setSelectedSectionId(duplicated.id);
+                }}
+                onDeleteSection={(sectionId) => {
+                  const nextLayout = removeSectionFromPageLayout(
+                    getResolvedPageLayoutOrder(config),
+                    sectionId,
+                  );
+                  const nextSections = normalizeSectionOrders(
+                    config.sections.filter((section) => section.id !== sectionId),
+                  );
+                  updateConfig({
+                    sections: syncSectionOrdersFromLayout(
+                      nextSections,
+                      reconcilePageLayoutOrder(nextLayout, {
+                        ...config,
+                        sections: nextSections,
+                      }),
+                    ),
+                    pageLayoutOrder: reconcilePageLayoutOrder(nextLayout, {
+                      ...config,
+                      sections: nextSections,
+                    }),
+                    mobile: { ...config.mobile, sectionOrder: null },
+                  });
+                  if (selectedSectionId === sectionId) {
+                    setSelectedSectionId(null);
+                  }
+                }}
+              />
 
               <select
                 className="w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm"
@@ -495,11 +492,17 @@ export default function ProductBuilder({
                   const section = createBlankSection(
                     e.target.value as SectionType,
                   );
+                  const nextLayout = appendSectionToPageLayout(
+                    getResolvedPageLayoutOrder(config),
+                    section.id,
+                  );
                   updateConfig({
                     sections: normalizeSectionOrders([
                       ...config.sections,
                       section,
                     ]),
+                    pageLayoutOrder: nextLayout,
+                    mobile: { ...config.mobile, sectionOrder: null },
                   });
                   setSelectedSectionId(section.id);
                   e.target.value = "";
@@ -520,8 +523,8 @@ export default function ProductBuilder({
                     section={selectedSection}
                     onChange={(updated) =>
                       updateConfig({
-                        sections: config.sections.map((s) =>
-                          s.id === updated.id ? updated : s,
+                        sections: config.sections.map((section) =>
+                          section.id === updated.id ? updated : section,
                         ),
                       })
                     }
@@ -846,7 +849,11 @@ export default function ProductBuilder({
               previewMobile ? "max-w-[390px]" : "max-w-5xl"
             }`}
           >
-            <ProductPageClient pageConfig={config} preview />
+            <ProductPageClient
+              pageConfig={config}
+              preview
+              previewMobile={previewMobile}
+            />
           </div>
         </div>
       </div>
