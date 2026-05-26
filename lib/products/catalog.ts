@@ -4,6 +4,7 @@ import {
   OFFICIAL_PRODUCT_SLUGS,
   type OfficialProductSlug,
 } from "@/lib/product-images";
+import { REVIEW_AVATARS } from "@/lib/review-images";
 import { buildStaticTemplateConfig as buildCollagenTemplate } from "@/lib/page-builder/section-templates";
 import type { PageSection, ProductPageConfig } from "@/lib/page-builder/types";
 
@@ -111,16 +112,14 @@ const hairSections = (sections: PageSection[]) =>
           location: "جدة",
           rating: 5,
           text: "تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.",
-          image:
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+          image: REVIEW_AVATARS.reem,
         },
         {
           name: "هند الزهراني",
           location: "مكة",
           rating: 5,
           text: "شعري صار أقوى وأقل تساقطاً. الذوبان سهل — أضيفه لسموثي كل صباح.",
-          image:
-            "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+          image: REVIEW_AVATARS.hind,
         },
       ],
     },
@@ -214,16 +213,14 @@ const detoxSections = (sections: PageSection[]) =>
           location: "الدمام",
           rating: 5,
           text: "Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. أحس بخفة من الأسبوع الأول.",
-          image:
-            "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+          image: REVIEW_AVATARS.maryam,
         },
         {
           name: "دانة المطيري",
           location: "الطائف",
           rating: 5,
           text: "الانتفاخ بعد الوجبات قل كثير. المذاق لطيف والاستخدام سهل — صار جزء من روتيني.",
-          image:
-            "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80",
+          image: REVIEW_AVATARS.dana,
         },
       ],
     },

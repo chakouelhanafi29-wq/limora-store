@@ -4,6 +4,7 @@ import {
   HAIR_REVIVE_PRIMARY_IMAGE,
 } from "@/lib/product-images";
 import { HOME_TRANSFORMATION_IMAGES } from "@/lib/home-images";
+import { REVIEW_AVATARS } from "@/lib/review-images";
 
 export const brand = {
   name: "LIMORA",
@@ -228,8 +229,7 @@ export const testimonials = {
       product: "LIMORA Collagen Glow",
       rating: 5,
       text: "Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة وأحس بثقة مختلفة.",
-      image:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80",
+      image: REVIEW_AVATARS.noura,
     },
     {
       name: "فاطمة الدوسري",
@@ -237,8 +237,7 @@ export const testimonials = {
       product: "LIMORA Hair Revive",
       rating: 5,
       text: "تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.",
-      image:
-        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&q=80",
+      image: REVIEW_AVATARS.fatima,
     },
     {
       name: "مريم القحطاني",
@@ -246,8 +245,7 @@ export const testimonials = {
       product: "LIMORA Detox Cleanse",
       rating: 5,
       text: "Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. المجموعة الثلاثية مع Collagen Glow وHair Revive صارت روتيني الكامل.",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+      image: REVIEW_AVATARS.maryam,
     },
   ],
 };

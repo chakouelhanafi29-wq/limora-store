@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { normalizeReviewImage } from "@/lib/review-images";
 
 type TestimonialItem = {
   name: string;
@@ -63,7 +64,7 @@ export default function Testimonials({ testimonials }: Props) {
               <div className="flex items-center gap-4 border-t border-champagne/10 pt-6">
                 <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-champagne/30">
                   <Image
-                    src={item.image}
+                    src={normalizeReviewImage(item.name, item.image)}
                     alt={item.name}
                     fill
                     className="object-cover"

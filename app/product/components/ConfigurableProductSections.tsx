@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { normalizeReviewImage } from "@/lib/review-images";
 import type { PageSection, ProductPageConfig, ProductPageTheme } from "@/lib/page-builder/types";
 import { getOrderedSections } from "@/lib/page-builder/default-config";
 import SectionCTA from "./SectionCTA";
@@ -213,7 +214,7 @@ function renderSection(
                     <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80">&ldquo;{review.text}&rdquo;</blockquote>
                     <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
                       <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-champagne/20">
-                        <Image src={review.image} alt={review.name} fill className="object-cover" sizes="44px" />
+                        <Image src={normalizeReviewImage(review.name, review.image)} alt={review.name} fill className="object-cover" sizes="44px" />
                       </div>
                       <div>
                         <p className="text-sm font-bold">{review.name}</p>

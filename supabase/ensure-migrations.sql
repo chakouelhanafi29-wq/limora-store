@@ -74,4 +74,5 @@ create policy "Admin manage home page configs" on home_page_configs
 -- See orders-rls-migration.sql
 
 -- Homepage transformation section auto-sync (run supabase/home-transformations-sync.sql)
+-- Review avatar migration (run supabase/review-avatars-migration.sql)
 -- See home-transformations-sync.sql

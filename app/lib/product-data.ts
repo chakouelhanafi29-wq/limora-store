@@ -2,6 +2,7 @@ import {
   COLLAGEN_GLOW_GALLERY,
   COLLAGEN_GLOW_PRIMARY_IMAGE,
 } from "@/lib/product-images";
+import { REVIEW_AVATARS } from "@/lib/review-images";
 
 export const productAnnouncements = [
   "شحن مجاني + الدفع عند الاستلام داخل السعودية",
@@ -242,48 +243,42 @@ export const productReviews = {
       location: "الرياض",
       rating: 5,
       text: "Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة وأحس بثقة مختلفة. الدفع عند الاستلام خلّاني أجرب بدون تردد.",
-      image:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&q=80",
+      image: REVIEW_AVATARS.noura,
     },
     {
       name: "سارة الحربي",
       location: "جدة",
       rating: 5,
       text: "طلبت عرض قطعتين — وفعلاً الأفضل. بشرتي صارت أكثر مرونة وترطيب، والخطوط الدقيقة أهدأ. التغليف فخم يحسسك إنكِ تستحقين الأفضل.",
-      image:
-        "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&q=80",
+      image: REVIEW_AVATARS.sara,
     },
     {
       name: "لمى الشمري",
       location: "الدمام",
       rating: 5,
       text: "جربت منتجات كثيرة — Collagen Glow أول واحد حسّيت فيه فرق حقيقي في الإشراقة والنعومة. الشحن سريع والدفع عند الباب راح بالي.",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80",
+      image: REVIEW_AVATARS.lama,
     },
     {
       name: "هند الزهراني",
       location: "مكة",
       rating: 5,
       text: "كنت مترددة — لكن الضمان وCOD خلّاني أطلب. بعد 3 أسابيع بشرتي مختلفة: أكثر إشراقًا ومرونة. أنصح فيه بقوة.",
-      image:
-        "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80",
+      image: REVIEW_AVATARS.hind,
     },
     {
       name: "ريم القحطاني",
       location: "الخبر",
       rating: 5,
       text: "الذوبان سهل جداً — أضيفه لسموثي كل صباح. شعري وأظافري صاروا أقوى، وبشرتي توهج طبيعي مو مصطنع.",
-      image:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80",
+      image: REVIEW_AVATARS.reem,
     },
     {
       name: "دانة المطيري",
       location: "الطائف",
       rating: 5,
       text: "منتج فاخر بكل معنى الكلمة. جفاف بشرتي اختفى تقريباً، ولونها صار أكثر توحّد. LIMORA Collagen Glow صار جزء من روتيني اليومي.",
-      image:
-        "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&q=80",
+      image: REVIEW_AVATARS.dana,
     },
   ],
 };

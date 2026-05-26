@@ -476,8 +476,8 @@ and not exists (
 -- Seed homepage reviews
 insert into reviews (customer_name, location, product_label, rating, content, image_url, sort_order)
 select * from (values
-  ('نورة العتيبي', 'الرياض', 'LIMORA Collagen Glow', 5, 'Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة.', 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80', 1),
-  ('فاطمة الدوسري', 'جدة', 'LIMORA Hair Revive', 5, 'تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.', 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80', 2),
-  ('مريم القحطاني', 'الدمام', 'LIMORA Detox Cleanse', 5, 'Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. المجموعة الثلاثية صارت روتيني الكامل.', 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&q=80', 3)
+  ('نورة العتيبي', 'الرياض', 'LIMORA Collagen Glow', 5, 'Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة.', '/reviews/noura-alotaibi.webp', 1),
+  ('فاطمة الدوسري', 'جدة', 'LIMORA Hair Revive', 5, 'تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.', '/reviews/fatima-aldosari.webp', 2),
+  ('مريم القحطاني', 'الدمام', 'LIMORA Detox Cleanse', 5, 'Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. المجموعة الثلاثية صارت روتيني الكامل.', '/reviews/maryam-alqahtani.webp', 3)
 ) as seed(customer_name, location, product_label, rating, content, image_url, sort_order)
 where not exists (select 1 from reviews limit 1);

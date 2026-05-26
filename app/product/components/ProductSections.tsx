@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { normalizeReviewImage } from "@/lib/review-images";
 import {
   comparison,
   guarantee,
@@ -249,7 +250,7 @@ export function ReviewsSection() {
               <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
                 <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-champagne/20">
                   <Image
-                    src={review.image}
+                    src={normalizeReviewImage(review.name, review.image)}
                     alt={review.name}
                     fill
                     className="object-cover"

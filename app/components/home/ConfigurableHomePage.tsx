@@ -341,13 +341,17 @@ function renderSection(
     case "brand_story": {
       const paragraphs = (content.paragraphs as string[]) ?? [];
       const values = (content.values as { label: string; icon: string }[]) ?? [];
+      const imageSrc = String(content.image ?? "").trim();
+      const showImage = imageSrc.startsWith("/") || imageSrc.startsWith("http");
       return (
         <section key={section.id} id="about" className={pad}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid items-center gap-12 lg:grid-cols-2">
-              <div className="relative overflow-hidden rounded-[1.5rem] luxury-shadow-lg">
-                <Image src={String(content.image ?? "")} alt="LIMORA" width={800} height={900} className="aspect-[4/5] w-full object-cover" />
-              </div>
+            <div className={`grid items-center gap-12 ${showImage ? "lg:grid-cols-2" : ""}`}>
+              {showImage ? (
+                <div className="relative overflow-hidden rounded-[1.5rem] luxury-shadow-lg">
+                  <Image src={imageSrc} alt="LIMORA" width={800} height={900} className="aspect-[4/5] w-full object-cover" />
+                </div>
+              ) : null}
               <div className="text-center lg:text-right">
                 <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
                 <div className="space-y-5 text-muted">
@@ -386,7 +390,9 @@ function renderSection(
           <div className="mx-auto max-w-7xl px-4 text-center text-ivory sm:px-6">
             {productItems.length > 0 && (
               <div className="mb-10 flex flex-wrap items-end justify-center gap-4 sm:gap-6">
-                {productItems.map((item) => (
+                {productItems
+                  .filter((item) => item.image?.trim())
+                  .map((item) => (
                   <Link
                     key={item.name}
                     href={item.href ?? "#products"}
