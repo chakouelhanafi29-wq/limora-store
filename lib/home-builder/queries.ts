@@ -90,8 +90,9 @@ export async function getHomePageConfig(slug = "home"): Promise<HomePageConfig> 
       if (!persist.ok) {
         try {
           await supabase.rpc("sync_home_before_after_managed");
+          await supabase.rpc("sync_home_cleanup_orphan_sections");
         } catch {
-          // RPC may not exist until home-transformations-sync.sql is applied.
+          // RPC may not exist until SQL migrations are applied.
         }
       }
     }

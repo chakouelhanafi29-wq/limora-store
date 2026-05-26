@@ -75,4 +75,5 @@ create policy "Admin manage home page configs" on home_page_configs
 
 -- Homepage transformation section auto-sync (run supabase/home-transformations-sync.sql)
 -- Review avatar migration (run supabase/review-avatars-migration.sql)
+-- Homepage orphan section cleanup (run supabase/home-cleanup-orphan-sections.sql)
 -- See home-transformations-sync.sql

@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import AnnouncementBar from "@/app/components/AnnouncementBar";
 import Testimonials from "@/app/components/Testimonials";
 import { getOrderedHomeSections } from "@/lib/home-builder/default-config";
+import { isValidImageSrc } from "@/lib/home-builder/image-utils";
 import type {
   HomePageConfig,
   HomePageTheme,
@@ -227,6 +228,7 @@ function renderSection(
       } as const;
 
       const items = (content.transformations as TransformationCard[]) ?? [];
+      const visibleItems = items.filter((item) => isValidImageSrc(item.image));
 
       return (
         <section key={section.id} id="results" className={`bg-beige/50 ${pad}`}>
@@ -237,7 +239,7 @@ function renderSection(
               subtitle={String(content.subtitle ?? "")}
             />
             <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
-              {items.map((item) => {
+              {visibleItems.map((item) => {
                 const accent = item.accent ?? "gold";
                 const card = (
                   <article
@@ -342,7 +344,17 @@ function renderSection(
       const paragraphs = (content.paragraphs as string[]) ?? [];
       const values = (content.values as { label: string; icon: string }[]) ?? [];
       const imageSrc = String(content.image ?? "").trim();
-      const showImage = imageSrc.startsWith("/") || imageSrc.startsWith("http");
+      const showImage = isValidImageSrc(imageSrc);
+      const hasText =
+        paragraphs.length > 0 ||
+        Boolean(content.title) ||
+        Boolean(content.subtitle) ||
+        values.length > 0;
+
+      if (!showImage && !hasText) {
+        return null;
+      }
+
       return (
         <section key={section.id} id="about" className={pad}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -376,6 +388,10 @@ function renderSection(
       const productItems =
         (content.products as { name: string; image: string; href?: string }[]) ??
         [];
+      const visibleProducts = productItems.filter(
+        (item) => isValidImageSrc(item.image) && item.name?.trim(),
+      );
+
       return (
         <section
           key={section.id}
@@ -388,11 +404,9 @@ function renderSection(
           }}
         >
           <div className="mx-auto max-w-7xl px-4 text-center text-ivory sm:px-6">
-            {productItems.length > 0 && (
+            {visibleProducts.length > 0 && (
               <div className="mb-10 flex flex-wrap items-end justify-center gap-4 sm:gap-6">
-                {productItems
-                  .filter((item) => item.image?.trim())
-                  .map((item) => (
+                {visibleProducts.map((item) => (
                   <Link
                     key={item.name}
                     href={item.href ?? "#products"}
@@ -516,9 +530,11 @@ export default function ConfigurableHomePage({
       {!sections.some((s) => s.type === "announcement_bar") && null}
       <ConfigurableNavbar navbar={config.navbar} />
       <main>
-        {sections.map((section) =>
-          renderSection(section, config.theme, products, testimonials),
-        )}
+        {sections
+          .map((section) =>
+            renderSection(section, config.theme, products, testimonials),
+          )
+          .filter(Boolean)}
       </main>
       {preview && hasFooterSection && (
         <p className="sr-only">Footer rendered in sections</p>

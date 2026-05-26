@@ -8,10 +8,11 @@ import {
 import { HOME_TRANSFORMATION_IMAGES } from "@/lib/home-images";
 import { COLLAGEN_GLOW_PRIMARY_IMAGE } from "@/lib/product-images";
 import { normalizeReviewImage } from "@/lib/review-images";
+import { isValidImageSrc } from "./image-utils";
 import type { HomePageConfig, HomeSection } from "./types";
 
 /** Bump when managed homepage section content changes in code. */
-export const HOME_MANAGED_CONTENT_REVISION = 3;
+export const HOME_MANAGED_CONTENT_REVISION = 4;
 
 export const HOME_BEFORE_AFTER_CONTENT_REVISION = 2;
 
@@ -26,11 +27,9 @@ function clone<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-function isValidImageSrc(value: unknown): value is string {
-  if (typeof value !== "string") return false;
-  const src = value.trim();
-  if (!src) return false;
-  return src.startsWith("/") || src.startsWith("http://") || src.startsWith("https://");
+function getFaqOrder(sections: HomeSection[]): number | null {
+  const faq = sections.find((section) => section.type === "faq");
+  return faq?.order ?? null;
 }
 
 function getBeforeAfterSection(sections: HomeSection[]) {
@@ -81,15 +80,16 @@ function syncBeforeAfterSection(section: HomeSection): HomeSection {
 function syncBrandStorySection(section: HomeSection): HomeSection {
   const content = section.content as Record<string, unknown>;
   const defaultContent = clone(emotionalMessage);
+  const resolvedImage = isValidImageSrc(content.image)
+    ? content.image
+    : defaultContent.image || COLLAGEN_GLOW_PRIMARY_IMAGE;
 
   return {
     ...section,
     content: {
       ...defaultContent,
       ...content,
-      image: isValidImageSrc(content.image)
-        ? content.image
-        : defaultContent.image || COLLAGEN_GLOW_PRIMARY_IMAGE,
+      image: resolvedImage,
       paragraphs:
         Array.isArray(content.paragraphs) && content.paragraphs.length
           ? content.paragraphs
@@ -138,6 +138,10 @@ function syncPromoBannerSection(section: HomeSection): HomeSection {
   const isBundle = title.includes("مجموعة LIMORA");
 
   if (isBundle) {
+    const products = (clone(limoraBundle).products ?? []).filter((product) =>
+      isValidImageSrc(product.image),
+    );
+
     return {
       ...section,
       content: {
@@ -146,19 +150,18 @@ function syncPromoBannerSection(section: HomeSection): HomeSection {
         backgroundColor:
           String(content.backgroundColor ?? "") ||
           "linear-gradient(135deg, #2a201e, #3d2e2a)",
-        products: (clone(limoraBundle).products ?? []).filter((product) =>
-          isValidImageSrc(product.image),
-        ),
+        products,
       },
     };
   }
 
-  const nextContent = {
+  const nextContent: Record<string, unknown> = {
     ...clone(finalCta),
     ...content,
   };
-  delete (nextContent as Record<string, unknown>).products;
-  delete (nextContent as Record<string, unknown>).priceNote;
+  delete nextContent.products;
+  delete nextContent.priceNote;
+  delete nextContent.image;
 
   return {
     ...section,
@@ -166,13 +169,24 @@ function syncPromoBannerSection(section: HomeSection): HomeSection {
   };
 }
 
-function removeOrphanBrandStorySections(sections: HomeSection[]): HomeSection[] {
+function removeDuplicateBrandStorySections(sections: HomeSection[]): HomeSection[] {
   const brandStories = sections.filter((section) => section.type === "brand_story");
   if (brandStories.length <= 1) return sections;
 
   const primary = [...brandStories].sort((a, b) => a.order - b.order)[0];
   return sections.filter(
     (section) => section.type !== "brand_story" || section.id === primary.id,
+  );
+}
+
+/** Legacy saved configs kept an old about/brand_story block after FAQ. */
+function removeBrandStoryAfterFaq(sections: HomeSection[]): HomeSection[] {
+  const faqOrder = getFaqOrder(sections);
+  if (faqOrder == null) return sections;
+
+  return sections.filter(
+    (section) =>
+      section.type !== "brand_story" || section.order < faqOrder,
   );
 }
 
@@ -199,7 +213,12 @@ export function syncManagedHomeSections(
 ): HomePageConfig {
   const defaultBeforeAfter = getBeforeAfterSection(defaults.sections);
 
-  let sections = removeOrphanBrandStorySections(config.sections).map(sanitizeSection);
+  let sections = config.sections
+    .filter((section) => section.enabled !== false)
+    .map(sanitizeSection);
+
+  sections = removeDuplicateBrandStorySections(sections);
+  sections = removeBrandStoryAfterFaq(sections);
 
   if (defaultBeforeAfter && !sections.some((section) => section.type === "before_after")) {
     sections.push({
@@ -210,7 +229,9 @@ export function syncManagedHomeSections(
 
   return {
     ...config,
-    sections: sections.sort((a, b) => a.order - b.order),
+    sections: sections
+      .sort((a, b) => a.order - b.order)
+      .map((section, index) => ({ ...section, order: index })),
   };
 }
 
@@ -220,3 +241,5 @@ export function homePageConfigNeedsManagedSync(
 ): boolean {
   return JSON.stringify(saved.sections) !== JSON.stringify(synced.sections);
 }
+
+export { isValidImageSrc };
