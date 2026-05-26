@@ -122,20 +122,28 @@ export const problemSolution = {
   title: "هل تعانين من هذه المشاكل؟",
   problems: [
     {
+      icon: "😔",
       title: "بهتان البشرة",
       description: "بشرة بلا حياة… وتوهج يختفي مع ضغط الأيام.",
+      image: "",
     },
     {
+      icon: "〰️",
       title: "الخطوط الدقيقة والتجاعيد",
       description: "علامات التعب تظهر قبل وقتها — وتقلقين كل صباح.",
+      image: "",
     },
     {
+      icon: "💧",
       title: "جفاف البشرة",
       description: "ترطيب سطحي لا يكفي… والبشرة تطلب عناية أعمق.",
+      image: "",
     },
     {
+      icon: "🌸",
       title: "فقدان المرونة",
       description: "مرونة البشرة تضعف… والمظهر يفقد شبابه الطبيعي.",
+      image: "",
     },
     {
       title: "مسام واسعة",
@@ -208,14 +216,20 @@ export const transformation = {
     {
       before: COLLAGEN_GLOW_GALLERY[0],
       after: COLLAGEN_GLOW_GALLERY[1],
+      beforeLabel: "قبل",
+      afterLabel: "بعد",
       quote: "بشرتي صارت أهدأ وأكثر إشراقًا — الرياض",
       days: "21 يوم",
+      caption: "نتيجة حقيقية مع الاستمرار اليومي",
     },
     {
       before: COLLAGEN_GLOW_GALLERY[0],
       after: COLLAGEN_GLOW_GALLERY[1],
+      beforeLabel: "قبل",
+      afterLabel: "بعد",
       quote: "مرونة وترطيب حسيت فيهم من الأسبوع الثاني — جدة",
       days: "14 يوم",
+      caption: "توهج طبيعي… بثقة أنثوية",
     },
   ],
 };

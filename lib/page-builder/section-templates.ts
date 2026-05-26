@@ -173,9 +173,11 @@ export function genericSectionScaffolds(
       content: {
         label: "SKIN CONCERNS",
         title: "هل تعانين من هذه المشاكل؟",
-        problems: (product.bullets ?? []).slice(0, 5).map((bullet) => ({
+        problems: (product.bullets ?? []).slice(0, 5).map((bullet, index) => ({
+          icon: ["✨", "💧", "🌸", "💫", "👑"][index % 5],
           title: bullet,
           description: "",
+          image: "",
         })),
         solution: {
           title: `${name} — الحل الذي تستحقينه`,

@@ -80,7 +80,13 @@ function renderSection(
 
   switch (section.type) {
     case "problem_solution": {
-      const problems = (content.problems as { title: string; description: string }[]) ?? [];
+      const problems =
+        (content.problems as {
+          title: string;
+          description: string;
+          icon?: string;
+          image?: string;
+        }[]) ?? [];
       const solution = content.solution as {
         title: string;
         description: string;
@@ -93,11 +99,47 @@ function renderSection(
               label={String(content.label ?? "")}
               title={String(content.title ?? "")}
             />
-            <div className="mb-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {problems.map((p) => (
-                <div key={p.title} className="rounded-2xl border border-champagne/10 bg-beige/40 p-5 sm:p-6">
-                  <h3 className="mb-2 text-sm font-bold sm:text-base">{p.title}</h3>
-                  <p className="text-xs leading-relaxed text-muted sm:text-sm">{p.description}</p>
+            <div className="mb-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {problems.map((p, index) => (
+                <div
+                  key={`${p.title}-${index}`}
+                  className="group overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                >
+                  {p.image ? (
+                    <div className="relative aspect-[4/3] overflow-hidden">
+                      <Image
+                        src={p.image}
+                        alt={p.title}
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                        sizes="(max-width: 768px) 100vw, 25vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />
+                      <div className="absolute bottom-0 right-0 left-0 p-4 text-white">
+                        {p.icon ? (
+                          <span className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-lg backdrop-blur-sm">
+                            {p.icon}
+                          </span>
+                        ) : null}
+                        <h3 className="text-sm font-bold sm:text-base">{p.title}</h3>
+                        {p.description ? (
+                          <p className="mt-1 text-xs leading-relaxed text-white/85 sm:text-sm">
+                            {p.description}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-5 sm:p-6">
+                      <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
+                        {p.icon || "✦"}
+                      </span>
+                      <h3 className="mb-2 text-sm font-bold sm:text-base">{p.title}</h3>
+                      <p className="text-xs leading-relaxed text-muted sm:text-sm">
+                        {p.description}
+                      </p>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -167,31 +209,84 @@ function renderSection(
       );
     }
     case "transformation": {
-      const items = (content.beforeAfter as { before: string; after: string; quote: string; days: string }[]) ?? [];
+      const items =
+        (content.beforeAfter as {
+          before: string;
+          after: string;
+          beforeLabel?: string;
+          afterLabel?: string;
+          quote: string;
+          days: string;
+          caption?: string;
+        }[]) ?? [];
       return (
-        <section key={section.id} className={pad}>
+        <section key={section.id} className={`${pad} bg-gradient-to-b from-ivory to-beige/30`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
-            <div className="grid gap-10 lg:grid-cols-2">
-              {items.map((item) => (
-                <div key={item.quote} className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg">
+            <SectionHeader
+              label={String(content.label ?? "")}
+              title={String(content.title ?? "")}
+              subtitle={String(content.subtitle ?? "")}
+            />
+            <div className="grid gap-8 lg:grid-cols-2">
+              {items.map((item, index) => (
+                <div
+                  key={`${item.quote}-${index}`}
+                  className="overflow-hidden rounded-[2rem] border border-champagne/10 bg-white luxury-shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
+                >
                   <div className="grid grid-cols-2">
-                    <div className="relative aspect-[3/4]">
-                      <span className="absolute right-2 top-2 z-10 rounded-full bg-foreground/70 px-2 py-0.5 text-[10px] font-bold text-ivory">
-                        قبل
+                    <div className="relative aspect-[3/4] overflow-hidden">
+                      <span className="absolute right-2 top-2 z-10 rounded-full bg-foreground/75 px-3 py-1 text-[10px] font-bold text-ivory backdrop-blur-sm">
+                        {item.beforeLabel || "قبل"}
                       </span>
-                      <Image src={item.before} alt="قبل" fill className="object-cover grayscale-[25%]" sizes="50vw" />
+                      {item.before ? (
+                        <Image
+                          src={item.before}
+                          alt={item.beforeLabel || "قبل"}
+                          fill
+                          className="object-cover grayscale-[30%] transition duration-700 hover:grayscale-0"
+                          sizes="50vw"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-beige/50 text-xs text-muted">
+                          صورة قبل
+                        </div>
+                      )}
                     </div>
-                    <div className="relative aspect-[3/4]">
-                      <span className="absolute right-2 top-2 z-10 rounded-full bg-champagne px-2 py-0.5 text-[10px] font-bold text-white">
-                        بعد
+                    <div className="relative aspect-[3/4] overflow-hidden">
+                      <span className="absolute right-2 top-2 z-10 rounded-full bg-champagne px-3 py-1 text-[10px] font-bold text-white shadow-sm">
+                        {item.afterLabel || "بعد"}
                       </span>
-                      <Image src={item.after} alt="بعد" fill className="object-cover" sizes="50vw" />
+                      {item.after ? (
+                        <Image
+                          src={item.after}
+                          alt={item.afterLabel || "بعد"}
+                          fill
+                          className="object-cover"
+                          sizes="50vw"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center bg-beige/50 text-xs text-muted">
+                          صورة بعد
+                        </div>
+                      )}
                     </div>
                   </div>
-                  <div className="p-6 text-center">
-                    <p className="mb-1 text-sm font-bold text-champagne">{item.days}</p>
-                    <p className="text-sm italic text-foreground/80">&ldquo;{item.quote}&rdquo;</p>
+                  <div className="border-t border-champagne/10 bg-gradient-to-b from-white to-beige/20 p-6 text-center sm:p-8">
+                    {item.days ? (
+                      <p className="mb-2 text-sm font-bold tracking-wide text-champagne">
+                        {item.days}
+                      </p>
+                    ) : null}
+                    {item.quote ? (
+                      <p className="text-base italic leading-relaxed text-foreground/85 sm:text-lg">
+                        &ldquo;{item.quote}&rdquo;
+                      </p>
+                    ) : null}
+                    {item.caption ? (
+                      <p className="mt-3 text-xs font-medium text-muted sm:text-sm">
+                        {item.caption}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               ))}
@@ -232,6 +327,7 @@ function renderSection(
           rating: number;
           text: string;
           image: string;
+          transformationImage?: string;
         }[]) ?? [];
       const ctaSubtitle = String(content.ctaSubtitle ?? "");
       const ctaFootnote = String(content.ctaFootnote ?? "");
@@ -241,17 +337,42 @@ function renderSection(
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} />
               <div className="grid gap-6 sm:grid-cols-2">
-                {items.map((review) => (
-                  <article key={`${review.name}-${review.text.slice(0, 20)}`} className="rounded-3xl bg-white p-7 luxury-shadow">
-                    <ReviewStars rating={review.rating ?? 5} />
-                    <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80">&ldquo;{review.text}&rdquo;</blockquote>
-                    <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
-                      <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-champagne/20">
-                        <Image src={normalizeReviewImage(review.name, review.image)} alt={review.name} fill className="object-cover" sizes="44px" />
+                {items.map((review, index) => (
+                  <article
+                    key={`${review.name}-${index}`}
+                    className="overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-1 hover:shadow-xl"
+                  >
+                    {review.transformationImage ? (
+                      <div className="relative aspect-[16/10] overflow-hidden">
+                        <Image
+                          src={review.transformationImage}
+                          alt={`تحول ${review.name}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent" />
                       </div>
-                      <div>
-                        <p className="text-sm font-bold">{review.name}</p>
-                        <p className="text-xs text-muted">{review.location}</p>
+                    ) : null}
+                    <div className="p-7">
+                      <ReviewStars rating={review.rating ?? 5} />
+                      <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80 sm:text-base">
+                        &ldquo;{review.text}&rdquo;
+                      </blockquote>
+                      <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
+                        <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-champagne/20">
+                          <Image
+                            src={normalizeReviewImage(review.name, review.image)}
+                            alt={review.name}
+                            fill
+                            className="object-cover"
+                            sizes="48px"
+                          />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold">{review.name}</p>
+                          <p className="text-xs text-muted">{review.location}</p>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -294,20 +415,49 @@ function renderSection(
       );
     }
     case "ingredients": {
-      const items = (content.items as { name: string; benefit: string; image: string }[]) ?? [];
+      const items =
+        (content.items as { name: string; benefit: string; image: string; icon?: string }[]) ??
+        [];
       return (
-        <section key={section.id} className={pad}>
+        <section key={section.id} className={`${pad} bg-gradient-to-b from-beige/20 to-ivory`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
+            <SectionHeader
+              label={String(content.label ?? "")}
+              title={String(content.title ?? "")}
+              subtitle={String(content.subtitle ?? "")}
+            />
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {items.map((item) => (
-                <div key={item.name} className="overflow-hidden rounded-3xl bg-white luxury-shadow">
-                  <div className="relative aspect-square">
-                    <Image src={item.image} alt={item.name} fill className="object-cover" sizes="25vw" />
+              {items.map((item, index) => (
+                <div
+                  key={`${item.name}-${index}`}
+                  className="group overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-beige/50 to-white">
+                    {item.image ? (
+                      <Image
+                        src={item.image}
+                        alt={item.name}
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-105"
+                        sizes="25vw"
+                      />
+                    ) : (
+                      <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
+                        <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-champagne/15 text-3xl">
+                          {item.icon || "✦"}
+                        </span>
+                        <p className="text-xs text-muted">ارفعي صورة المكون من المحرر</p>
+                      </div>
+                    )}
+                    {item.icon && item.image ? (
+                      <span className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-lg shadow-sm backdrop-blur-sm">
+                        {item.icon}
+                      </span>
+                    ) : null}
                   </div>
-                  <div className="p-5">
-                    <h3 className="mb-1 font-bold">{item.name}</h3>
-                    <p className="text-xs text-muted">{item.benefit}</p>
+                  <div className="border-t border-champagne/10 p-5">
+                    <h3 className="mb-1 font-serif text-lg font-semibold">{item.name}</h3>
+                    <p className="text-xs leading-relaxed text-muted sm:text-sm">{item.benefit}</p>
                   </div>
                 </div>
               ))}

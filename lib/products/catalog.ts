@@ -33,20 +33,28 @@ const hairSections = (sections: PageSection[]) =>
           title: "هل تعانين من هذه المشاكل؟",
           problems: [
             {
+              icon: "💇‍♀️",
               title: "تساقط الشعر",
               description: "خصلات تتساقط يومياً… وتقلق يزداد.",
+              image: "",
             },
             {
+              icon: "😔",
               title: "شعر خفيف",
               description: "كثافة تقل… والمظهر يفقد حيويته.",
+              image: "",
             },
             {
+              icon: "💔",
               title: "شعر ضعيف",
               description: "يتكسر بسهولة… ولا يتحمل التصفيف.",
+              image: "",
             },
             {
+              icon: "⏳",
               title: "بطء النمو",
               description: "شعركِ لا ينمو بالسرعة التي تستحقينها.",
+              image: "",
             },
           ],
           solution: {
@@ -121,6 +129,20 @@ const hairSections = (sections: PageSection[]) =>
           text: "شعري صار أقوى وأقل تساقطاً. الذوبان سهل — أضيفه لسموثي كل صباح.",
           image: REVIEW_AVATARS.hind,
         },
+        {
+          name: "سارة الحربي",
+          location: "جدة",
+          rating: 5,
+          text: "Hair Revive أعطاني كثافة ولمعان — فرق واضح خلال 3 أسابيع.",
+          image: REVIEW_AVATARS.sara,
+        },
+        {
+          name: "لمى الشمري",
+          location: "الدمام",
+          rating: 5,
+          text: "كنت أبحث عن حل للتساقط — هذا المنتج فعلاً ساعدني. COD خلّاني أجرب بثقة.",
+          image: REVIEW_AVATARS.lama,
+        },
       ],
     },
   );
@@ -134,20 +156,28 @@ const detoxSections = (sections: PageSection[]) =>
           title: "هل تعانين من هذه المشاكل؟",
           problems: [
             {
+              icon: "🫧",
               title: "الانتفاخ",
               description: "ثقل بعد الوجبات… وبطن غير مريح.",
+              image: "",
             },
             {
+              icon: "😣",
               title: "بطء الهضم",
               description: "شعور بالثقل… وعدم راحة يومية.",
+              image: "",
             },
             {
+              icon: "⚖️",
               title: "عدم التوازن",
               description: "جسمكِ يحتاج تنظيفاً لطيفاً من الداخل.",
+              image: "",
             },
             {
+              icon: "😴",
               title: "تعب داخلي",
               description: "طاقة أقل… وشعور بعدم الخفة.",
+              image: "",
             },
           ],
           solution: {
@@ -221,6 +251,20 @@ const detoxSections = (sections: PageSection[]) =>
           rating: 5,
           text: "الانتفاخ بعد الوجبات قل كثير. المذاق لطيف والاستخدام سهل — صار جزء من روتيني.",
           image: REVIEW_AVATARS.dana,
+        },
+        {
+          name: "نورة العتيبي",
+          location: "الرياض",
+          rating: 5,
+          text: "Detox Cleanse ساعدني أحس بخفّة يومية — بطن أهدأ وتوازن أفضل.",
+          image: REVIEW_AVATARS.noura,
+        },
+        {
+          name: "فاطمة الدوسري",
+          location: "الرياض",
+          rating: 5,
+          text: "منتج أنيق وسهل — أحس بفرق في الهضم والانتفاخ من الأسبوع الثاني.",
+          image: REVIEW_AVATARS.fatima,
         },
       ],
     },

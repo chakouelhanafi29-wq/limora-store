@@ -96,23 +96,52 @@ function ImageUploadField({
   };
 
   return (
-    <div className="space-y-2">
-      <Field label={label} value={value} onChange={onChange} />
+    <div className="space-y-2 rounded-xl border border-champagne/10 bg-white/60 p-3">
+      <span className="block text-xs font-medium text-muted">{label}</span>
       {value ? (
-        <img src={value} alt="" className="h-20 w-20 rounded-lg object-cover" />
-      ) : null}
-      <label className="inline-block cursor-pointer rounded-full border border-champagne/30 px-3 py-1.5 text-xs hover:bg-beige">
-        رفع صورة
-        <input
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) upload(file);
-          }}
-        />
-      </label>
+        <div className="space-y-2">
+          <img
+            src={value}
+            alt=""
+            className="h-28 w-full max-w-[220px] rounded-xl object-cover shadow-sm"
+          />
+          <div className="flex flex-wrap gap-2">
+            <label className="inline-block cursor-pointer rounded-full border border-champagne/30 px-3 py-1.5 text-xs hover:bg-beige">
+              استبدال
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) upload(file);
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              onClick={() => onChange("")}
+              className="rounded-full border border-red-200 px-3 py-1.5 text-xs text-red-500 hover:bg-red-50"
+            >
+              إزالة الصورة
+            </button>
+          </div>
+        </div>
+      ) : (
+        <label className="inline-block cursor-pointer rounded-full border border-champagne/30 px-3 py-1.5 text-xs hover:bg-beige">
+          + رفع صورة
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) upload(file);
+            }}
+          />
+        </label>
+      )}
+      <Field label="رابط الصورة (اختياري)" value={value} onChange={onChange} />
     </div>
   );
 }
@@ -247,22 +276,17 @@ export default function SectionEditor({ section, slug, onChange }: Props) {
 
       {section.type === "problem_solution" && (
         <>
-          <ItemsEditor
-            label="المشاكل"
+          <ProblemsEditor
+            slug={slug}
             items={
-              (content.problems as { title: string; description: string }[]) ?? []
+              (content.problems as {
+                title: string;
+                description: string;
+                icon?: string;
+                image?: string;
+              }[]) ?? []
             }
-            fields={[
-              { key: "title", label: "العنوان" },
-              { key: "description", label: "الوصف" },
-            ]}
             onChange={(items) => updateContent("problems", items)}
-            onAdd={() =>
-              updateContent("problems", [
-                ...((content.problems as object[]) ?? []),
-                { title: "مشكلة جديدة", description: "" },
-              ])
-            }
           />
           <p className="text-xs font-semibold text-muted">الحل</p>
           <Field
@@ -383,6 +407,79 @@ export default function SectionEditor({ section, slug, onChange }: Props) {
           onChange={(items) => updateContent("items", items)}
         />
       )}
+    </div>
+  );
+}
+
+function ProblemsEditor({
+  slug,
+  items,
+  onChange,
+}: {
+  slug: string;
+  items: { title: string; description: string; icon?: string; image?: string }[];
+  onChange: (items: { title: string; description: string; icon?: string; image?: string }[]) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">بطاقات المشاكل</p>
+      {items.map((item, i) => (
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
+          </div>
+          <input
+            value={item.icon ?? ""}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, icon: e.target.value };
+              onChange(next);
+            }}
+            placeholder="أيقونة (emoji)"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <input
+            value={item.title}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, title: e.target.value };
+              onChange(next);
+            }}
+            placeholder="العنوان"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <textarea
+            value={item.description}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, description: e.target.value };
+              onChange(next);
+            }}
+            placeholder="الوصف"
+            rows={2}
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <ImageUploadField
+            label="صورة المشكلة"
+            value={item.image ?? ""}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, image: v };
+              onChange(next);
+            }}
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="مشكلة"
+        onAdd={() =>
+          onChange([
+            ...items,
+            { icon: "✦", title: "مشكلة جديدة", description: "", image: "" },
+          ])
+        }
+      />
     </div>
   );
 }
@@ -554,8 +651,24 @@ function ReviewItemsEditor({
   onChange,
 }: {
   slug: string;
-  items: { name: string; location: string; text: string; image: string; rating?: number }[];
-  onChange: (items: { name: string; location: string; text: string; image: string; rating?: number }[]) => void;
+  items: {
+    name: string;
+    location: string;
+    text: string;
+    image: string;
+    rating?: number;
+    transformationImage?: string;
+  }[];
+  onChange: (
+    items: {
+      name: string;
+      location: string;
+      text: string;
+      image: string;
+      rating?: number;
+      transformationImage?: string;
+    }[],
+  ) => void;
 }) {
   return (
     <div className="space-y-3">
@@ -611,12 +724,22 @@ function ReviewItemsEditor({
             className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
           />
           <ImageUploadField
-            label="صورة العميلة"
+            label="صورة العميلة (Avatar)"
             value={item.image}
             slug={slug}
             onChange={(v) => {
               const next = [...items];
               next[i] = { ...item, image: v };
+              onChange(next);
+            }}
+          />
+          <ImageUploadField
+            label="صورة التحول (اختياري)"
+            value={item.transformationImage ?? ""}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, transformationImage: v };
               onChange(next);
             }}
           />
@@ -627,7 +750,7 @@ function ReviewItemsEditor({
         onAdd={() =>
           onChange([
             ...items,
-            { name: "", location: "", text: "", image: "", rating: 5 },
+            { name: "", location: "", text: "", image: "", rating: 5, transformationImage: "" },
           ])
         }
       />
@@ -641,8 +764,26 @@ function BeforeAfterEditor({
   onChange,
 }: {
   slug: string;
-  items: { before: string; after: string; quote: string; days: string }[];
-  onChange: (items: { before: string; after: string; quote: string; days: string }[]) => void;
+  items: {
+    before: string;
+    after: string;
+    beforeLabel?: string;
+    afterLabel?: string;
+    quote: string;
+    days: string;
+    caption?: string;
+  }[];
+  onChange: (
+    items: {
+      before: string;
+      after: string;
+      beforeLabel?: string;
+      afterLabel?: string;
+      quote: string;
+      days: string;
+      caption?: string;
+    }[],
+  ) => void;
 }) {
   return (
     <div className="space-y-3">
@@ -672,6 +813,28 @@ function BeforeAfterEditor({
               onChange(next);
             }}
           />
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              value={item.beforeLabel ?? "قبل"}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...item, beforeLabel: e.target.value };
+                onChange(next);
+              }}
+              placeholder="تسمية قبل"
+              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+            <input
+              value={item.afterLabel ?? "بعد"}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...item, afterLabel: e.target.value };
+                onChange(next);
+              }}
+              placeholder="تسمية بعد"
+              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+          </div>
           <input
             value={item.days}
             onChange={(e) => {
@@ -689,8 +852,18 @@ function BeforeAfterEditor({
               next[i] = { ...item, quote: e.target.value };
               onChange(next);
             }}
-            placeholder="الاقتباس"
+            placeholder="الاقتباس العاطفي"
             rows={2}
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <input
+            value={item.caption ?? ""}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, caption: e.target.value };
+              onChange(next);
+            }}
+            placeholder="تعليق النتيجة (اختياري)"
             className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
           />
         </div>
@@ -698,7 +871,18 @@ function BeforeAfterEditor({
       <ListControls
         addLabel="تحول"
         onAdd={() =>
-          onChange([...items, { before: "", after: "", quote: "", days: "" }])
+          onChange([
+            ...items,
+            {
+              before: "",
+              after: "",
+              beforeLabel: "قبل",
+              afterLabel: "بعد",
+              quote: "",
+              days: "",
+              caption: "",
+            },
+          ])
         }
       />
     </div>
@@ -711,8 +895,8 @@ function IngredientEditor({
   onChange,
 }: {
   slug: string;
-  items: { name: string; benefit: string; image: string }[];
-  onChange: (items: { name: string; benefit: string; image: string }[]) => void;
+  items: { name: string; benefit: string; image: string; icon?: string }[];
+  onChange: (items: { name: string; benefit: string; image: string; icon?: string }[]) => void;
 }) {
   return (
     <div className="space-y-3">
@@ -722,6 +906,16 @@ function IngredientEditor({
           <div className="flex justify-end">
             <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
           </div>
+          <input
+            value={item.icon ?? ""}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, icon: e.target.value };
+              onChange(next);
+            }}
+            placeholder="أيقونة (emoji)"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
           <input
             value={item.name}
             onChange={(e) => {
@@ -756,7 +950,7 @@ function IngredientEditor({
       ))}
       <ListControls
         addLabel="مكون"
-        onAdd={() => onChange([...items, { name: "", benefit: "", image: "" }])}
+        onAdd={() => onChange([...items, { name: "", benefit: "", image: "", icon: "✦" }])}
       />
     </div>
   );
