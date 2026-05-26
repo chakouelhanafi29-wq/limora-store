@@ -39,15 +39,12 @@ export async function POST(request: Request) {
       offer_label,
       offer_quantity,
       total_price,
-      traffic_source,
       traffic_platform,
+      traffic_source,
+      device_type,
       utm_source,
       utm_medium,
       utm_campaign,
-      utm_content,
-      utm_term,
-      referrer,
-      device_type,
       landing_page,
       session_id,
     } = body;
@@ -87,50 +84,55 @@ export async function POST(request: Request) {
     }
 
     const supabase = await createClient();
+    const orderPayload = {
+      p_customer_name: customer_name.trim(),
+      p_phone: normalizedPhone,
+      p_city: COD_PENDING_CITY,
+      p_product_id: product_id || null,
+      p_product_name: product_name,
+      p_product_slug: product_slug || null,
+      p_offer_id: offer_id || null,
+      p_offer_label: offer_label,
+      p_offer_quantity: offer_quantity || 1,
+      p_total_price: total_price,
+      p_notes: notes,
+    };
 
-    // Core columns only — avoids failures when analytics columns are not migrated yet.
-    const { data, error } = await supabase
-      .from("orders")
-      .insert({
-        customer_name: customer_name.trim(),
-        phone: normalizedPhone,
-        city: COD_PENDING_CITY,
-        product_id: product_id || null,
-        product_name,
-        product_slug: product_slug || null,
-        offer_id: offer_id || null,
-        offer_label,
-        offer_quantity: offer_quantity || 1,
-        total_price,
-        status: "pending",
-        notes,
-      })
-      .select("id")
-      .single();
+    // Preferred: SECURITY DEFINER RPC (works with strict RLS — no public SELECT needed)
+    const { data: rpcId, error: rpcError } = await supabase.rpc(
+      "create_storefront_order",
+      orderPayload,
+    );
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (!rpcError && rpcId) {
+      return NextResponse.json({ success: true, id: rpcId });
     }
 
-    // Best-effort analytics update when optional columns exist (ignored if migration not run).
-    void supabase
-      .from("orders")
-      .update({
-        traffic_source: traffic_source || null,
-        traffic_platform: traffic_platform || null,
-        utm_source: utm_source || null,
-        utm_medium: utm_medium || null,
-        utm_campaign: utm_campaign || null,
-        utm_content: utm_content || null,
-        utm_term: utm_term || null,
-        referrer: referrer || null,
-        device_type: device_type || null,
-        landing_page: landing_page || null,
-        session_id: session_id || null,
-      })
-      .eq("id", data.id);
+    // Fallback: insert without RETURNING (anon users cannot SELECT inserted rows)
+    const { error: insertError } = await supabase.from("orders").insert({
+      customer_name: customer_name.trim(),
+      phone: normalizedPhone,
+      city: COD_PENDING_CITY,
+      product_id: product_id || null,
+      product_name,
+      product_slug: product_slug || null,
+      offer_id: offer_id || null,
+      offer_label,
+      offer_quantity: offer_quantity || 1,
+      total_price,
+      status: "pending",
+      notes,
+    });
 
-    return NextResponse.json({ success: true, id: data.id });
+    if (insertError) {
+      const detail = rpcError?.message ?? insertError.message;
+      return NextResponse.json({ error: detail }, { status: 500 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      id: `order-${Date.now()}`,
+    });
   } catch {
     return NextResponse.json({ error: "Server error" }, { status: 500 });
   }

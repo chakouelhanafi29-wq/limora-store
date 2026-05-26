@@ -69,3 +69,6 @@ create policy "Public read home page configs" on home_page_configs
 drop policy if exists "Admin manage home page configs" on home_page_configs;
 create policy "Admin manage home page configs" on home_page_configs
   for all using (is_admin()) with check (is_admin());
+
+-- Orders RLS + storefront checkout RPC (run supabase/orders-rls-migration.sql for full fix)
+-- See orders-rls-migration.sql

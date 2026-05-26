@@ -224,28 +224,44 @@ export default function OrderModal({
             >
               رقم الجوال
             </label>
-            <input
-              id="order-phone"
-              type="tel"
-              required
-              dir="ltr"
-              inputMode="tel"
-              autoComplete="tel"
-              value={phone}
-              onChange={(e) => {
-                setPhone(e.target.value);
-                setPhoneError("");
-              }}
-              onBlur={handlePhoneBlur}
-              placeholder="05XXXXXXXX"
-              className={`w-full rounded-xl border bg-white px-4 py-3.5 text-base outline-none transition focus:ring-2 ${
+            <div
+              className={`flex overflow-hidden rounded-xl border bg-white transition focus-within:ring-2 ${
                 phoneError
-                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
-                  : "border-champagne/20 focus:border-champagne focus:ring-champagne/20"
+                  ? "border-red-300 focus-within:border-red-400 focus-within:ring-red-100"
+                  : "border-champagne/20 focus-within:border-champagne focus-within:ring-champagne/20"
               }`}
-            />
-            {phoneError && (
+            >
+              <div className="flex shrink-0 items-center gap-1.5 border-l border-champagne/15 bg-beige/50 px-3 text-sm text-foreground">
+                <span aria-hidden="true" className="text-base leading-none">
+                  🇸🇦
+                </span>
+                <span className="font-semibold tracking-wide" dir="ltr">
+                  +966
+                </span>
+              </div>
+              <input
+                id="order-phone"
+                type="tel"
+                required
+                dir="ltr"
+                inputMode="tel"
+                autoComplete="tel-national"
+                value={phone}
+                onChange={(e) => {
+                  setPhone(e.target.value);
+                  setPhoneError("");
+                }}
+                onBlur={handlePhoneBlur}
+                placeholder="5X XXX XXXX"
+                className="min-w-0 flex-1 bg-transparent px-3 py-3.5 text-base outline-none placeholder:text-muted/60"
+              />
+            </div>
+            {phoneError ? (
               <p className="mt-1 text-xs text-red-600">{phoneError}</p>
+            ) : (
+              <p className="mt-1 text-[11px] text-muted">
+                رقم سعودي — مثال: 05XXXXXXXX
+              </p>
             )}
           </div>
 

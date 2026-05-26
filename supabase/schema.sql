@@ -236,11 +236,24 @@ create policy "Public read offers" on product_offers
 create policy "Admin all offers" on product_offers
   for all using (is_admin()) with check (is_admin());
 
--- Orders: public insert, admin read/update
+-- Orders: public insert only, admin read/update/delete
 create policy "Public insert orders" on orders
-  for insert with check (true);
-create policy "Admin all orders" on orders
-  for all using (is_admin()) with check (is_admin());
+  for insert
+  to anon, authenticated
+  with check (true);
+create policy "Admin read orders" on orders
+  for select
+  to authenticated
+  using (is_admin());
+create policy "Admin update orders" on orders
+  for update
+  to authenticated
+  using (is_admin())
+  with check (is_admin());
+create policy "Admin delete orders" on orders
+  for delete
+  to authenticated
+  using (is_admin());
 
 -- Reviews: public read active, admin full
 create policy "Public read active reviews" on reviews
@@ -327,6 +340,53 @@ using (bucket_id = 'product-images' and is_admin());
 create policy "Admin delete product images"
 on storage.objects for delete
 using (bucket_id = 'product-images' and is_admin());
+
+create policy "Admin delete orders" on orders
+  for delete
+  to authenticated
+  using (is_admin());
+
+-- Storefront order RPC (bypasses SELECT RLS on RETURNING for anonymous checkout)
+create or replace function create_storefront_order(
+  p_customer_name text,
+  p_phone text,
+  p_product_name text,
+  p_offer_label text,
+  p_total_price numeric,
+  p_city text default 'يتم التأكيد هاتفياً',
+  p_product_id uuid default null,
+  p_product_slug text default null,
+  p_offer_id uuid default null,
+  p_offer_quantity int default 1,
+  p_notes text default null
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  new_id uuid;
+begin
+  insert into orders (
+    customer_name, phone, city, product_id, product_name, product_slug,
+    offer_id, offer_label, offer_quantity, total_price, status, notes
+  ) values (
+    p_customer_name, p_phone, p_city, p_product_id, p_product_name, p_product_slug,
+    p_offer_id, p_offer_label, coalesce(p_offer_quantity, 1), p_total_price, 'pending', p_notes
+  )
+  returning id into new_id;
+  return new_id;
+end;
+$$;
+
+revoke all on function create_storefront_order(
+  text, text, text, text, numeric, text, uuid, text, uuid, int, text
+) from public;
+
+grant execute on function create_storefront_order(
+  text, text, text, text, numeric, text, uuid, text, uuid, int, text
+) to anon, authenticated;
 
 -- Realtime for live order updates in admin
 do $$
