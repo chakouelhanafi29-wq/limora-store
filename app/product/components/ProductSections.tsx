@@ -303,36 +303,29 @@ export function IngredientsSection() {
           title={productIngredients.title}
           subtitle={productIngredients.subtitle}
         />
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {productIngredients.items.map((item) => (
             <div
               key={item.name}
-              className="overflow-hidden rounded-3xl bg-white luxury-shadow"
+              className="overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-1"
             >
-              <div className="relative aspect-square">
-                <Image
-                  src={item.image}
-                  alt={item.name}
-                  fill
-                  className="object-cover"
-                  sizes="25vw"
-                />
-                {"icon" in item && item.icon ? (
-                  <span className="absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-sm shadow-sm">
-                    {item.icon as string}
-                  </span>
-                ) : null}
-              </div>
-              <div className="p-4 sm:p-5">
-                <div className="mb-1 flex items-center gap-2">
-                  {"icon" in item && item.icon ? (
-                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-champagne/8 text-[13px] leading-none">
-                      {item.icon as string}
-                    </span>
-                  ) : null}
-                  <h3 className="font-bold text-foreground">{item.name}</h3>
+              {item.image ? (
+                <div className="relative aspect-[4/3]">
+                  <Image
+                    src={item.image}
+                    alt={item.name}
+                    fill
+                    className="object-cover"
+                    sizes="33vw"
+                  />
                 </div>
-                <p className="text-xs text-muted">{item.benefit}</p>
+              ) : null}
+              <div className="p-5 sm:p-6">
+                <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
+                  {"icon" in item && item.icon ? (item.icon as string) : "✦"}
+                </span>
+                <h3 className="mb-2 font-bold">{item.name}</h3>
+                <p className="text-sm text-muted">{item.benefit}</p>
               </div>
             </div>
           ))}

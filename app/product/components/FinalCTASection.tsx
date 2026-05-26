@@ -1,4 +1,5 @@
 import type { FinalCtaConfig } from "@/lib/page-builder/types";
+import { resolveHeroTrustBadges } from "@/lib/page-builder/hero-trust";
 import { HeroTrustBadge } from "./TrustBadgeItem";
 
 type Props = {
@@ -25,6 +26,8 @@ export default function FinalCTASection({
   const title = config.title || `جاهزة لتجربة ${productName}؟`;
   const subtitle = config.subtitle || urgency;
 
+  const trustBadges = resolveHeroTrustBadges(codTrust);
+
   return (
     <section className="border-t border-champagne/10 bg-gradient-to-b from-beige/60 to-ivory py-12 sm:py-14">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
@@ -36,9 +39,9 @@ export default function FinalCTASection({
         </h2>
         <p className="mx-auto mb-6 max-w-lg text-muted">{subtitle}</p>
 
-        {config.showTrustBadges && codTrust.length > 0 ? (
+        {config.showTrustBadges && trustBadges.length > 0 ? (
           <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
-            {codTrust.map((item) => (
+            {trustBadges.map((item) => (
               <HeroTrustBadge key={item} label={item} />
             ))}
           </div>

@@ -909,26 +909,16 @@ function IngredientEditor({
           <div className="flex justify-end">
             <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
           </div>
-          <label className="block">
-            <span className="mb-1 block text-xs text-muted">
-              Emoji / أيقونة (اختياري)
-            </span>
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-sm shadow-sm ring-1 ring-champagne/15">
-                {item.icon?.trim() || "✦"}
-              </span>
-              <input
-                value={item.icon ?? ""}
-                onChange={(e) => {
-                  const next = [...items];
-                  next[i] = { ...item, icon: e.target.value };
-                  onChange(next);
-                }}
-                placeholder="مثال: 🧬 💧 🌿 ✨"
-                className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-              />
-            </div>
-          </label>
+          <input
+            value={item.icon ?? ""}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, icon: e.target.value };
+              onChange(next);
+            }}
+            placeholder="أيقونة (emoji)"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
           <input
             value={item.name}
             onChange={(e) => {
@@ -939,7 +929,7 @@ function IngredientEditor({
             placeholder="اسم المكون"
             className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
           />
-          <input
+          <textarea
             value={item.benefit}
             onChange={(e) => {
               const next = [...items];
@@ -947,10 +937,11 @@ function IngredientEditor({
               onChange(next);
             }}
             placeholder="الفائدة"
+            rows={2}
             className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
           />
           <ImageUploadField
-            label="صورة المكون"
+            label="صورة المكون (اختياري)"
             value={item.image}
             slug={slug}
             onChange={(v) => {

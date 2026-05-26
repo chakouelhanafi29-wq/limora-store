@@ -1,9 +1,7 @@
 import type { StorefrontProduct } from "@/lib/storefront";
-import { HeroTrustBadge } from "./TrustBadgeItem";
 
 type Props = {
   product: StorefrontProduct;
-  codTrust?: string[];
 };
 
 function Stars({ rating, reviewCount }: { rating: number; reviewCount: number }) {
@@ -34,17 +32,7 @@ function Stars({ rating, reviewCount }: { rating: number; reviewCount: number })
   );
 }
 
-function TrustBadges({ items }: { items: string[] }) {
-  return (
-    <div className="mb-6 flex flex-wrap gap-2">
-      {items.map((item) => (
-        <HeroTrustBadge key={item} label={item} />
-      ))}
-    </div>
-  );
-}
-
-export default function ProductInfo({ product, codTrust = [] }: Props) {
+export default function ProductInfo({ product }: Props) {
   return (
     <div className="flex flex-col">
       <p
@@ -59,8 +47,6 @@ export default function ProductInfo({ product, codTrust = [] }: Props) {
       <p className="mb-4 text-lg font-medium text-rose-gold">{product.subtitle}</p>
 
       <Stars rating={product.rating} reviewCount={product.reviewCount} />
-
-      {codTrust.length > 0 && <TrustBadges items={codTrust} />}
 
       {product.emotionalHook ? (
         <p className="mb-5 rounded-2xl border border-rose-200/40 bg-rose-50/50 px-4 py-3 text-sm font-semibold leading-relaxed text-rose-gold/95">

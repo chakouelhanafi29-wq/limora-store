@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Offer } from "../lib/product-data";
 import type { ProductPageConfig } from "@/lib/page-builder/types";
+import { resolveHeroTrustBadges } from "@/lib/page-builder/hero-trust";
 import { createDefaultFinalCta } from "@/lib/page-builder/default-final-cta";
 import {
   PAGE_BLOCK_FINAL_CTA,
@@ -57,6 +58,11 @@ export default function ProductPageClient({
         pageConfig.offers.map((o) => [o.id, o.displayLabel || o.label]),
       ),
     [pageConfig.offers],
+  );
+
+  const heroTrustBadges = useMemo(
+    () => resolveHeroTrustBadges(pageConfig.hero.codTrust),
+    [pageConfig.hero.codTrust],
   );
 
   const defaultOffer = useMemo(
@@ -156,10 +162,7 @@ export default function ProductPageClient({
         <section key={blockId} className={heroGradient}>
           <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-12">
             <ProductGallery product={product} aspectClass={aspectClass} />
-            <ProductInfo
-              product={product}
-              codTrust={pageConfig.hero.codTrust}
-            />
+            <ProductInfo product={product} />
           </div>
         </section>
       );
@@ -179,7 +182,7 @@ export default function ProductPageClient({
                 }
                 offers={offers}
                 ctaLabel={pageConfig.hero.ctaLabel}
-                codTrust={pageConfig.hero.codTrust}
+                codTrust={heroTrustBadges}
                 buttonStyle={pageConfig.theme.buttonStyle}
                 ctaSize={pageConfig.mobile.ctaSize}
               />
@@ -202,7 +205,7 @@ export default function ProductPageClient({
           onOrder={openOrder}
           ctaLabel={pageConfig.hero.ctaLabel}
           price={selectedOffer.price}
-          codTrust={pageConfig.hero.codTrust}
+          codTrust={heroTrustBadges}
         />
       );
     }
@@ -226,10 +229,7 @@ export default function ProductPageClient({
             <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-12">
               <ProductGallery product={product} aspectClass={aspectClass} />
               <div>
-                <ProductInfo
-                  product={product}
-                  codTrust={pageConfig.hero.codTrust}
-                />
+                <ProductInfo product={product} />
                 <PurchaseZone
                   selectedOffer={selectedOffer}
                   onSelectOffer={handleSelectOffer}
@@ -239,7 +239,7 @@ export default function ProductPageClient({
                   }
                   offers={offers}
                   ctaLabel={pageConfig.hero.ctaLabel}
-                  codTrust={pageConfig.hero.codTrust}
+                  codTrust={heroTrustBadges}
                   buttonStyle={pageConfig.theme.buttonStyle}
                   ctaSize={pageConfig.mobile.ctaSize}
                 />
@@ -308,7 +308,7 @@ export default function ProductPageClient({
             onOrder={openOrder}
             ctaLabel={pageConfig.hero.ctaLabel}
             visible={showStickyCta}
-            codTrust={pageConfig.hero.codTrust}
+            codTrust={heroTrustBadges}
           />
           <OrderModal
             open={modalOpen}
@@ -319,7 +319,7 @@ export default function ProductPageClient({
             productSlug={pageConfig.slug}
             offerLabels={offerLabels}
             orderModal={pageConfig.orderModal}
-            codTrust={pageConfig.hero.codTrust}
+            codTrust={heroTrustBadges}
           />
         </>
       )}

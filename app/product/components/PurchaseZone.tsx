@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Offer } from "../../lib/product-data";
 import OfferSelection from "./OfferSelection";
-import { HeroTrustBadge } from "./TrustBadgeItem";
+import PurchaseTrustStrip from "./PurchaseTrustStrip";
 
 type Props = {
   selectedOffer: Offer;
@@ -16,16 +16,6 @@ type Props = {
   buttonStyle?: "rounded-full" | "rounded-xl";
   ctaSize?: "sm" | "md" | "lg";
 };
-
-function CompactTrustBadges({ items }: { items: string[] }) {
-  return (
-    <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5">
-      {items.map((item) => (
-        <HeroTrustBadge key={item} label={item} compact />
-      ))}
-    </div>
-  );
-}
 
 function OrderButton({
   onOrder,
@@ -115,7 +105,7 @@ export default function PurchaseZone({
           buttonStyle={buttonStyle}
           sizeClass={sizeClass}
         />
-        <CompactTrustBadges items={codTrust} />
+        <PurchaseTrustStrip items={codTrust} />
       </div>
 
       <div className="mt-8 hidden md:block">
@@ -126,7 +116,7 @@ export default function PurchaseZone({
           buttonStyle={buttonStyle}
           sizeClass={sizeClass}
         />
-        <CompactTrustBadges items={codTrust} />
+        <PurchaseTrustStrip items={codTrust} />
       </div>
     </div>
   );

@@ -479,58 +479,36 @@ export function renderProductSection(
         (content.items as { name: string; benefit: string; image: string; icon?: string }[]) ??
         [];
       return (
-        <section key={section.id} className={`${pad} bg-gradient-to-b from-beige/20 to-ivory`}>
+        <section key={section.id} className={`${pad} ${bg || "bg-beige/50"}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               label={String(content.label ?? "")}
               title={String(content.title ?? "")}
               subtitle={String(content.subtitle ?? "")}
             />
-            <div className={`grid ${gridGap} sm:grid-cols-2 lg:grid-cols-4`}>
+            <div className={`grid ${gridGap} sm:grid-cols-2 lg:grid-cols-3`}>
               {items.map((item, index) => (
                 <div
                   key={`${item.name}-${index}`}
-                  className="group overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
+                  className="overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-1"
                 >
-                  <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-beige/50 to-white">
-                    {item.image ? (
+                  {item.image ? (
+                    <div className="relative aspect-[4/3]">
                       <Image
                         src={item.image}
                         alt={item.name}
                         fill
-                        className="object-cover transition duration-700 group-hover:scale-105"
-                        sizes="25vw"
+                        className="object-cover"
+                        sizes="33vw"
                       />
-                    ) : (
-                      <div className="flex h-full flex-col items-center justify-center gap-2 p-5 text-center">
-                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-champagne/10 text-base">
-                          {item.icon || "✦"}
-                        </span>
-                      </div>
-                    )}
-                    {item.icon && item.image ? (
-                      <span className="absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-sm shadow-sm backdrop-blur-sm">
-                        {item.icon}
-                      </span>
-                    ) : null}
-                  </div>
-                  <div className="border-t border-champagne/10 p-4 sm:p-5">
-                    <div className="mb-1 flex items-center gap-2">
-                      {item.icon ? (
-                        <span
-                          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-champagne/8 text-[13px] leading-none"
-                          aria-hidden
-                        >
-                          {item.icon}
-                        </span>
-                      ) : null}
-                      <h3 className="font-serif text-base font-semibold sm:text-lg">
-                        {item.name}
-                      </h3>
                     </div>
-                    <p className="text-xs leading-relaxed text-muted sm:text-sm">
-                      {item.benefit}
-                    </p>
+                  ) : null}
+                  <div className="p-5 sm:p-6">
+                    <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
+                      {item.icon || "✦"}
+                    </span>
+                    <h3 className="mb-2 font-bold">{item.name}</h3>
+                    <p className="text-sm text-muted">{item.benefit}</p>
                   </div>
                 </div>
               ))}
