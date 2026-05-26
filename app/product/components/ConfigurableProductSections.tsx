@@ -106,72 +106,118 @@ export function renderProductSection(
         title: string;
         description: string;
         highlights: string[];
+        image?: string;
+        caption?: string;
       };
+
       return (
-        <section key={section.id} className={pad}>
+        <section
+          key={section.id}
+          className={`${pad} bg-gradient-to-b from-ivory via-rose-50/20 to-beige/30`}
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               label={String(content.label ?? "")}
               title={String(content.title ?? "")}
             />
-            <div className={`mb-8 grid ${gridGap} sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`}>
-              {problems.map((p, index) => (
-                <div
-                  key={`${p.title}-${index}`}
-                  className="group overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+
+            <div className={`mb-8 grid ${gridGap} lg:grid-cols-2`}>
+              {problems.map((problem, index) => (
+                <article
+                  key={`${problem.title}-${index}`}
+                  className="group overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
                 >
-                  {p.image ? (
-                    <div className="relative aspect-[4/3] overflow-hidden">
-                      <Image
-                        src={p.image}
-                        alt={p.title}
-                        fill
-                        className="object-cover transition duration-700 group-hover:scale-105"
-                        sizes="(max-width: 768px) 100vw, 25vw"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-foreground/20 to-transparent" />
-                      <div className="absolute bottom-0 right-0 left-0 p-4 text-white">
-                        {p.icon ? (
-                          <span className="mb-2 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/15 text-lg backdrop-blur-sm">
-                            {p.icon}
+                  <div className="grid sm:grid-cols-[132px_1fr]">
+                    <div className="relative aspect-[4/3] overflow-hidden sm:aspect-auto sm:min-h-[148px]">
+                      {problem.image ? (
+                        <Image
+                          src={problem.image}
+                          alt={problem.title}
+                          fill
+                          className="object-cover transition duration-700 group-hover:scale-105"
+                          sizes="(max-width: 640px) 100vw, 180px"
+                        />
+                      ) : (
+                        <div className="flex h-full min-h-[120px] flex-col items-center justify-center gap-2 bg-gradient-to-br from-beige/70 via-rose-50/50 to-white p-4 text-center">
+                          <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/70 text-xl shadow-sm ring-1 ring-champagne/10">
+                            {problem.icon || "✦"}
                           </span>
-                        ) : null}
-                        <h3 className="text-sm font-bold sm:text-base">{p.title}</h3>
-                        {p.description ? (
-                          <p className="mt-1 text-xs leading-relaxed text-white/85 sm:text-sm">
-                            {p.description}
-                          </p>
-                        ) : null}
-                      </div>
+                          <p className="text-[10px] text-muted">ارفعي صورة من المحرر</p>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-foreground/15 to-transparent sm:bg-gradient-to-l sm:from-transparent sm:via-transparent sm:to-white/10" />
                     </div>
-                  ) : (
-                    <div className="p-5 sm:p-6">
-                      <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
-                        {p.icon || "✦"}
-                      </span>
-                      <h3 className="mb-2 text-sm font-bold sm:text-base">{p.title}</h3>
+
+                    <div className="flex flex-col justify-center p-4 sm:p-5">
+                      {problem.icon ? (
+                        <span className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-champagne/12 text-lg">
+                          {problem.icon}
+                        </span>
+                      ) : null}
+                      <h3 className="mb-1.5 text-sm font-bold text-foreground sm:text-base">
+                        {problem.title}
+                      </h3>
                       <p className="text-xs leading-relaxed text-muted sm:text-sm">
-                        {p.description}
+                        {problem.description}
                       </p>
                     </div>
-                  )}
-                </div>
+                  </div>
+                </article>
               ))}
             </div>
-            {solution && (
-              <div className="rounded-3xl bg-gradient-to-l from-champagne/10 via-nude/20 to-beige p-6 sm:p-8">
-                <h3 className="mb-3 font-serif text-2xl font-semibold sm:text-3xl">{solution.title}</h3>
-                <p className="mb-4 max-w-3xl leading-relaxed text-muted">{solution.description}</p>
-                <ul className="flex flex-wrap gap-4">
-                  {solution.highlights?.map((h) => (
-                    <li key={h} className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium">
-                      <span className="text-champagne">✦</span>
-                      {h}
-                    </li>
-                  ))}
-                </ul>
+
+            {solution ? (
+              <div className="overflow-hidden rounded-[1.75rem] border border-champagne/10 bg-gradient-to-l from-champagne/10 via-nude/20 to-beige luxury-shadow-lg">
+                <div className="grid lg:grid-cols-2">
+                  <div className="flex flex-col justify-center p-6 sm:p-8">
+                    <span className="section-label mb-3 inline-block text-[10px] tracking-[0.25em] text-champagne">
+                      THE SOLUTION
+                    </span>
+                    <h3 className="mb-3 font-serif text-2xl font-semibold text-foreground sm:text-3xl">
+                      {solution.title}
+                    </h3>
+                    <p className="mb-4 max-w-xl leading-relaxed text-muted">
+                      {solution.description}
+                    </p>
+                    <ul className="flex flex-wrap gap-2.5">
+                      {solution.highlights?.map((highlight) => (
+                        <li
+                          key={highlight}
+                          className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3.5 py-1.5 text-xs font-medium text-foreground/90 sm:text-sm"
+                        >
+                          <span className="text-champagne">✦</span>
+                          {highlight}
+                        </li>
+                      ))}
+                    </ul>
+                    {solution.caption ? (
+                      <p className="mt-4 text-sm font-medium italic text-champagne sm:text-base">
+                        {solution.caption}
+                      </p>
+                    ) : null}
+                  </div>
+
+                  <div className="relative min-h-[220px] overflow-hidden bg-gradient-to-br from-beige/40 to-rose-50/30 lg:min-h-[320px]">
+                    {solution.image ? (
+                      <Image
+                        src={solution.image}
+                        alt={solution.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 1024px) 100vw, 50vw"
+                      />
+                    ) : (
+                      <div className="flex h-full min-h-[220px] items-center justify-center p-8 text-center lg:min-h-[320px]">
+                        <p className="text-xs text-muted">
+                          ارفعي صورة الحل / التحول من المحرر
+                        </p>
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/10 via-transparent to-transparent lg:bg-gradient-to-r lg:from-white/20 lg:via-transparent lg:to-transparent" />
+                  </div>
+                </div>
               </div>
-            )}
+            ) : null}
           </div>
         </section>
       );

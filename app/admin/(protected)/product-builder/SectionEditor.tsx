@@ -325,6 +325,28 @@ export default function SectionEditor({ section, slug, onChange }: Props) {
             }
             multiline
           />
+          <ImageUploadField
+            label="صورة الحل / التحول"
+            value={String((content.solution as { image?: string })?.image ?? "")}
+            slug={slug}
+            onChange={(v) =>
+              updateContent("solution", {
+                ...(content.solution as object),
+                image: v,
+              })
+            }
+          />
+          <Field
+            label="تعليق عاطفي (اختياري)"
+            value={String((content.solution as { caption?: string })?.caption ?? "")}
+            onChange={(v) =>
+              updateContent("solution", {
+                ...(content.solution as object),
+                caption: v,
+              })
+            }
+            multiline
+          />
         </>
       )}
 
@@ -475,7 +497,7 @@ function ProblemsEditor({
             className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
           />
           <ImageUploadField
-            label="صورة المشكلة"
+            label="صورة المشكلة (بجانب النص)"
             value={item.image ?? ""}
             slug={slug}
             onChange={(v) => {
@@ -1230,7 +1252,7 @@ const BLANK_SECTION_CONTENT: Record<SectionType, Record<string, unknown>> = {
     label: "CONCERNS",
     title: "عنوان المشاكل",
     problems: [],
-    solution: { title: "", description: "", highlights: [] },
+    solution: { title: "", description: "", highlights: [], image: "", caption: "" },
   },
   benefits: { label: "BENEFITS", title: "الفوائد", subtitle: "", items: [] },
   transformation: {

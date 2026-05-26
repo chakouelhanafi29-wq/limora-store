@@ -167,6 +167,8 @@ export const problemSolution = {
       "ترطيب عميق ومرونة أفضل",
       "ثقة أنثوية تعود… من الداخل",
     ],
+    image: COLLAGEN_GLOW_GALLERY[0],
+    caption: "بشرة تتوهج… وثقة تعود من الداخل ✨",
   },
 };
 

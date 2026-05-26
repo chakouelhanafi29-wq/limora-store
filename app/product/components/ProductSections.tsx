@@ -60,47 +60,91 @@ function SectionHeader({
 export function ProblemSolutionSection() {
   const { problems, solution } = problemSolution;
   return (
-    <section className="py-10 sm:py-12">
+    <section className="bg-gradient-to-b from-ivory via-rose-50/20 to-beige/30 py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={problemSolution.label}
           title={problemSolution.title}
         />
 
-        <div className="mb-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {problems.map((p) => (
-            <div
-              key={p.title}
-              className="rounded-2xl border border-champagne/10 bg-beige/40 p-5 sm:p-6"
+        <div className="mb-8 grid gap-4 lg:grid-cols-2">
+          {problems.map((problem) => (
+            <article
+              key={problem.title}
+              className="overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow"
             >
-              <h3 className="mb-2 text-sm font-bold text-foreground sm:text-base">
-                {p.title}
-              </h3>
-              <p className="text-xs leading-relaxed text-muted sm:text-sm">
-                {p.description}
-              </p>
-            </div>
+              <div className="grid sm:grid-cols-[132px_1fr]">
+                <div className="relative aspect-[4/3] overflow-hidden sm:aspect-auto sm:min-h-[148px]">
+                  {"image" in problem && problem.image ? (
+                    <Image
+                      src={problem.image as string}
+                      alt={problem.title}
+                      fill
+                      className="object-cover"
+                      sizes="180px"
+                    />
+                  ) : (
+                    <div className="flex h-full min-h-[120px] items-center justify-center bg-gradient-to-br from-beige/70 via-rose-50/50 to-white">
+                      <span className="text-2xl">
+                        {"icon" in problem ? (problem.icon as string) : "✦"}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col justify-center p-4 sm:p-5">
+                  {"icon" in problem && problem.icon ? (
+                    <span className="mb-2 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-champagne/12 text-lg">
+                      {problem.icon as string}
+                    </span>
+                  ) : null}
+                  <h3 className="mb-1.5 text-sm font-bold sm:text-base">{problem.title}</h3>
+                  <p className="text-xs leading-relaxed text-muted sm:text-sm">
+                    {problem.description}
+                  </p>
+                </div>
+              </div>
+            </article>
           ))}
         </div>
 
-        <div className="rounded-3xl bg-gradient-to-l from-champagne/10 via-nude/20 to-beige p-8 sm:p-12">
-          <h3 className="mb-4 font-serif text-2xl font-semibold text-foreground sm:text-3xl">
-            {solution.title}
-          </h3>
-          <p className="mb-6 max-w-3xl leading-relaxed text-muted">
-            {solution.description}
-          </p>
-          <ul className="flex flex-wrap gap-4">
-            {solution.highlights.map((h) => (
-              <li
-                key={h}
-                className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium text-foreground"
-              >
-                <span className="text-champagne">✦</span>
-                {h}
-              </li>
-            ))}
-          </ul>
+        <div className="overflow-hidden rounded-[1.75rem] border border-champagne/10 bg-gradient-to-l from-champagne/10 via-nude/20 to-beige luxury-shadow-lg">
+          <div className="grid lg:grid-cols-2">
+            <div className="p-6 sm:p-8">
+              <h3 className="mb-3 font-serif text-2xl font-semibold sm:text-3xl">
+                {solution.title}
+              </h3>
+              <p className="mb-4 max-w-xl leading-relaxed text-muted">
+                {solution.description}
+              </p>
+              <ul className="flex flex-wrap gap-2.5">
+                {solution.highlights.map((highlight) => (
+                  <li
+                    key={highlight}
+                    className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3.5 py-1.5 text-xs font-medium sm:text-sm"
+                  >
+                    <span className="text-champagne">✦</span>
+                    {highlight}
+                  </li>
+                ))}
+              </ul>
+              {"caption" in solution && solution.caption ? (
+                <p className="mt-4 text-sm font-medium italic text-champagne">
+                  {solution.caption as string}
+                </p>
+              ) : null}
+            </div>
+            {"image" in solution && solution.image ? (
+              <div className="relative min-h-[220px] lg:min-h-[320px]">
+                <Image
+                  src={solution.image as string}
+                  alt={solution.title}
+                  fill
+                  className="object-cover"
+                  sizes="50vw"
+                />
+              </div>
+            ) : null}
+          </div>
         </div>
       </div>
     </section>
