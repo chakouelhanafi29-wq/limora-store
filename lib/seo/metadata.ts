@@ -116,5 +116,5 @@ export function buildPageMetadata(
 }
 
 export function productPagePath(slug: string) {
-  return `/product?slug=${encodeURIComponent(slug)}`;
+  return `/product/${encodeURIComponent(slug)}`;
 }

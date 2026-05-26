@@ -197,7 +197,7 @@ function renderSection(
                       {product.price} <span className="text-sm text-muted line-through">{product.originalPrice}</span>
                       <span className="text-sm text-muted"> ر.س</span>
                     </p>
-                    <Link href={`/product?slug=${product.slug}`} className={`mt-auto inline-block ${btn} bg-foreground px-6 py-3 text-center text-sm text-ivory transition hover:bg-champagne`}>
+                    <Link href={`/product/${product.slug}`} className={`mt-auto inline-block ${btn} bg-foreground px-6 py-3 text-center text-sm text-ivory transition hover:bg-champagne`}>
                       {product.cta}
                     </Link>
                   </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { sortProductImages } from "@/lib/product-images";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -226,6 +227,12 @@ export default function ProductsManager({
             </div>
 
             <div className="flex flex-wrap gap-2">
+              <Link
+                href={`/admin/products/${product.id}/builder`}
+                className="rounded-full bg-champagne/20 px-4 py-2 text-xs font-medium text-foreground hover:bg-champagne/30"
+              >
+                محرر الصفحة
+              </Link>
               <button
                 type="button"
                 onClick={() => startEdit(product)}
@@ -406,20 +413,28 @@ export function NewProductForm() {
     const supabase = createClient();
     if (!supabase) return;
 
-    const { error } = await supabase.from("products").insert({
-      slug: form.slug,
-      name_ar: form.name_ar,
-      name_en: form.name_en,
-      subtitle: form.subtitle,
-      description: form.description,
-      price: Number(form.price),
-      original_price: form.original_price ? Number(form.original_price) : null,
-      badge: form.badge || null,
-      is_featured: true,
-      is_active: true,
-    });
+    const { data, error } = await supabase
+      .from("products")
+      .insert({
+        slug: form.slug,
+        name_ar: form.name_ar,
+        name_en: form.name_en,
+        subtitle: form.subtitle,
+        description: form.description,
+        price: Number(form.price),
+        original_price: form.original_price ? Number(form.original_price) : null,
+        badge: form.badge || null,
+        is_featured: true,
+        is_active: true,
+      })
+      .select("id")
+      .single();
     if (error) {
       alert(error.message);
+      return;
+    }
+    if (data?.id) {
+      router.push(`/admin/products/${data.id}/builder`);
       return;
     }
     router.refresh();

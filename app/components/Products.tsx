@@ -72,11 +72,7 @@ export default function Products({ products }: Props) {
                     )}
                   </div>
                   <Link
-                    href={
-                      product.slug === "glow"
-                        ? "/product"
-                        : `/product?slug=${product.slug}`
-                    }
+                    href={`/product/${product.slug}`}
                     className="rounded-full bg-foreground px-6 py-2.5 text-sm font-medium text-ivory transition-all hover:bg-champagne hover:shadow-lg"
                   >
                     {product.cta}

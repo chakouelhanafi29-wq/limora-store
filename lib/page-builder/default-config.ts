@@ -1,170 +1,65 @@
-import {
-  comparison,
-  guarantee,
-  howToUse,
-  offers,
-  problemSolution,
-  product,
-  productBenefits,
-  productFaqs,
-  productIngredients,
-  productReviews,
-  relatedProducts,
-  transformation,
-} from "@/app/lib/product-data";
-import type { ProductPageConfig, PageSection } from "./types";
+import { buildProductPageConfigFromProduct } from "./product-seed";
+import { buildStaticTemplateConfig } from "./section-templates";
+import type { ProductWithRelations } from "@/lib/types/database";
+import type { PageSection, ProductPageConfig } from "./types";
+
+export { createSectionId } from "./section-templates";
 
 function createId() {
   return `sec-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function getDefaultProductPageConfig(slug = "glow"): ProductPageConfig {
-  if (typeof structuredClone === "function") {
-    return buildDefaultConfig(slug);
-  }
-  return JSON.parse(JSON.stringify(buildDefaultConfig(slug))) as ProductPageConfig;
+function createPlaceholderProduct(slug: string): ProductWithRelations {
+  return {
+    id: "",
+    slug,
+    name_ar: "منتج جديد",
+    name_en: "New Product",
+    subtitle: "",
+    description: "",
+    price: 199,
+    original_price: null,
+    badge: null,
+    is_featured: false,
+    is_active: true,
+    sort_order: 0,
+    bullets: [],
+    urgency_text: null,
+    created_at: "",
+    updated_at: "",
+    product_images: [],
+    product_offers: [],
+  };
 }
 
-function buildDefaultConfig(slug: string): ProductPageConfig {
-  const sections: PageSection[] = [
-    {
-      id: createId(),
-      type: "problem_solution",
-      enabled: true,
-      order: 0,
-      content: structuredClone(problemSolution),
-    },
-    {
-      id: createId(),
-      type: "benefits",
-      enabled: true,
-      order: 1,
-      content: structuredClone(productBenefits),
-    },
-    {
-      id: createId(),
-      type: "transformation",
-      enabled: true,
-      order: 2,
-      content: structuredClone(transformation),
-    },
-    {
-      id: createId(),
-      type: "comparison",
-      enabled: true,
-      order: 3,
-      content: structuredClone(comparison),
-    },
-    {
-      id: createId(),
-      type: "reviews",
-      enabled: true,
-      order: 4,
-      content: structuredClone(productReviews),
-    },
-    {
-      id: createId(),
-      type: "how_to_use",
-      enabled: true,
-      order: 5,
-      content: structuredClone(howToUse),
-    },
-    {
-      id: createId(),
-      type: "ingredients",
-      enabled: true,
-      order: 6,
-      content: structuredClone(productIngredients),
-    },
-    {
-      id: createId(),
-      type: "faq",
-      enabled: true,
-      order: 7,
-      content: structuredClone(productFaqs),
-    },
-    {
-      id: createId(),
-      type: "guarantee",
-      enabled: true,
-      order: 8,
-      content: structuredClone(guarantee),
-    },
-    {
-      id: createId(),
-      type: "related_products",
-      enabled: false,
-      order: 9,
-      content: { label: "YOU MAY ALSO LOVE", title: "منتجات قد تعجبكِ", items: relatedProducts },
-    },
-  ];
+export function getDefaultProductPageConfig(
+  slug = "glow",
+  product?: ProductWithRelations | null,
+): ProductPageConfig {
+  let config: ProductPageConfig;
+  if (product) {
+    config = buildProductPageConfigFromProduct(product, slug);
+  } else if (slug === "glow") {
+    config = buildStaticTemplateConfig(slug);
+  } else {
+    config = buildProductPageConfigFromProduct(
+      createPlaceholderProduct(slug),
+      slug,
+    );
+  }
 
-  return {
-    slug,
-    hero: {
-      nameAr: product.name,
-      nameEn: product.nameEn,
-      subtitle: product.subtitle,
-      emotionalHook: product.emotionalHook,
-      rating: product.rating,
-      reviewCount: product.reviewCount,
-      bullets: [...product.bullets],
-      urgency: product.urgency,
-      images: [...product.images],
-      codTrust: [...product.codTrust],
-      ctaLabel: "أطلب الآن الدفع عند الاستلام",
-    },
-    offers: offers.map((offer) => ({
-      id: offer.id,
-      label: offer.label,
-      displayLabel:
-        offer.quantity === 1
-          ? "عرض قطعة واحدة"
-          : offer.quantity === 2
-            ? "عرض قطعتين"
-            : `عرض ${offer.quantity} قطع`,
-      quantity: offer.quantity,
-      price: offer.price,
-      badge: offer.badge,
-      recommended: offer.recommended,
-      savingsText: null,
-    })),
-    orderModal: {
-      title: "أكّدي طلبكِ",
-      subtitle: "دفع عند الاستلام · شحن مجاني",
-      submitLabel: "تأكيد الطلب",
-      trustLine: "✦ الدفع عند الاستلام · لا حاجة لبطاقة ائتمان",
-    },
-    stickyBar: {
-      enabled: true,
-      messages: [
-        "LIMORA Collagen Glow — كولاجين بحري فاخر ✨",
-        "شحن مجاني + الدفع عند الاستلام",
-        "جمالك يبدأ من الداخل",
-      ],
-    },
-    sections,
-    theme: {
-      accentColor: "#D4899A",
-      buttonStyle: "rounded-full",
-      heroGradient: "pink",
-      sectionSpacing: "normal",
-      sectionBackground: "ivory",
-    },
-    mobile: {
-      ctaSize: "md",
-      imageAspect: "square",
-      sectionOrder: null,
-      spacingScale: 1,
-    },
-  };
+  if (typeof structuredClone === "function") {
+    return structuredClone(config);
+  }
+  return JSON.parse(JSON.stringify(config)) as ProductPageConfig;
 }
 
 export function mergeProductPageConfig(
   saved: Partial<ProductPageConfig> | null,
   slug = "glow",
+  product?: ProductWithRelations | null,
 ): ProductPageConfig {
-  const defaults = getDefaultProductPageConfig(slug);
+  const defaults = getDefaultProductPageConfig(slug, product);
   if (!saved) return defaults;
 
   return {

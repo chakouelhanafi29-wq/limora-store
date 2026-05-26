@@ -28,6 +28,15 @@ export async function getFeaturedProducts(): Promise<Product[]> {
   return (data as Product[]) ?? [];
 }
 
+function normalizeProductRelations(
+  data: ProductWithRelations,
+): ProductWithRelations {
+  const product = data;
+  product.product_offers?.sort((a, b) => a.sort_order - b.sort_order);
+  product.product_images?.sort((a, b) => a.sort_order - b.sort_order);
+  return product;
+}
+
 export async function getProductBySlug(
   slug: string,
 ): Promise<ProductWithRelations | null> {
@@ -40,10 +49,21 @@ export async function getProductBySlug(
     .eq("is_active", true)
     .single();
   if (!data) return null;
-  const product = data as ProductWithRelations;
-  product.product_offers.sort((a, b) => a.sort_order - b.sort_order);
-  product.product_images.sort((a, b) => a.sort_order - b.sort_order);
-  return product;
+  return normalizeProductRelations(data as ProductWithRelations);
+}
+
+export async function getProductById(
+  id: string,
+): Promise<ProductWithRelations | null> {
+  if (!isSupabaseConfigured()) return null;
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("products")
+    .select("*, product_images(*), product_offers(*)")
+    .eq("id", id)
+    .single();
+  if (!data) return null;
+  return normalizeProductRelations(data as ProductWithRelations);
 }
 
 export async function getActiveProductSlugs(): Promise<string[]> {

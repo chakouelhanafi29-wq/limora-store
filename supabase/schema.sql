@@ -262,11 +262,15 @@ create policy "Admin read analytics events" on analytics_events
 -- Product page builder configs
 create table if not exists product_page_configs (
   id uuid primary key default gen_random_uuid(),
+  product_id uuid references products(id) on delete cascade,
   slug text not null unique,
   config jsonb not null default '{}'::jsonb,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
+
+create index if not exists product_page_configs_product_id_idx
+  on product_page_configs (product_id);
 
 create index if not exists product_page_configs_slug_idx
   on product_page_configs (slug);

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useState } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import {
@@ -18,9 +19,13 @@ const SECTION_TYPES = Object.keys(SECTION_LABELS) as SectionType[];
 export default function ProductBuilder({
   initialConfig,
   slug,
+  productId,
+  productName,
 }: {
   initialConfig: ProductPageConfig;
   slug: string;
+  productId?: string;
+  productName?: string;
 }) {
   const [config, setConfig] = useState<ProductPageConfig>(initialConfig);
   const [tab, setTab] = useState<Tab>("hero");
@@ -48,10 +53,16 @@ export default function ProductBuilder({
     if (!supabase) return;
 
     setSaving(true);
-    const { error } = await supabase.from("product_page_configs").upsert(
-      { slug, config: { ...config, slug } },
-      { onConflict: "slug" },
-    );
+    const row: Record<string, unknown> = {
+      slug,
+      config: { ...config, slug },
+    };
+    if (productId) {
+      row.product_id = productId;
+    }
+    const { error } = await supabase.from("product_page_configs").upsert(row, {
+      onConflict: "slug",
+    });
     setSaving(false);
     if (error) {
       alert(error.message);
@@ -105,8 +116,16 @@ export default function ProductBuilder({
       <div className="flex w-full flex-col border-l border-champagne/10 bg-white lg:w-[420px] lg:shrink-0">
         <div className="flex items-center justify-between border-b border-champagne/10 p-4">
           <div>
-            <p className="text-xs text-champagne">PAGE BUILDER</p>
-            <h2 className="font-serif text-lg font-semibold">محرر صفحة المنتج</h2>
+            <Link
+              href="/admin/products"
+              className="mb-1 inline-block text-xs text-muted hover:text-champagne"
+            >
+              ← المنتجات
+            </Link>
+            <p className="text-xs text-champagne">PRODUCT BUILDER · {slug}</p>
+            <h2 className="font-serif text-lg font-semibold">
+              {productName ?? "محرر صفحة المنتج"}
+            </h2>
           </div>
           <button
             type="button"
@@ -484,7 +503,7 @@ export default function ProductBuilder({
               {(
                 [
                   ["buttonStyle", "شكل الزر", ["rounded-full", "rounded-xl"]],
-                  ["heroGradient", "Hero gradient", ["luxury", "soft", "minimal"]],
+                  ["heroGradient", "Hero gradient", ["luxury", "soft", "minimal", "pink"]],
                   ["sectionSpacing", "المسافات", ["compact", "normal", "spacious"]],
                   ["sectionBackground", "خلفية", ["ivory", "beige", "white"]],
                 ] as const
@@ -700,7 +719,7 @@ export default function ProductBuilder({
               Mobile
             </button>
             <a
-              href={`/product?slug=${slug}`}
+              href={`/product/${slug}`}
               target="_blank"
               rel="noreferrer"
               className="rounded-full border border-champagne/30 px-3 py-1 text-xs hover:bg-beige"

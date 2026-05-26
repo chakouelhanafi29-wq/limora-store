@@ -9,7 +9,6 @@ const links = [
   { href: "/admin", label: "لوحة التحكم", icon: "◈" },
   { href: "/admin/analytics", label: "التحليلات", icon: "📊" },
   { href: "/admin/home-builder", label: "محرر الرئيسية", icon: "🏠" },
-  { href: "/admin/product-builder", label: "محرر المنتج", icon: "🎨" },
   { href: "/admin/orders", label: "الطلبات", icon: "📦" },
   { href: "/admin/products", label: "المنتجات", icon: "✦" },
   { href: "/admin/customers", label: "العملاء", icon: "👤" },

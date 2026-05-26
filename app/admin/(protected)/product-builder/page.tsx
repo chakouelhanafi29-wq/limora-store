@@ -1,15 +1,12 @@
 export const dynamic = "force-dynamic";
 
-import { getProductPageConfig } from "@/lib/page-builder/queries";
-import ProductBuilder from "./ProductBuilder";
+import { redirect } from "next/navigation";
+import { getAllProducts } from "@/lib/supabase/queries";
 
-export default async function ProductBuilderPage() {
-  const slug = "glow";
-  const config = await getProductPageConfig(slug);
-
-  return (
-    <div className="-m-4 lg:-m-8">
-      <ProductBuilder initialConfig={config} slug={slug} />
-    </div>
-  );
+export default async function LegacyProductBuilderPage() {
+  const products = await getAllProducts();
+  if (products.length > 0) {
+    redirect(`/admin/products/${products[0].id}/builder`);
+  }
+  redirect("/admin/products");
 }
