@@ -40,6 +40,39 @@ export function isLegacyReviewImage(url: string | null | undefined): boolean {
   );
 }
 
+/** True when a review has an intentionally uploaded or curated avatar image. */
+export function hasCustomReviewImage(
+  imageUrl: string | null | undefined,
+): boolean {
+  if (!imageUrl?.trim()) return false;
+  return !isLegacyReviewImage(imageUrl);
+}
+
+export function getReviewInitial(customerName: string): string {
+  const trimmed = customerName.trim();
+  if (!trimmed) return "ل";
+  return trimmed.charAt(0);
+}
+
+const REVIEW_AVATAR_GRADIENTS = [
+  "from-[#f6d9e2] to-[#e8b4c4]",
+  "from-[#ecd9f0] to-[#d4a8dc]",
+  "from-[#fde8d8] to-[#f0c4a8]",
+  "from-[#dce8f6] to-[#b8cfe8]",
+  "from-[#e8f0e0] to-[#c4d4b8]",
+  "from-[#f0e0e8] to-[#d4b8c4]",
+  "from-[#f5e6dc] to-[#ddb8a8]",
+  "from-[#e6dff5] to-[#c4b8e0]",
+] as const;
+
+export function getReviewAvatarGradient(customerName: string): string {
+  const hash = customerName
+    .trim()
+    .split("")
+    .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+  return REVIEW_AVATAR_GRADIENTS[hash % REVIEW_AVATAR_GRADIENTS.length];
+}
+
 export function normalizeReviewImage(
   customerName: string,
   imageUrl: string | null | undefined,

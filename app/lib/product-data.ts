@@ -361,28 +361,33 @@ export const productIngredients = {
       name: "Marine Collagen",
       benefit: "مرونة البشرة ومكافحة علامات التقدّم",
       image: COLLAGEN_GLOW_GALLERY[0],
+      icon: "🧬",
     },
     {
       name: "Hyaluronic Acid",
       benefit: "ترطيب عميق ونعومة فائقة",
       image: COLLAGEN_GLOW_GALLERY[1],
+      icon: "💧",
     },
     {
       name: "Vitamin C",
       benefit: "إشراقة طبيعية ونضارة",
       image: COLLAGEN_GLOW_GALLERY[1],
+      icon: "✨",
     },
     {
       name: "Biotin",
       benefit: "دعم الشعر والأظافر من الداخل",
       image:
         "https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=400&q=80",
+      icon: "🌿",
     },
     {
       name: "Zinc",
       benefit: "صحة البشرة والتوازن الطبيعي",
       image:
         "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=400&q=80",
+      icon: "⚡",
     },
   ],
 };

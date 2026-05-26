@@ -25,7 +25,7 @@ export default function FinalCTASection({
   const subtitle = config.subtitle || urgency;
 
   return (
-    <section className="border-t border-champagne/10 bg-gradient-to-b from-beige/60 to-ivory py-16 sm:py-20">
+    <section className="border-t border-champagne/10 bg-gradient-to-b from-beige/60 to-ivory py-12 sm:py-14">
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         {config.label ? (
           <p className="section-label mb-3 text-xs text-champagne">{config.label}</p>

@@ -3,16 +3,24 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { normalizeReviewImage } from "@/lib/review-images";
+import {
+  getSectionGridGapClass,
+  getSectionHeaderMarginClass,
+  getSectionLabelMarginClass,
+  getSectionPaddingClass,
+} from "@/lib/page-builder/section-spacing";
 import type { PageSection, ProductPageConfig, ProductPageTheme } from "@/lib/page-builder/types";
 import { getOrderedSections } from "@/lib/page-builder/default-config";
+import ReviewAvatar from "./ReviewAvatar";
 import SectionCTA from "./SectionCTA";
 
 function spacingClass(theme: ProductPageTheme) {
-  if (theme.sectionSpacing === "compact") return "py-12 sm:py-16";
-  if (theme.sectionSpacing === "spacious") return "py-24 sm:py-32";
-  return "py-20 sm:py-28";
+  return getSectionPaddingClass(theme);
 }
+
+const gridGap = getSectionGridGapClass();
+const headerMargin = getSectionHeaderMarginClass();
+const labelMargin = getSectionLabelMarginClass();
 
 function SectionHeader({
   label,
@@ -26,9 +34,9 @@ function SectionHeader({
   dark?: boolean;
 }) {
   return (
-    <div className="mb-12 text-center">
+    <div className={`${headerMargin} text-center`}>
       <span
-        className={`section-label mb-4 inline-block text-xs font-medium tracking-[0.25em] ${dark ? "text-champagne-light" : "text-champagne"}`}
+        className={`section-label ${labelMargin} inline-block text-xs font-medium tracking-[0.25em] ${dark ? "text-champagne-light" : "text-champagne"}`}
       >
         {label}
       </span>
@@ -99,7 +107,7 @@ export function renderProductSection(
               label={String(content.label ?? "")}
               title={String(content.title ?? "")}
             />
-            <div className="mb-16 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className={`mb-8 grid ${gridGap} sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4`}>
               {problems.map((p, index) => (
                 <div
                   key={`${p.title}-${index}`}
@@ -144,9 +152,9 @@ export function renderProductSection(
               ))}
             </div>
             {solution && (
-              <div className="rounded-3xl bg-gradient-to-l from-champagne/10 via-nude/20 to-beige p-8 sm:p-12">
-                <h3 className="mb-4 font-serif text-2xl font-semibold sm:text-3xl">{solution.title}</h3>
-                <p className="mb-6 max-w-3xl leading-relaxed text-muted">{solution.description}</p>
+              <div className="rounded-3xl bg-gradient-to-l from-champagne/10 via-nude/20 to-beige p-6 sm:p-8">
+                <h3 className="mb-3 font-serif text-2xl font-semibold sm:text-3xl">{solution.title}</h3>
+                <p className="mb-4 max-w-3xl leading-relaxed text-muted">{solution.description}</p>
                 <ul className="flex flex-wrap gap-4">
                   {solution.highlights?.map((h) => (
                     <li key={h} className="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-sm font-medium">
@@ -177,7 +185,7 @@ export function renderProductSection(
               title={String(content.title ?? "")}
               subtitle={String(content.subtitle ?? "")}
             />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className={`grid ${gridGap} sm:grid-cols-2 lg:grid-cols-3`}>
               {items.map((item) => (
                 <div
                   key={item.title}
@@ -194,8 +202,8 @@ export function renderProductSection(
                       />
                     </div>
                   ) : null}
-                  <div className="p-7">
-                    <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
+                  <div className="p-5 sm:p-6">
+                    <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
                       {item.icon}
                     </span>
                     <h3 className="mb-2 font-bold">{item.title}</h3>
@@ -227,7 +235,7 @@ export function renderProductSection(
               title={String(content.title ?? "")}
               subtitle={String(content.subtitle ?? "")}
             />
-            <div className="grid gap-8 lg:grid-cols-2">
+            <div className={`grid ${gridGap} lg:grid-cols-2`}>
               {items.map((item, index) => (
                 <div
                   key={`${item.quote}-${index}`}
@@ -412,11 +420,11 @@ export function renderProductSection(
           <section id="reviews" className={pad}>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} />
-              <div className="grid gap-6 sm:grid-cols-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 {items.map((review, index) => (
                   <article
                     key={`${review.name}-${index}`}
-                    className="overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-1 hover:shadow-xl"
+                    className="overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-0.5 hover:shadow-xl"
                   >
                     {review.transformationImage ? (
                       <div className="relative aspect-[16/10] overflow-hidden">
@@ -430,21 +438,13 @@ export function renderProductSection(
                         <div className="absolute inset-0 bg-gradient-to-t from-foreground/30 to-transparent" />
                       </div>
                     ) : null}
-                    <div className="p-7">
+                    <div className="p-5 sm:p-6">
                       <ReviewStars rating={review.rating ?? 5} />
-                      <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80 sm:text-base">
+                      <blockquote className="mb-4 text-sm leading-relaxed text-foreground/80 sm:text-base">
                         &ldquo;{review.text}&rdquo;
                       </blockquote>
-                      <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
-                        <div className="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-champagne/20">
-                          <Image
-                            src={normalizeReviewImage(review.name, review.image)}
-                            alt={review.name}
-                            fill
-                            className="object-cover"
-                            sizes="48px"
-                          />
-                        </div>
+                      <div className="flex items-center gap-3 border-t border-champagne/10 pt-3">
+                        <ReviewAvatar name={review.name} image={review.image} />
                         <div>
                           <p className="text-sm font-bold">{review.name}</p>
                           <p className="text-xs text-muted">{review.location}</p>
@@ -477,7 +477,7 @@ export function renderProductSection(
         <section key={section.id} className={`${pad} bg-beige/50`}>
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
             <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
-            <div className="grid gap-8 md:grid-cols-3">
+            <div className={`grid ${gridGap} md:grid-cols-3`}>
               {steps.map((step) => (
                 <div key={step.step} className="text-center">
                   <span className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-champagne/15 font-serif text-xl font-semibold text-champagne">{step.step}</span>
@@ -502,11 +502,11 @@ export function renderProductSection(
               title={String(content.title ?? "")}
               subtitle={String(content.subtitle ?? "")}
             />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className={`grid ${gridGap} sm:grid-cols-2 lg:grid-cols-4`}>
               {items.map((item, index) => (
                 <div
                   key={`${item.name}-${index}`}
-                  className="group overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-0.5 hover:shadow-xl"
                 >
                   <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-beige/50 to-white">
                     {item.image ? (
@@ -518,11 +518,10 @@ export function renderProductSection(
                         sizes="25vw"
                       />
                     ) : (
-                      <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
-                        <span className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-champagne/15 text-3xl">
+                      <div className="flex h-full flex-col items-center justify-center gap-2 p-5 text-center">
+                        <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-champagne/15 text-3xl">
                           {item.icon || "✦"}
                         </span>
-                        <p className="text-xs text-muted">ارفعي صورة المكون من المحرر</p>
                       </div>
                     )}
                     {item.icon && item.image ? (
@@ -531,9 +530,23 @@ export function renderProductSection(
                       </span>
                     ) : null}
                   </div>
-                  <div className="border-t border-champagne/10 p-5">
-                    <h3 className="mb-1 font-serif text-lg font-semibold">{item.name}</h3>
-                    <p className="text-xs leading-relaxed text-muted sm:text-sm">{item.benefit}</p>
+                  <div className="border-t border-champagne/10 p-4 sm:p-5">
+                    <div className="mb-1 flex items-center gap-2.5">
+                      {item.icon ? (
+                        <span
+                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-champagne/10 text-lg"
+                          aria-hidden
+                        >
+                          {item.icon}
+                        </span>
+                      ) : null}
+                      <h3 className="font-serif text-base font-semibold sm:text-lg">
+                        {item.name}
+                      </h3>
+                    </div>
+                    <p className="text-xs leading-relaxed text-muted sm:text-sm">
+                      {item.benefit}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -555,9 +568,9 @@ export function renderProductSection(
           <section className={pad}>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className={`grid ${gridGap} sm:grid-cols-2 lg:grid-cols-4`}>
                 {points.map((point) => (
-                  <div key={point.title} className="rounded-3xl border border-champagne/15 bg-white p-6 text-center luxury-shadow">
+                  <div key={point.title} className="rounded-3xl border border-champagne/15 bg-white p-5 text-center luxury-shadow sm:p-6">
                     <span className="mb-3 block text-2xl text-champagne">{point.icon}</span>
                     <h3 className="mb-2 text-sm font-bold">{point.title}</h3>
                     <p className="text-xs text-muted">{point.description}</p>
@@ -584,7 +597,7 @@ export function renderProductSection(
         <section key={section.id} className={`${pad} ${bg}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div
-              className={`grid items-center gap-10 lg:grid-cols-2 ${
+              className={`grid items-center ${gridGap} lg:grid-cols-2 lg:gap-6 ${
                 imagePosition === "left" ? "lg:[direction:ltr]" : ""
               }`}
             >
@@ -633,9 +646,9 @@ export function renderProductSection(
         <section key={section.id} className={`${pad} border-t border-champagne/10 bg-beige/30`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader label={String(content.label ?? "YOU MAY ALSO LOVE")} title={String(content.title ?? "منتجات قد تعجبكِ")} />
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className={`grid ${gridGap} md:grid-cols-3`}>
               {items.map((item) => (
-                <Link key={item.id} href={item.href} className="group overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-1">
+                <Link key={item.id} href={item.href} className="group overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-0.5">
                   <div className="relative aspect-square overflow-hidden">
                     <Image src={item.image} alt={item.name} fill className="object-cover transition duration-700 group-hover:scale-105" sizes="33vw" />
                   </div>

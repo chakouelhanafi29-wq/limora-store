@@ -154,7 +154,7 @@ export default function ProductPageClient({
     if (blockId === PAGE_BLOCK_HERO) {
       return (
         <section key={blockId} className={heroGradient}>
-          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-16">
+          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-12">
             <ProductGallery product={product} aspectClass={aspectClass} />
             <ProductInfo
               product={product}
@@ -168,7 +168,7 @@ export default function ProductPageClient({
     if (blockId === PAGE_BLOCK_OFFERS) {
       return (
         <section key={blockId} className={heroGradient}>
-          <div className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 lg:pb-16">
+          <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
             <div className="lg:mr-auto lg:max-w-xl lg:justify-self-end">
               <PurchaseZone
                 selectedOffer={selectedOffer}
@@ -223,7 +223,7 @@ export default function ProductPageClient({
       if (blockId === PAGE_BLOCK_HERO && nextBlockId === PAGE_BLOCK_OFFERS) {
         blocks.push(
           <section key={`${blockId}-${nextBlockId}`} className={heroGradient}>
-            <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-16">
+            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-12">
               <ProductGallery product={product} aspectClass={aspectClass} />
               <div>
                 <ProductInfo

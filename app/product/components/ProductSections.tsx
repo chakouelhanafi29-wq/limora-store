@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { normalizeReviewImage } from "@/lib/review-images";
+import ReviewAvatar from "./ReviewAvatar";
 import {
   comparison,
   guarantee,
@@ -54,7 +54,7 @@ function SectionHeader({
 export function ProblemSolutionSection() {
   const { problems, solution } = problemSolution;
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={problemSolution.label}
@@ -103,7 +103,7 @@ export function ProblemSolutionSection() {
 
 export function BenefitsSection() {
   return (
-    <section className="bg-beige/50 py-20 sm:py-28">
+    <section className="bg-beige/50 py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={productBenefits.label}
@@ -131,7 +131,7 @@ export function BenefitsSection() {
 
 export function TransformationSection() {
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={transformation.label}
@@ -188,7 +188,7 @@ export function TransformationSection() {
 
 export function ComparisonSection() {
   return (
-    <section className="bg-beige/50 py-20 sm:py-28">
+    <section className="bg-beige/50 py-10 sm:py-12">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <SectionHeader
           label={comparison.label}
@@ -221,7 +221,7 @@ export function ComparisonSection() {
 
 export function ReviewsSection() {
   return (
-    <section id="reviews" className="py-20 sm:py-28">
+    <section id="reviews" className="py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={productReviews.label}
@@ -247,16 +247,8 @@ export function ReviewsSection() {
               <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80">
                 &ldquo;{review.text}&rdquo;
               </blockquote>
-              <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
-                <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-champagne/20">
-                  <Image
-                    src={normalizeReviewImage(review.name, review.image)}
-                    alt={review.name}
-                    fill
-                    className="object-cover"
-                    sizes="44px"
-                  />
-                </div>
+              <div className="flex items-center gap-3 border-t border-champagne/10 pt-3">
+                <ReviewAvatar name={review.name} image={review.image} size="sm" />
                 <div>
                   <p className="text-sm font-bold">{review.name}</p>
                   <p className="text-xs text-muted">{review.location}</p>
@@ -272,7 +264,7 @@ export function ReviewsSection() {
 
 export function HowToUseSection() {
   return (
-    <section className="bg-beige/50 py-20 sm:py-28">
+    <section className="bg-beige/50 py-10 sm:py-12">
       <div className="mx-auto max-w-4xl px-4 sm:px-6">
         <SectionHeader
           label={howToUse.label}
@@ -297,7 +289,7 @@ export function HowToUseSection() {
 
 export function IngredientsSection() {
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={productIngredients.label}
@@ -318,9 +310,21 @@ export function IngredientsSection() {
                   className="object-cover"
                   sizes="25vw"
                 />
+                {"icon" in item && item.icon ? (
+                  <span className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-lg shadow-sm">
+                    {item.icon as string}
+                  </span>
+                ) : null}
               </div>
-              <div className="p-5">
-                <h3 className="mb-1 font-bold text-foreground">{item.name}</h3>
+              <div className="p-4 sm:p-5">
+                <div className="mb-1 flex items-center gap-2">
+                  {"icon" in item && item.icon ? (
+                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-champagne/10 text-lg">
+                      {item.icon as string}
+                    </span>
+                  ) : null}
+                  <h3 className="font-bold text-foreground">{item.name}</h3>
+                </div>
                 <p className="text-xs text-muted">{item.benefit}</p>
               </div>
             </div>
@@ -335,7 +339,7 @@ export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="bg-beige/50 py-20 sm:py-28">
+    <section id="faq" className="bg-beige/50 py-10 sm:py-12">
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <SectionHeader label={productFaqs.label} title={productFaqs.title} />
         <div className="space-y-3">
@@ -381,7 +385,7 @@ export function FAQSection() {
 
 export function GuaranteeSection() {
   return (
-    <section className="py-20 sm:py-28">
+    <section className="py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label={guarantee.label}
@@ -411,7 +415,7 @@ export function GuaranteeSection() {
 
 export function RelatedProductsSection() {
   return (
-    <section className="border-t border-champagne/10 bg-beige/30 py-20 sm:py-28">
+    <section className="border-t border-champagne/10 bg-beige/30 py-10 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <SectionHeader
           label="YOU MAY ALSO LOVE"

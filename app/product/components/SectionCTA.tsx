@@ -14,8 +14,8 @@ export default function SectionCTA({
   footnote = "✓ الدفع عند الاستلام · ✓ شحن مجاني · ✓ تأكيد سريع",
 }: Props) {
   return (
-    <div className="mx-auto max-w-xl px-4 pb-4 pt-2 sm:px-6">
-      <div className="rounded-3xl border border-champagne/20 bg-gradient-to-l from-champagne/10 via-white to-beige/40 p-6 text-center luxury-shadow">
+    <div className="mx-auto max-w-xl px-4 pb-2 pt-1 sm:px-6">
+      <div className="rounded-3xl border border-champagne/20 bg-gradient-to-l from-champagne/10 via-white to-beige/40 p-5 text-center luxury-shadow sm:p-6">
         <p className="mb-3 text-sm text-muted">{subtitle}</p>
         <button
           type="button"

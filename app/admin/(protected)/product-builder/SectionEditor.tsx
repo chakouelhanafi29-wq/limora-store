@@ -739,7 +739,7 @@ function ReviewItemsEditor({
             className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
           />
           <ImageUploadField
-            label="صورة العميلة (Avatar)"
+            label="صورة العميلة (اختياري — بدون صورة يظهر Avatar بالحرف الأول)"
             value={item.image}
             slug={slug}
             onChange={(v) => {
@@ -748,6 +748,11 @@ function ReviewItemsEditor({
               onChange(next);
             }}
           />
+          {!item.image?.trim() && item.name.trim() ? (
+            <p className="text-[11px] text-muted">
+              معاينة: Avatar تلقائي بالحرف «{item.name.trim().charAt(0)}»
+            </p>
+          ) : null}
           <ImageUploadField
             label="صورة التحول (اختياري)"
             value={item.transformationImage ?? ""}
@@ -921,16 +926,26 @@ function IngredientEditor({
           <div className="flex justify-end">
             <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
           </div>
-          <input
-            value={item.icon ?? ""}
-            onChange={(e) => {
-              const next = [...items];
-              next[i] = { ...item, icon: e.target.value };
-              onChange(next);
-            }}
-            placeholder="أيقونة (emoji)"
-            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-          />
+          <label className="block">
+            <span className="mb-1 block text-xs text-muted">
+              Emoji / أيقونة (اختياري)
+            </span>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow-sm ring-1 ring-champagne/15">
+                {item.icon?.trim() || "✦"}
+              </span>
+              <input
+                value={item.icon ?? ""}
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...item, icon: e.target.value };
+                  onChange(next);
+                }}
+                placeholder="مثال: 🧬 💧 🌿 ✨"
+                className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+              />
+            </div>
+          </label>
           <input
             value={item.name}
             onChange={(e) => {
