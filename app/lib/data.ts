@@ -3,6 +3,7 @@ import {
   DETOX_CLEANSE_PRIMARY_IMAGE,
   HAIR_REVIVE_PRIMARY_IMAGE,
 } from "@/lib/product-images";
+import { HOME_TRANSFORMATION_IMAGES } from "@/lib/home-images";
 
 export const brand = {
   name: "LIMORA",
@@ -173,31 +174,44 @@ export const realResults = {
   label: "REAL TRANSFORMATIONS",
   title: "تحولٌ حقيقي… تستحقينه",
   subtitle:
-    "وراء كل إشراقة وكل خصلة شعر وكل توازن داخلي — امرأة اختارت LIMORA. هذا ما شاركنه.",
+    "وراء كل إشراقة امرأة اختارت نفسها. LIMORA لا تغيّر مظهركِ فقط — بل تُعيد إليكِ ثقتكِ.",
+  contentRevision: 2,
   transformations: [
     {
+      productName: "LIMORA Collagen Glow",
       title: "بشرة تتوهج",
+      emotionalLine: "إشراقة تبدأ من الداخل",
       description:
-        "Collagen Glow — إشراقة طبيعية ونعومة كالحرير. بشرة أكثر تماسكاً وشباباً من الداخل.",
-      image: COLLAGEN_GLOW_PRIMARY_IMAGE,
+        "إشراقة طبيعية ونعومة كالحرير — بشرة أكثر تماسكاً وشباباً من الداخل.",
+      image: HOME_TRANSFORMATION_IMAGES.collagenGlow,
       stat: "92%",
       statLabel: "لاحظن إشراقة خلال 14 يوم",
+      href: "/product/collagen-glow",
+      accent: "rose",
     },
     {
+      productName: "LIMORA Hair Revive",
       title: "شعرٌ أكثر حياة",
+      emotionalLine: "شعر أكثر قوة… وثقة تدوم",
       description:
-        "Hair Revive — كثافة، لمعان، وقوة من الجذور. شعر أقوى وأقل تساقطاً.",
-      image: HAIR_REVIVE_PRIMARY_IMAGE,
+        "كثافة، لمعان، وقوة من الجذور — شعر أقوى وأقل تساقطاً.",
+      image: HOME_TRANSFORMATION_IMAGES.hairRevive,
       stat: "88%",
       statLabel: "لاحظن فرقاً في الكثافة",
+      href: "/product/hair-revive",
+      accent: "gold",
     },
     {
+      productName: "LIMORA Detox Cleanse",
       title: "توازن داخلي",
+      emotionalLine: "توازن داخلي ينعكس على جمالك",
       description:
-        "Detox Cleanse — بطن أخف وتوازن يومي. تنظيف الجسم بلطف وتقليل الانتفاخ.",
-      image: DETOX_CLEANSE_PRIMARY_IMAGE,
+        "بطن أخف وتوازن يومي — تنظيف الجسم بلطف وتقليل الانتفاخ.",
+      image: HOME_TRANSFORMATION_IMAGES.detoxCleanse,
       stat: "21",
       statLabel: "يوماً لتحول ملموس",
+      href: "/product/detox-cleanse",
+      accent: "sage",
     },
   ],
 };

@@ -208,25 +208,92 @@ function renderSection(
         </section>
       );
     case "before_after": {
-      const items = (content.transformations as { title: string; description: string; image: string; stat: string; statLabel: string }[]) ?? [];
+      type TransformationCard = {
+        productName?: string;
+        title: string;
+        emotionalLine?: string;
+        description: string;
+        image: string;
+        stat: string;
+        statLabel: string;
+        href?: string;
+        accent?: "rose" | "gold" | "sage";
+      };
+
+      const accentStyles = {
+        rose: "from-rose-gold/20 via-champagne/10 to-transparent ring-rose-gold/15",
+        gold: "from-champagne/25 via-amber-100/10 to-transparent ring-champagne/20",
+        sage: "from-emerald-100/30 via-emerald-50/20 to-transparent ring-emerald-200/20",
+      } as const;
+
+      const items = (content.transformations as TransformationCard[]) ?? [];
+
       return (
         <section key={section.id} id="results" className={`bg-beige/50 ${pad}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
-            <div className="grid gap-8 lg:grid-cols-3">
-              {items.map((item) => (
-                <article key={item.title} className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg">
-                  <div className="relative aspect-[4/3]">
-                    <Image src={item.image} alt={item.title} fill className="object-cover" sizes="33vw" />
-                  </div>
-                  <div className="p-7">
-                    <p className="font-serif text-3xl font-semibold text-champagne">{item.stat}</p>
-                    <p className="text-xs text-muted">{item.statLabel}</p>
-                    <h3 className="mt-3 text-xl font-bold">{item.title}</h3>
-                    <p className="mt-2 text-sm text-muted">{item.description}</p>
-                  </div>
-                </article>
-              ))}
+            <SectionHeader
+              label={String(content.label ?? "")}
+              title={String(content.title ?? "")}
+              subtitle={String(content.subtitle ?? "")}
+            />
+            <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
+              {items.map((item) => {
+                const accent = item.accent ?? "gold";
+                const card = (
+                  <article
+                    className={`group relative overflow-hidden rounded-[1.75rem] bg-white ring-1 ring-champagne/10 luxury-shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-champagne/10 ${item.href ? "cursor-pointer" : ""}`}
+                  >
+                    <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[3/4]">
+                      <Image
+                        src={item.image}
+                        alt={item.productName ?? item.title}
+                        fill
+                        className="object-cover transition duration-700 group-hover:scale-[1.03]"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#2a201e]/55 via-[#2a201e]/10 to-transparent" />
+                      <div className="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1.5 backdrop-blur-sm">
+                        <p className="font-serif text-lg font-semibold text-champagne">
+                          {item.stat}
+                        </p>
+                        <p className="text-[10px] text-muted">{item.statLabel}</p>
+                      </div>
+                    </div>
+                    <div
+                      className={`relative border-t border-champagne/10 bg-gradient-to-b ${accentStyles[accent]} p-6 sm:p-7`}
+                    >
+                      <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-champagne">
+                        {item.productName ?? "LIMORA"}
+                      </p>
+                      <h3 className="mt-2 font-serif text-xl font-semibold text-foreground sm:text-2xl">
+                        {item.title}
+                      </h3>
+                      {item.emotionalLine ? (
+                        <p className="mt-3 font-serif text-base leading-relaxed text-champagne sm:text-lg">
+                          {item.emotionalLine}
+                        </p>
+                      ) : null}
+                      <p className="mt-3 text-sm leading-relaxed text-muted">
+                        {item.description}
+                      </p>
+                      {item.href ? (
+                        <span className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-foreground transition group-hover:text-champagne">
+                          اكتشفي المزيد
+                          <span aria-hidden="true">←</span>
+                        </span>
+                      ) : null}
+                    </div>
+                  </article>
+                );
+
+                return item.href ? (
+                  <Link key={item.title} href={item.href} className="block">
+                    {card}
+                  </Link>
+                ) : (
+                  <div key={item.title}>{card}</div>
+                );
+              })}
             </div>
           </div>
         </section>

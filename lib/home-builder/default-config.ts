@@ -14,6 +14,10 @@ import {
 } from "@/app/lib/data";
 import { COLLAGEN_GLOW_PRIMARY_IMAGE } from "@/lib/product-images";
 import type { HomePageConfig, HomeSection } from "./types";
+import {
+  homePageConfigNeedsManagedSync,
+  syncManagedHomeSections,
+} from "./sync-managed-sections";
 
 function createId() {
   return `home-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
@@ -154,14 +158,18 @@ export function mergeHomePageConfig(
   const defaults = getDefaultHomePageConfig(slug);
   if (!saved) return defaults;
 
-  return {
+  const merged: HomePageConfig = {
     slug,
     navbar: { ...defaults.navbar, ...saved.navbar },
     sections: saved.sections?.length ? saved.sections : defaults.sections,
     theme: { ...defaults.theme, ...saved.theme },
     mobile: { ...defaults.mobile, ...saved.mobile },
   };
+
+  return syncManagedHomeSections(merged, defaults);
 }
+
+export { homePageConfigNeedsManagedSync, syncManagedHomeSections };
 
 export function getOrderedHomeSections(
   config: HomePageConfig,

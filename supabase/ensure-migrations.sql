@@ -72,3 +72,6 @@ create policy "Admin manage home page configs" on home_page_configs
 
 -- Orders RLS + storefront checkout RPC (run supabase/orders-rls-migration.sql for full fix)
 -- See orders-rls-migration.sql
+
+-- Homepage transformation section auto-sync (run supabase/home-transformations-sync.sql)
+-- See home-transformations-sync.sql
