@@ -391,7 +391,7 @@ export default function ConfigurableHomePage({
     >
       {!sections.some((s) => s.type === "announcement_bar") && null}
       <ConfigurableNavbar navbar={config.navbar} />
-      <main style={{ transform: `scale(${config.mobile.spacingScale})`, transformOrigin: "top center" }}>
+      <main>
         {sections.map((section) =>
           renderSection(section, config.theme, products, testimonials),
         )}

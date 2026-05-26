@@ -25,11 +25,21 @@ export async function generateMetadata(): Promise<Metadata> {
   return buildRootMetadata(site);
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const site = await getSiteConfig();
+  const orgJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: site.name,
+    url: site.url,
+    description: site.seo.description,
+    areaServed: { "@type": "Country", name: "Saudi Arabia" },
+  };
+
   return (
     <html
       lang="ar"
@@ -37,6 +47,10 @@ export default function RootLayout({
       className={`${tajawal.variable} ${cormorant.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full bg-ivory text-foreground">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(orgJsonLd) }}
+        />
         {children}
         <Footer />
         <TrackingPixels />

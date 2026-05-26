@@ -9,6 +9,7 @@ import ConfigurableProductSections, {
   builderOffersToOffers,
   heroToStorefrontProduct,
 } from "./components/ConfigurableProductSections";
+import FinalCTASection from "./components/FinalCTASection";
 import OrderModal from "./components/OrderModal";
 import ProductGallery from "./components/ProductGallery";
 import ProductInfo from "./components/ProductInfo";
@@ -57,7 +58,6 @@ export default function ProductPageClient({
   );
   const [selectedOffer, setSelectedOffer] = useState<Offer>(defaultOffer);
   const [modalOpen, setModalOpen] = useState(false);
-  const [purchaseVisible, setPurchaseVisible] = useState(true);
 
   useEffect(() => {
     if (preview) return;
@@ -65,7 +65,7 @@ export default function ProductPageClient({
       product_name: product.orderName,
       product_slug: pageConfig.slug,
       value: defaultOffer.price,
-      page_path: "/product",
+      page_path: `/product/${pageConfig.slug}`,
     });
   }, [preview, product.orderName, pageConfig.slug, defaultOffer.price]);
 
@@ -78,7 +78,7 @@ export default function ProductPageClient({
         product_slug: pageConfig.slug,
         offer_label: getOfferDisplayLabel(offer, offerLabels[offer.id]),
         value: offer.price,
-        page_path: "/product",
+        page_path: `/product/${pageConfig.slug}`,
       });
     },
     [preview, product.orderName, pageConfig.slug, offerLabels],
@@ -94,15 +94,11 @@ export default function ProductPageClient({
           offerLabels[selectedOffer.id],
         ),
         value: selectedOffer.price,
-        page_path: "/product",
+        page_path: `/product/${pageConfig.slug}`,
       });
     }
     setModalOpen(true);
   }, [preview, product.orderName, pageConfig.slug, selectedOffer, offerLabels]);
-
-  const handlePurchaseVisibility = useCallback((visible: boolean) => {
-    setPurchaseVisible(visible);
-  }, []);
 
   const heroGradient =
     pageConfig.theme.heroGradient === "pink"
@@ -125,7 +121,7 @@ export default function ProductPageClient({
         enabled={pageConfig.stickyBar.enabled}
       />
 
-        {!preview && (
+      {!preview && (
         <header className="border-b border-rose-200/40 bg-[#fff9fb]/90 backdrop-blur-xl">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
             <a
@@ -144,17 +140,19 @@ export default function ProductPageClient({
         </header>
       )}
 
-      <main className={preview ? "" : "pb-24 md:pb-0"}>
+      <main className={preview ? "" : "pb-28 md:pb-0"}>
         <section className={heroGradient}>
-          <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-20">
+          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-16">
             <ProductGallery product={product} aspectClass={aspectClass} />
             <div>
-              <ProductInfo product={product} />
+              <ProductInfo
+                product={product}
+                codTrust={pageConfig.hero.codTrust}
+              />
               <PurchaseZone
                 selectedOffer={selectedOffer}
                 onSelectOffer={handleSelectOffer}
                 onOrder={openOrder}
-                onPurchaseVisibilityChange={handlePurchaseVisibility}
                 offers={offers}
                 ctaLabel={pageConfig.hero.ctaLabel}
                 codTrust={pageConfig.hero.codTrust}
@@ -165,7 +163,23 @@ export default function ProductPageClient({
           </div>
         </section>
 
-        <ConfigurableProductSections config={pageConfig} />
+        <ConfigurableProductSections
+          config={pageConfig}
+          onOrder={preview ? undefined : openOrder}
+          ctaLabel={pageConfig.hero.ctaLabel}
+          selectedPrice={selectedOffer.price}
+        />
+
+        {!preview && (
+          <FinalCTASection
+            productName={product.name}
+            urgency={product.urgency}
+            onOrder={openOrder}
+            ctaLabel={pageConfig.hero.ctaLabel}
+            price={selectedOffer.price}
+            codTrust={pageConfig.hero.codTrust}
+          />
+        )}
       </main>
 
       {!preview && (
@@ -173,18 +187,21 @@ export default function ProductPageClient({
           <StickyMobileCTA
             offer={selectedOffer}
             onOrder={openOrder}
-            visible={!purchaseVisible}
             ctaLabel={pageConfig.hero.ctaLabel}
+            codTrust={pageConfig.hero.codTrust}
           />
           <OrderModal
             open={modalOpen}
             onClose={() => setModalOpen(false)}
             offer={selectedOffer}
+            offers={offers}
+            onSelectOffer={handleSelectOffer}
             product={product}
             productId={productId}
             productSlug={pageConfig.slug}
             offerLabels={offerLabels}
             orderModal={pageConfig.orderModal}
+            codTrust={pageConfig.hero.codTrust}
           />
         </>
       )}

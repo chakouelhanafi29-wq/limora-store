@@ -22,6 +22,7 @@ type Props = {
     offer?: string;
     price?: string;
     orderId?: string;
+    slug?: string;
   }>;
 };
 
@@ -29,10 +30,11 @@ export default async function ThankYouPage({ searchParams }: Props) {
   const params = await searchParams;
 
   const order = {
-    product: params.product ?? "LIMORA Beauty Powder",
-    offer: params.offer ?? "عرض قطعتين",
-    price: Number(params.price) || 249,
+    product: params.product ?? "LIMORA",
+    offer: params.offer ?? "عرض قطعة واحدة",
+    price: Number(params.price) || 199,
     orderId: params.orderId,
+    slug: params.slug,
   };
 
   return (

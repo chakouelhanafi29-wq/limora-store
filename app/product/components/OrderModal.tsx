@@ -1,19 +1,27 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getOfferDisplayLabel } from "@/lib/storefront";
 import type { StorefrontProduct } from "@/lib/storefront";
 import {
   getAttributionForOrder,
   trackEvent,
 } from "@/lib/analytics/events";
+import {
+  formatSaudiPhoneDisplay,
+  isValidSaudiPhone,
+  normalizeSaudiPhone,
+} from "@/lib/validation/saudi-phone";
 import { saudiCities, type Offer } from "../../lib/product-data";
+import OfferSelection from "./OfferSelection";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   offer: Offer;
+  offers: Offer[];
+  onSelectOffer: (offer: Offer) => void;
   product: StorefrontProduct;
   productId?: string;
   productSlug?: string;
@@ -24,50 +32,82 @@ type Props = {
     submitLabel: string;
     trustLine: string;
   };
+  codTrust?: string[];
 };
 
 export default function OrderModal({
   open,
   onClose,
   offer,
+  offers,
+  onSelectOffer,
   product,
   productId,
   productSlug = "glow",
   offerLabels = {},
   orderModal,
+  codTrust = [],
 }: Props) {
   const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [city, setCity] = useState("");
+  const [district, setDistrict] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
 
   if (!open) return null;
 
   const offerLabel = getOfferDisplayLabel(offer, offerLabels[offer.id]);
 
+  const handlePhoneBlur = () => {
+    if (!phone.trim()) {
+      setPhoneError("");
+      return;
+    }
+    if (!isValidSaudiPhone(phone)) {
+      setPhoneError("أدخلي رقم جوال سعودي صحيح (05XXXXXXXX)");
+    } else {
+      setPhoneError("");
+      setPhone(formatSaudiPhoneDisplay(phone));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
     setError("");
 
-    try {
-      trackEvent("Lead", {
-        product_name: product.orderName,
-        product_slug: productSlug,
-        offer_label: offerLabel,
-        value: offer.price,
-        page_path: "/product",
-      });
+    const normalizedPhone = normalizeSaudiPhone(phone);
+    if (!normalizedPhone) {
+      setPhoneError("أدخلي رقم جوال سعودي صحيح (05XXXXXXXX)");
+      return;
+    }
 
+    if (name.trim().split(/\s+/).length < 2) {
+      setError("يرجى إدخال الاسم الكامل (الاسم الأول واسم العائلة)");
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
       const res = await fetch("/api/orders", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customer_name: name,
-          phone,
+          customer_name: name.trim(),
+          phone: normalizedPhone,
           city,
+          district: district.trim(),
           product_id: productId || null,
           product_name: product.orderName,
           product_slug: productSlug,
@@ -82,10 +122,19 @@ export default function OrderModal({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "فشل إرسال الطلب");
 
+      trackEvent("Lead", {
+        product_name: product.orderName,
+        product_slug: productSlug,
+        offer_label: offerLabel,
+        value: offer.price,
+        page_path: `/product/${productSlug}`,
+      });
+
       const params = new URLSearchParams({
         product: product.orderName,
         offer: offerLabel,
         price: String(offer.price),
+        slug: productSlug,
       });
       if (data.id) params.set("orderId", data.id);
 
@@ -101,7 +150,9 @@ export default function OrderModal({
     setName("");
     setPhone("");
     setCity("");
+    setDistrict("");
     setError("");
+    setPhoneError("");
     onClose();
   };
 
@@ -142,16 +193,16 @@ export default function OrderModal({
           </p>
         </div>
 
-        <div className="mb-6 rounded-2xl bg-beige/60 p-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-bold text-foreground">{product.name}</p>
-              <p className="text-sm text-muted">{offer.label}</p>
-            </div>
-            <p className="font-serif text-xl font-semibold text-foreground">
-              {offer.price} <span className="text-sm">ر.س</span>
-            </p>
-          </div>
+        <div className="mb-4 rounded-2xl border border-champagne/15 bg-beige/40 p-4">
+          <p className="mb-3 text-xs font-semibold text-champagne">
+            اختاري العرض
+          </p>
+          <OfferSelection
+            selected={offer}
+            onSelect={onSelectOffer}
+            offers={offers}
+            compact
+          />
         </div>
 
         {error && (
@@ -172,11 +223,15 @@ export default function OrderModal({
               id="order-name"
               type="text"
               required
+              minLength={3}
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="مثال: نورة العتيبي"
               className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
             />
+            <p className="mt-1 text-[11px] text-muted">
+              الاسم الكامل يساعدنا على تأكيد طلبكِ بسرعة
+            </p>
           </div>
 
           <div>
@@ -191,11 +246,28 @@ export default function OrderModal({
               type="tel"
               required
               dir="ltr"
+              inputMode="tel"
+              autoComplete="tel"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => {
+                setPhone(e.target.value);
+                setPhoneError("");
+              }}
+              onBlur={handlePhoneBlur}
               placeholder="05XXXXXXXX"
-              className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
+              className={`w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-2 ${
+                phoneError
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-100"
+                  : "border-champagne/20 focus:border-champagne focus:ring-champagne/20"
+              }`}
             />
+            {phoneError ? (
+              <p className="mt-1 text-xs text-red-600">{phoneError}</p>
+            ) : (
+              <p className="mt-1 text-[11px] text-muted">
+                سنتواصل معكِ على هذا الرقم لتأكيد الطلب
+              </p>
+            )}
           </div>
 
           <div>
@@ -221,6 +293,28 @@ export default function OrderModal({
             </select>
           </div>
 
+          <div>
+            <label
+              htmlFor="order-district"
+              className="mb-1.5 block text-sm font-medium text-foreground"
+            >
+              الحي / المنطقة
+            </label>
+            <input
+              id="order-district"
+              type="text"
+              required
+              minLength={2}
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              placeholder="مثال: حي النرجس، العليا، اليرموك..."
+              className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
+            />
+            <p className="mt-1 text-[11px] text-muted">
+              يساعد مندوب التوصيل على الوصول إليكِ بسرعة
+            </p>
+          </div>
+
           <button
             type="submit"
             disabled={submitting}
@@ -238,6 +332,19 @@ export default function OrderModal({
             {orderModal?.trustLine ??
               "✦ الدفع عند الاستلام · لا حاجة لبطاقة ائتمان"}
           </p>
+
+          {codTrust.length > 0 && (
+            <div className="flex flex-wrap justify-center gap-2 pt-1">
+              {codTrust.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full bg-beige/60 px-2.5 py-1 text-[10px] text-muted"
+                >
+                  ✓ {item}
+                </span>
+              ))}
+            </div>
+          )}
         </form>
       </div>
     </div>

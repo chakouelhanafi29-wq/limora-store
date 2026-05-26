@@ -37,8 +37,20 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-ivory/10 pt-8 text-center">
-          <p className="text-xs text-ivory/40">
+        <div className="mt-12 border-t border-ivory/10 pt-8">
+          <div className="mb-6 flex flex-wrap justify-center gap-3">
+            {["شحن مجاني", "الدفع عند الاستلام", "ضمان الجودة", "دعم العملاء"].map(
+              (item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-ivory/15 bg-ivory/5 px-3 py-1.5 text-[11px] text-ivory/70"
+                >
+                  ✓ {item}
+                </span>
+              ),
+            )}
+          </div>
+          <p className="text-center text-xs text-ivory/40">
             © 2026 {brand.name}. جميع الحقوق محفوظة.
           </p>
         </div>

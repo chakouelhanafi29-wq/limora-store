@@ -4,6 +4,10 @@ import {
   buildProductPageMetadata,
   loadProductPage,
 } from "@/lib/page-builder/load-product-page";
+import { resolvePrimaryProductImage } from "@/lib/product-images";
+import { getSiteConfig } from "@/lib/site/config";
+import { buildProductJsonLd, jsonLdScript } from "@/lib/seo/structured-data";
+import { productPagePath } from "@/lib/seo/metadata";
 import ProductPageClient from "../ProductPageClient";
 
 export const dynamic = "force-dynamic";
@@ -19,17 +23,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductSlugPage({ params }: Props) {
   const { slug } = await params;
-  const { pageConfig, dbProduct, galleryImages } = await loadProductPage(slug);
+  const [site, { pageConfig, dbProduct, galleryImages }] = await Promise.all([
+    getSiteConfig(),
+    loadProductPage(slug),
+  ]);
 
   if (!dbProduct && slug !== "glow") {
     notFound();
   }
 
+  const productUrl = `${site.url}${productPagePath(slug)}`;
+  const primaryImage = resolvePrimaryProductImage(
+    dbProduct?.product_images,
+    pageConfig.hero.images[0],
+  );
+  const jsonLd = buildProductJsonLd(pageConfig, {
+    url: productUrl,
+    image: primaryImage,
+  });
+
   return (
-    <ProductPageClient
-      pageConfig={pageConfig}
-      productId={dbProduct?.id}
-      galleryImages={galleryImages}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={jsonLdScript(jsonLd)}
+      />
+      <ProductPageClient
+        pageConfig={pageConfig}
+        productId={dbProduct?.id}
+        galleryImages={galleryImages}
+      />
+    </>
   );
 }

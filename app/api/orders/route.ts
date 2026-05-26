@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import { isValidSaudiPhone, normalizeSaudiPhone } from "@/lib/validation/saudi-phone";
 
 export async function POST(request: Request) {
   try {
@@ -8,6 +9,7 @@ export async function POST(request: Request) {
       customer_name,
       phone,
       city,
+      district,
       product_id,
       product_name,
       product_slug,
@@ -35,6 +37,18 @@ export async function POST(request: Request) {
       );
     }
 
+    if (!isValidSaudiPhone(phone)) {
+      return NextResponse.json(
+        { error: "رقم الجوال غير صحيح — استخدمي 05XXXXXXXX" },
+        { status: 400 },
+      );
+    }
+
+    const normalizedPhone = normalizeSaudiPhone(phone)!;
+    const notes = district?.trim()
+      ? `الحي: ${district.trim()}`
+      : null;
+
     if (!isSupabaseConfigured()) {
       return NextResponse.json({
         success: true,
@@ -48,8 +62,9 @@ export async function POST(request: Request) {
       .from("orders")
       .insert({
         customer_name,
-        phone,
+        phone: normalizedPhone,
         city,
+        notes,
         product_id: product_id || null,
         product_name,
         product_slug: product_slug || null,

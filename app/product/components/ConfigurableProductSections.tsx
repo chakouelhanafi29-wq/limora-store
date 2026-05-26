@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import type { PageSection, ProductPageConfig, ProductPageTheme } from "@/lib/page-builder/types";
 import { getOrderedSections } from "@/lib/page-builder/default-config";
+import SectionCTA from "./SectionCTA";
 
 function spacingClass(theme: ProductPageTheme) {
   if (theme.sectionSpacing === "compact") return "py-12 sm:py-16";
@@ -44,7 +45,28 @@ function SectionHeader({
   );
 }
 
-function renderSection(section: PageSection, theme: ProductPageTheme) {
+function ReviewStars({ rating }: { rating: number }) {
+  const full = Math.round(rating);
+  return (
+    <div className="mb-3 flex gap-0.5 text-champagne">
+      {Array.from({ length: 5 }).map((_, i) => (
+        <svg
+          key={i}
+          className={`h-3.5 w-3.5 ${i < full ? "fill-current" : "fill-champagne/20"}`}
+          viewBox="0 0 20 20"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+        </svg>
+      ))}
+    </div>
+  );
+}
+
+function renderSection(
+  section: PageSection,
+  theme: ProductPageTheme,
+  cta?: { onOrder: () => void; ctaLabel: string; price: number },
+) {
   const pad = spacingClass(theme);
   const bg =
     theme.sectionBackground === "beige"
@@ -130,9 +152,15 @@ function renderSection(section: PageSection, theme: ProductPageTheme) {
                 <div key={item.quote} className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg">
                   <div className="grid grid-cols-2">
                     <div className="relative aspect-[3/4]">
+                      <span className="absolute right-2 top-2 z-10 rounded-full bg-foreground/70 px-2 py-0.5 text-[10px] font-bold text-ivory">
+                        قبل
+                      </span>
                       <Image src={item.before} alt="قبل" fill className="object-cover grayscale-[25%]" sizes="50vw" />
                     </div>
                     <div className="relative aspect-[3/4]">
+                      <span className="absolute right-2 top-2 z-10 rounded-full bg-champagne px-2 py-0.5 text-[10px] font-bold text-white">
+                        بعد
+                      </span>
                       <Image src={item.after} alt="بعد" fill className="object-cover" sizes="50vw" />
                     </div>
                   </div>
@@ -174,27 +202,38 @@ function renderSection(section: PageSection, theme: ProductPageTheme) {
     case "reviews": {
       const items = (content.items as { name: string; location: string; rating: number; text: string; image: string }[]) ?? [];
       return (
-        <section key={section.id} id="reviews" className={pad}>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} />
-            <div className="grid gap-6 sm:grid-cols-2">
-              {items.map((review) => (
-                <article key={review.name} className="rounded-3xl bg-white p-7 luxury-shadow">
-                  <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80">&ldquo;{review.text}&rdquo;</blockquote>
-                  <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
-                    <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-champagne/20">
-                      <Image src={review.image} alt={review.name} fill className="object-cover" sizes="44px" />
+        <div key={section.id}>
+          <section id="reviews" className={pad}>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} />
+              <div className="grid gap-6 sm:grid-cols-2">
+                {items.map((review) => (
+                  <article key={`${review.name}-${review.text.slice(0, 20)}`} className="rounded-3xl bg-white p-7 luxury-shadow">
+                    <ReviewStars rating={review.rating} />
+                    <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80">&ldquo;{review.text}&rdquo;</blockquote>
+                    <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
+                      <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-champagne/20">
+                        <Image src={review.image} alt={review.name} fill className="object-cover" sizes="44px" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold">{review.name}</p>
+                        <p className="text-xs text-muted">{review.location}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="text-sm font-bold">{review.name}</p>
-                      <p className="text-xs text-muted">{review.location}</p>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+          {cta && (
+            <SectionCTA
+              onOrder={cta.onOrder}
+              ctaLabel={cta.ctaLabel}
+              price={cta.price}
+              subtitle="انضمي لآلاف العميلات السعوديات — اطلبي الآن بالدفع عند الاستلام"
+            />
+          )}
+        </div>
       );
     }
     case "how_to_use": {
@@ -246,20 +285,30 @@ function renderSection(section: PageSection, theme: ProductPageTheme) {
     case "guarantee": {
       const points = (content.points as { icon: string; title: string; description: string }[]) ?? [];
       return (
-        <section key={section.id} className={pad}>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {points.map((point) => (
-                <div key={point.title} className="rounded-3xl border border-champagne/15 bg-white p-6 text-center luxury-shadow">
-                  <span className="mb-3 block text-2xl text-champagne">{point.icon}</span>
-                  <h3 className="mb-2 text-sm font-bold">{point.title}</h3>
-                  <p className="text-xs text-muted">{point.description}</p>
-                </div>
-              ))}
+        <div key={section.id}>
+          <section className={pad}>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {points.map((point) => (
+                  <div key={point.title} className="rounded-3xl border border-champagne/15 bg-white p-6 text-center luxury-shadow">
+                    <span className="mb-3 block text-2xl text-champagne">{point.icon}</span>
+                    <h3 className="mb-2 text-sm font-bold">{point.title}</h3>
+                    <p className="text-xs text-muted">{point.description}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+          {cta && (
+            <SectionCTA
+              onOrder={cta.onOrder}
+              ctaLabel={cta.ctaLabel}
+              price={cta.price}
+              subtitle="ضمان LIMORA — اطلبي بثقة والدفع عند الاستلام"
+            />
+          )}
+        </div>
       );
     }
     case "related_products": {
@@ -329,9 +378,15 @@ function FAQBlock({
 
 export default function ConfigurableProductSections({
   config,
+  onOrder,
+  ctaLabel = "أطلب الآن الدفع عند الاستلام",
+  selectedPrice = 0,
 }: {
   config: ProductPageConfig;
   preview?: boolean;
+  onOrder?: () => void;
+  ctaLabel?: string;
+  selectedPrice?: number;
 }) {
   const [isMobile, setIsMobile] = useState(false);
 
@@ -344,6 +399,10 @@ export default function ConfigurableProductSections({
   }, []);
 
   const sections = getOrderedSections(config, isMobile);
+  const cta =
+    onOrder && selectedPrice > 0
+      ? { onOrder, ctaLabel, price: selectedPrice }
+      : undefined;
 
   return (
     <div
@@ -355,7 +414,7 @@ export default function ConfigurableProductSections({
           : {}),
       }}
     >
-      {sections.map((section) => renderSection(section, config.theme))}
+      {sections.map((section) => renderSection(section, config.theme, cta))}
     </div>
   );
 }

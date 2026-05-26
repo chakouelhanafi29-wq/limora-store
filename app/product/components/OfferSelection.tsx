@@ -6,19 +6,24 @@ type Props = {
   selected: Offer;
   onSelect: (offer: Offer) => void;
   offers: Offer[];
+  compact?: boolean;
 };
 
-export default function OfferSelection({ selected, onSelect, offers }: Props) {
+export default function OfferSelection({ selected, onSelect, offers, compact }: Props) {
   const basePrice = offers[0]?.price ?? 199;
 
   return (
-    <section className="mt-10">
-      <h2 className="mb-2 font-serif text-2xl font-semibold text-foreground">
-        اختاري عرضكِ
-      </h2>
-      <p className="mb-6 text-sm text-muted">
-        كلما زادت الكمية — زاد التوفير
-      </p>
+    <section className={compact ? "" : "mt-10"}>
+      {!compact && (
+        <>
+          <h2 className="mb-2 font-serif text-2xl font-semibold text-foreground">
+            اختاري عرضكِ
+          </h2>
+          <p className="mb-6 text-sm text-muted">
+            كلما زادت الكمية — زاد التوفير
+          </p>
+        </>
+      )}
 
       <div className="space-y-4">
         {offers.map((offer) => {
