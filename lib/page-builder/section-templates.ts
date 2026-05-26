@@ -10,6 +10,7 @@ import {
   productIngredients,
   productReviews,
   relatedProducts,
+  resultsTimeline,
   transformation,
 } from "@/app/lib/product-data";
 import { createDefaultFinalCta } from "@/lib/page-builder/default-final-cta";
@@ -54,7 +55,7 @@ export function buildStaticTemplateConfig(slug: string): ProductPageConfig {
       id: createSectionId(),
       type: "ingredients",
       enabled: true,
-      order: 4,
+      order: 5,
       content: structuredClone(productIngredients),
     },
     {
@@ -68,7 +69,7 @@ export function buildStaticTemplateConfig(slug: string): ProductPageConfig {
       id: createSectionId(),
       type: "guarantee",
       enabled: true,
-      order: 6,
+      order: 7,
       content: structuredClone(guarantee),
     },
     {
@@ -82,14 +83,14 @@ export function buildStaticTemplateConfig(slug: string): ProductPageConfig {
       id: createSectionId(),
       type: "faq",
       enabled: true,
-      order: 8,
+      order: 9,
       content: structuredClone(productFaqs),
     },
     {
       id: createSectionId(),
       type: "related_products",
       enabled: false,
-      order: 9,
+      order: 10,
       content: {
         label: "YOU MAY ALSO LOVE",
         title: "منتجات قد تعجبكِ",
@@ -213,12 +214,17 @@ export function genericSectionScaffolds(
       },
     },
     {
+      type: "results_timeline",
+      enabled: true,
+      content: structuredClone(resultsTimeline),
+    },
+    {
       type: "comparison",
       enabled: true,
       content: {
         label: "WHY LIMORA",
-        title: `لماذا ${name}؟`,
-        subtitle: "الفرق واضح — في كل تفصيل.",
+        title: `LIMORA vs المنتجات العادية الأخرى`,
+        subtitle: "معايير أعلى… بثقة أنثوية هادئة.",
         rows: [
           { feature: "تركيبة فاخرة", limora: true, others: false },
           { feature: "جودة عالية", limora: true, others: false },

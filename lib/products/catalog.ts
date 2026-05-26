@@ -100,8 +100,8 @@ const hairSections = (sections: PageSection[]) =>
       "comparison",
       {
         label: "WHY LIMORA",
-        title: "لماذا LIMORA Hair Revive؟",
-        subtitle: "تركيبة نمو وتقوية… مصممة للمرأة التي تستحق الأفضل.",
+        title: "LIMORA vs المنتجات العادية الأخرى",
+        subtitle: "تركيبة نمو وتقوية… بمعايير أعلى وبثقة هادئة.",
         rows: [
           { feature: "كولاجين + بيوتين + كيراتين", limora: true, others: false },
           { feature: "زنك + سيليكا + فيتامين E", limora: true, others: false },
@@ -223,8 +223,8 @@ const detoxSections = (sections: PageSection[]) =>
       "comparison",
       {
         label: "WHY LIMORA",
-        title: "لماذا LIMORA Detox Cleanse؟",
-        subtitle: "تركيبة تنظيف وتوازن… مصممة للعناية اليومية.",
+        title: "LIMORA vs المنتجات العادية الأخرى",
+        subtitle: "تركيبة تنظيف وتوازن… بمعايير أعلى وبثقة أنثوية.",
         rows: [
           { feature: "خليط أخضر + بريبيوتيك", limora: true, others: false },
           { feature: "ألياف + إنزيمات + فيتامينات", limora: true, others: false },

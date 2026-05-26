@@ -295,6 +295,82 @@ function renderSection(
         </section>
       );
     }
+    case "results_timeline": {
+      const weeks =
+        (content.weeks as {
+          title: string;
+          description: string;
+          progress?: number;
+          image?: string;
+        }[]) ?? [];
+
+      return (
+        <section
+          key={section.id}
+          className={`${pad} bg-gradient-to-b from-rose-50/40 via-ivory to-beige/30`}
+        >
+          <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+            <SectionHeader
+              label={String(content.label ?? "")}
+              title={String(content.title ?? "متى تظهر النتائج؟")}
+              subtitle={String(content.subtitle ?? "")}
+            />
+            <div className="relative space-y-6">
+              <div className="absolute right-[1.125rem] top-2 bottom-2 w-px bg-gradient-to-b from-champagne/10 via-champagne/40 to-champagne/10 sm:right-8" />
+              {weeks.map((week, index) => {
+                const progress =
+                  typeof week.progress === "number"
+                    ? week.progress
+                    : Math.min(100, (index + 1) * 25);
+
+                return (
+                  <div key={`${week.title}-${index}`} className="relative pr-12 sm:pr-16">
+                    <div className="absolute right-3 top-8 z-10 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-champagne shadow-[0_0_16px_rgba(212,137,154,0.55)] sm:right-6 sm:h-6 sm:w-6">
+                      <span className="h-2 w-2 rounded-full bg-white" />
+                    </div>
+                    <article className="overflow-hidden rounded-[1.75rem] border border-champagne/10 bg-white/90 luxury-shadow backdrop-blur-sm transition hover:-translate-y-0.5 hover:shadow-xl">
+                      <div className="grid gap-0 md:grid-cols-[220px_1fr]">
+                        {week.image ? (
+                          <div className="relative aspect-[4/3] md:aspect-auto md:min-h-[180px]">
+                            <Image
+                              src={week.image}
+                              alt={week.title}
+                              fill
+                              className="object-cover"
+                              sizes="220px"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-foreground/25 to-transparent md:bg-gradient-to-l" />
+                          </div>
+                        ) : null}
+                        <div className="p-5 sm:p-6">
+                          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                            <h3 className="font-serif text-xl font-semibold text-foreground sm:text-2xl">
+                              {week.title}
+                            </h3>
+                            <span className="rounded-full bg-champagne/10 px-3 py-1 text-xs font-bold text-champagne">
+                              {progress}%
+                            </span>
+                          </div>
+                          <p className="mb-4 text-sm leading-relaxed text-muted sm:text-base">
+                            {week.description}
+                          </p>
+                          <div className="h-2 overflow-hidden rounded-full bg-beige/80">
+                            <div
+                              className="h-full rounded-full bg-gradient-to-l from-champagne via-rose-gold to-champagne shadow-[0_0_14px_rgba(212,137,154,0.45)] transition-all duration-700"
+                              style={{ width: `${progress}%` }}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </article>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      );
+    }
     case "comparison": {
       const rows = (content.rows as { feature: string; limora: boolean; others: boolean }[]) ?? [];
       return (
@@ -302,10 +378,10 @@ function renderSection(
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
             <div className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg">
-              <div className="grid grid-cols-3 border-b border-champagne/10 bg-beige/50 p-4 text-center text-sm font-bold">
+              <div className="grid grid-cols-3 border-b border-champagne/10 bg-beige/50 p-4 text-center text-xs font-bold sm:text-sm">
                 <div className="text-muted">الميزة</div>
                 <div className="text-champagne">LIMORA</div>
-                <div className="text-muted">أخرى</div>
+                <div className="leading-snug text-muted">المنتجات العادية الأخرى</div>
               </div>
               {rows.map((row) => (
                 <div key={row.feature} className="grid grid-cols-3 border-b border-champagne/5 p-4 text-center text-sm last:border-0">

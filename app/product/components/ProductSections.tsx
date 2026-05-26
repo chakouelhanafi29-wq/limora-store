@@ -199,7 +199,7 @@ export function ComparisonSection() {
           <div className="grid grid-cols-3 border-b border-champagne/10 bg-beige/50 p-4 text-center text-sm font-bold">
             <div className="text-muted">الميزة</div>
             <div className="text-champagne">LIMORA</div>
-            <div className="text-muted">أخرى</div>
+            <div className="leading-snug text-muted">المنتجات العادية الأخرى</div>
           </div>
           {comparison.rows.map((row) => (
             <div

@@ -328,6 +328,21 @@ export default function SectionEditor({ section, slug, onChange }: Props) {
         </>
       )}
 
+      {section.type === "results_timeline" && (
+        <ResultsTimelineEditor
+          slug={slug}
+          weeks={
+            (content.weeks as {
+              title: string;
+              description: string;
+              progress?: number;
+              image?: string;
+            }[]) ?? []
+          }
+          onChange={(weeks) => updateContent("weeks", weeks)}
+        />
+      )}
+
       {section.type === "comparison" && (
         <ComparisonEditor
           rows={
@@ -956,6 +971,131 @@ function IngredientEditor({
   );
 }
 
+function ResultsTimelineEditor({
+  slug,
+  weeks,
+  onChange,
+}: {
+  slug: string;
+  weeks: {
+    title: string;
+    description: string;
+    progress?: number;
+    image?: string;
+  }[];
+  onChange: (
+    weeks: {
+      title: string;
+      description: string;
+      progress?: number;
+      image?: string;
+    }[],
+  ) => void;
+}) {
+  const moveWeek = (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= weeks.length) return;
+    const next = [...weeks];
+    [next[index], next[target]] = [next[target], next[index]];
+    onChange(next);
+  };
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">خط زمني للنتائج</p>
+      {weeks.map((week, i) => (
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-xs font-medium text-champagne">الأسبوع {i + 1}</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={i === 0}
+                onClick={() => moveWeek(i, -1)}
+                className="text-xs text-champagne disabled:opacity-30"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                disabled={i === weeks.length - 1}
+                onClick={() => moveWeek(i, 1)}
+                className="text-xs text-champagne disabled:opacity-30"
+              >
+                ↓
+              </button>
+              <RemoveButton onClick={() => onChange(weeks.filter((_, idx) => idx !== i))} />
+            </div>
+          </div>
+          <input
+            value={week.title}
+            onChange={(e) => {
+              const next = [...weeks];
+              next[i] = { ...week, title: e.target.value };
+              onChange(next);
+            }}
+            placeholder="عنوان الأسبوع"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <textarea
+            value={week.description}
+            onChange={(e) => {
+              const next = [...weeks];
+              next[i] = { ...week, description: e.target.value };
+              onChange(next);
+            }}
+            placeholder="وصف النتيجة"
+            rows={2}
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <label className="block">
+            <span className="mb-1 block text-xs text-muted">
+              نسبة التقدم ({week.progress ?? 0}%)
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={5}
+              value={week.progress ?? 0}
+              onChange={(e) => {
+                const next = [...weeks];
+                next[i] = { ...week, progress: Number(e.target.value) };
+                onChange(next);
+              }}
+              className="w-full"
+            />
+          </label>
+          <ImageUploadField
+            label="صورة الأسبوع (اختياري)"
+            value={week.image ?? ""}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...weeks];
+              next[i] = { ...week, image: v };
+              onChange(next);
+            }}
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="أسبوع"
+        onAdd={() =>
+          onChange([
+            ...weeks,
+            {
+              title: `الأسبوع ${weeks.length + 1}`,
+              description: "",
+              progress: Math.min(100, (weeks.length + 1) * 25),
+              image: "",
+            },
+          ])
+        }
+      />
+    </div>
+  );
+}
+
 function RelatedProductsEditor({
   slug,
   items,
@@ -1082,7 +1222,7 @@ function ComparisonEditor({
                 onChange(next);
               }}
             />
-            المنافسون ✓
+            المنتجات العادية الأخرى ✓
           </label>
         </div>
       ))}
@@ -1110,7 +1250,20 @@ const BLANK_SECTION_CONTENT: Record<SectionType, Record<string, unknown>> = {
     subtitle: "",
     beforeAfter: [],
   },
-  comparison: { label: "WHY US", title: "المقارنة", subtitle: "", rows: [] },
+  results_timeline: {
+    label: "YOUR TRANSFORMATION",
+    title: "متى تظهر النتائج؟",
+    subtitle: "تحولٌ تدريجي… حقيقي… تُلاحظينه أسبوعاً بعد أسبوع.",
+    weeks: [
+      {
+        title: "الأسبوع الأول",
+        description: "بداية الشعور بالترطيب والنضارة",
+        progress: 25,
+        image: "",
+      },
+    ],
+  },
+  comparison: { label: "WHY US", title: "LIMORA vs المنتجات العادية الأخرى", subtitle: "", rows: [] },
   reviews: { label: "REVIEWS", title: "التقييمات", items: [], ctaSubtitle: "" },
   how_to_use: { label: "HOW TO", title: "طريقة الاستخدام", subtitle: "", steps: [] },
   ingredients: { label: "FORMULA", title: "المكونات", subtitle: "", items: [] },

@@ -234,10 +234,42 @@ export const transformation = {
   ],
 };
 
+export const resultsTimeline = {
+  label: "YOUR TRANSFORMATION",
+  title: "متى تظهر النتائج؟",
+  subtitle: "تحولٌ تدريجي… حقيقي… تُلاحظينه أسبوعاً بعد أسبوع.",
+  weeks: [
+    {
+      title: "الأسبوع الأول",
+      description: "بداية الشعور بالترطيب والنضارة",
+      progress: 25,
+      image: "",
+    },
+    {
+      title: "الأسبوع الثاني",
+      description: "تحسن واضح في مرونة البشرة",
+      progress: 50,
+      image: "",
+    },
+    {
+      title: "الأسبوع الثالث",
+      description: "إشراقة أقوى وملمس أكثر نعومة",
+      progress: 75,
+      image: "",
+    },
+    {
+      title: "الأسبوع الرابع",
+      description: "تحول ملموس… ثقة تُحسّ من الداخل",
+      progress: 100,
+      image: "",
+    },
+  ],
+};
+
 export const comparison = {
   label: "WHY LIMORA",
-  title: "لماذا LIMORA Collagen Glow؟",
-  subtitle: "تركيبة فاخرة… مصممة للمرأة التي تستحق الأفضل.",
+  title: "LIMORA vs المنتجات العادية الأخرى",
+  subtitle: "تركيبة فاخرة… بمعايير أعلى… بثقة أنثوية هادئة.",
   rows: [
     { feature: "تركيبة بحرية فاخرة", limora: true, others: false },
     { feature: "كولاجين عالي الجودة", limora: true, others: false },

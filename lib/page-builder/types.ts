@@ -2,6 +2,7 @@ export type SectionType =
   | "problem_solution"
   | "benefits"
   | "transformation"
+  | "results_timeline"
   | "comparison"
   | "reviews"
   | "how_to_use"
@@ -104,6 +105,7 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   problem_solution: "المشكلة والحل",
   benefits: "الفوائد",
   transformation: "قبل / بعد",
+  results_timeline: "متى تظهر النتائج؟",
   comparison: "المقارنة",
   reviews: "التقييمات",
   how_to_use: "طريقة الاستخدام",
