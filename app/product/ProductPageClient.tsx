@@ -58,6 +58,11 @@ export default function ProductPageClient({
   );
   const [selectedOffer, setSelectedOffer] = useState<Offer>(defaultOffer);
   const [modalOpen, setModalOpen] = useState(false);
+  const [showStickyCta, setShowStickyCta] = useState(false);
+
+  const handleStickyVisibilityChange = useCallback((show: boolean) => {
+    setShowStickyCta(show);
+  }, []);
 
   useEffect(() => {
     if (preview) return;
@@ -140,7 +145,15 @@ export default function ProductPageClient({
         </header>
       )}
 
-      <main className={preview ? "" : "pb-28 md:pb-0"}>
+      <main
+        className={
+          preview
+            ? ""
+            : showStickyCta
+              ? "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-0"
+              : "pb-6 md:pb-0"
+        }
+      >
         <section className={heroGradient}>
           <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-16">
             <ProductGallery product={product} aspectClass={aspectClass} />
@@ -153,6 +166,9 @@ export default function ProductPageClient({
                 selectedOffer={selectedOffer}
                 onSelectOffer={handleSelectOffer}
                 onOrder={openOrder}
+                onStickyVisibilityChange={
+                  preview ? undefined : handleStickyVisibilityChange
+                }
                 offers={offers}
                 ctaLabel={pageConfig.hero.ctaLabel}
                 codTrust={pageConfig.hero.codTrust}
@@ -188,6 +204,7 @@ export default function ProductPageClient({
             offer={selectedOffer}
             onOrder={openOrder}
             ctaLabel={pageConfig.hero.ctaLabel}
+            visible={showStickyCta}
             codTrust={pageConfig.hero.codTrust}
           />
           <OrderModal
