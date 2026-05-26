@@ -1,4 +1,5 @@
 import type { StorefrontProduct } from "@/lib/storefront";
+import { HeroTrustBadge } from "./TrustBadgeItem";
 
 type Props = {
   product: StorefrontProduct;
@@ -37,13 +38,7 @@ function TrustBadges({ items }: { items: string[] }) {
   return (
     <div className="mb-6 flex flex-wrap gap-2">
       {items.map((item) => (
-        <span
-          key={item}
-          className="inline-flex items-center gap-1.5 rounded-full border border-champagne/20 bg-white/70 px-3 py-1.5 text-[11px] font-medium text-foreground/85 backdrop-blur-sm"
-        >
-          <span className="text-champagne">✓</span>
-          {item}
-        </span>
+        <HeroTrustBadge key={item} label={item} />
       ))}
     </div>
   );

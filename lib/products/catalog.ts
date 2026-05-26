@@ -291,7 +291,7 @@ const hairReviveConfig = (): ProductPageConfig => {
       ],
       urgency: "✨ الأكثر طلباً — عرض قطعتين بـ 349 ر.س + شحن مجاني",
       images: [HAIR_REVIVE_PRIMARY_IMAGE],
-      codTrust: ["شحن مجاني", "دفع عند الاستلام", "ضمان الجودة", "دعم العملاء"],
+      codTrust: ["شحن سريع", "دفع عند الاستلام", "ضمان الجودة", "حلال"],
       ctaLabel: "أطلب الآن الدفع عند الاستلام",
     },
     offers: [
@@ -365,7 +365,7 @@ const detoxCleanseConfig = (): ProductPageConfig => {
       ],
       urgency: "✨ عرض قطعتين بـ 329 ر.س — شحن مجاني + COD",
       images: [DETOX_CLEANSE_PRIMARY_IMAGE],
-      codTrust: ["شحن مجاني", "دفع عند الاستلام", "ضمان الجودة", "دعم العملاء"],
+      codTrust: ["شحن سريع", "دفع عند الاستلام", "ضمان الجودة", "حلال"],
       ctaLabel: "أطلب الآن الدفع عند الاستلام",
     },
     offers: [

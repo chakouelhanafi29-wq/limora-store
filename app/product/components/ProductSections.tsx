@@ -1,6 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import {
+  resolveTransformationCaption,
+  resolveTransformationImage,
+  resolveTransformationResult,
+  resolveTransformationTitle,
+} from "@/lib/page-builder/transformation-content";
 import Link from "next/link";
 import { useState } from "react";
 import ReviewAvatar from "./ReviewAvatar";
@@ -138,48 +144,49 @@ export function TransformationSection() {
           title={transformation.title}
           subtitle={transformation.subtitle}
         />
-        <div className="grid gap-10 lg:grid-cols-2">
-          {transformation.beforeAfter.map((item) => (
-            <div
-              key={item.quote}
-              className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg"
-            >
-              <div className="grid grid-cols-2">
-                <div className="relative aspect-[3/4]">
-                  <Image
-                    src={item.before}
-                    alt="قبل"
-                    fill
-                    className="object-cover grayscale-[25%]"
-                    sizes="50vw"
-                  />
-                  <span className="absolute top-3 right-3 rounded-full bg-foreground/80 px-2.5 py-1 text-xs font-bold text-ivory">
-                    قبل
-                  </span>
+        <div className="grid gap-5 lg:grid-cols-2">
+          {transformation.beforeAfter.map((item, index) => {
+            const image = resolveTransformationImage(item);
+            const title = resolveTransformationTitle(item);
+            const caption = resolveTransformationCaption(item);
+            const resultText = resolveTransformationResult(item);
+
+            return (
+              <div
+                key={`${title || caption || index}`}
+                className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg"
+              >
+                <div className="relative aspect-[16/10] overflow-hidden sm:aspect-[5/3]">
+                  {image ? (
+                    <Image
+                      src={image}
+                      alt={title || caption || "تحول قبل / بعد"}
+                      fill
+                      className="object-cover"
+                      sizes="50vw"
+                    />
+                  ) : null}
                 </div>
-                <div className="relative aspect-[3/4]">
-                  <Image
-                    src={item.after}
-                    alt="بعد"
-                    fill
-                    className="object-cover"
-                    sizes="50vw"
-                  />
-                  <span className="absolute top-3 right-3 rounded-full bg-champagne px-2.5 py-1 text-xs font-bold text-white">
-                    بعد
-                  </span>
-                </div>
+                {(title || caption || resultText) && (
+                  <div className="p-5 text-center sm:p-6">
+                    {title ? (
+                      <h3 className="mb-2 font-serif text-lg font-semibold">{title}</h3>
+                    ) : null}
+                    {caption ? (
+                      <p className="text-sm italic leading-relaxed text-foreground/85">
+                        &ldquo;{caption}&rdquo;
+                      </p>
+                    ) : null}
+                    {resultText ? (
+                      <p className="mt-2 text-xs font-medium text-champagne sm:text-sm">
+                        {resultText}
+                      </p>
+                    ) : null}
+                  </div>
+                )}
               </div>
-              <div className="p-6 text-center">
-                <p className="mb-1 text-sm font-bold text-champagne">
-                  {item.days}
-                </p>
-                <p className="text-sm italic text-foreground/80">
-                  &ldquo;{item.quote}&rdquo;
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -311,7 +318,7 @@ export function IngredientsSection() {
                   sizes="25vw"
                 />
                 {"icon" in item && item.icon ? (
-                  <span className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-lg shadow-sm">
+                  <span className="absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-sm shadow-sm">
                     {item.icon as string}
                   </span>
                 ) : null}
@@ -319,7 +326,7 @@ export function IngredientsSection() {
               <div className="p-4 sm:p-5">
                 <div className="mb-1 flex items-center gap-2">
                   {"icon" in item && item.icon ? (
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-champagne/10 text-lg">
+                    <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-champagne/8 text-[13px] leading-none">
                       {item.icon as string}
                     </span>
                   ) : null}

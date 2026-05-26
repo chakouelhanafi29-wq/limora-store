@@ -27,7 +27,7 @@ export const product = {
   ],
   urgency: "✨ العرض الأقوى — الأكثر طلباً: عرض قطعتين بـ 249 ر.س",
   images: [...COLLAGEN_GLOW_GALLERY],
-  codTrust: ["شحن مجاني", "دفع عند الاستلام", "ضمان الجودة", "دعم العملاء"],
+  codTrust: ["شحن سريع", "دفع عند الاستلام", "ضمان الجودة", "حلال"],
 };
 
 export const offers = [
@@ -214,22 +214,16 @@ export const transformation = {
   subtitle: "نساء خليجيات وثقن بـ LIMORA Collagen Glow — وهذا ما شاركنه.",
   beforeAfter: [
     {
-      before: COLLAGEN_GLOW_GALLERY[0],
-      after: COLLAGEN_GLOW_GALLERY[1],
-      beforeLabel: "قبل",
-      afterLabel: "بعد",
-      quote: "بشرتي صارت أهدأ وأكثر إشراقًا — الرياض",
-      days: "21 يوم",
-      caption: "نتيجة حقيقية مع الاستمرار اليومي",
+      image: COLLAGEN_GLOW_GALLERY[1],
+      title: "تحول خلال 21 يوم",
+      caption: "بشرتي صارت أهدأ وأكثر إشراقًا — الرياض",
+      resultText: "21 يوم · نتيجة حقيقية مع الاستمرار اليومي",
     },
     {
-      before: COLLAGEN_GLOW_GALLERY[0],
-      after: COLLAGEN_GLOW_GALLERY[1],
-      beforeLabel: "قبل",
-      afterLabel: "بعد",
-      quote: "مرونة وترطيب حسيت فيهم من الأسبوع الثاني — جدة",
-      days: "14 يوم",
-      caption: "توهج طبيعي… بثقة أنثوية",
+      image: COLLAGEN_GLOW_GALLERY[1],
+      title: "إشراقة ومرونة ملحوظة",
+      caption: "مرونة وترطيب حسيت فيهم من الأسبوع الثاني — جدة",
+      resultText: "14 يوم · توهج طبيعي… بثقة أنثوية",
     },
   ],
 };

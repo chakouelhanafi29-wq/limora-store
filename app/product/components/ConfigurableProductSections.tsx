@@ -9,6 +9,13 @@ import {
   getSectionLabelMarginClass,
   getSectionPaddingClass,
 } from "@/lib/page-builder/section-spacing";
+import {
+  resolveTransformationCaption,
+  resolveTransformationImage,
+  resolveTransformationResult,
+  resolveTransformationTitle,
+  type TransformationCardContent,
+} from "@/lib/page-builder/transformation-content";
 import type { PageSection, ProductPageConfig, ProductPageTheme } from "@/lib/page-builder/types";
 import { getOrderedSections } from "@/lib/page-builder/default-config";
 import ReviewAvatar from "./ReviewAvatar";
@@ -217,16 +224,7 @@ export function renderProductSection(
       );
     }
     case "transformation": {
-      const items =
-        (content.beforeAfter as {
-          before: string;
-          after: string;
-          beforeLabel?: string;
-          afterLabel?: string;
-          quote: string;
-          days: string;
-          caption?: string;
-        }[]) ?? [];
+      const items = (content.beforeAfter as TransformationCardContent[]) ?? [];
       return (
         <section key={section.id} className={`${pad} bg-gradient-to-b from-ivory to-beige/30`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -236,68 +234,54 @@ export function renderProductSection(
               subtitle={String(content.subtitle ?? "")}
             />
             <div className={`grid ${gridGap} lg:grid-cols-2`}>
-              {items.map((item, index) => (
-                <div
-                  key={`${item.quote}-${index}`}
-                  className="overflow-hidden rounded-[2rem] border border-champagne/10 bg-white luxury-shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
-                >
-                  <div className="grid grid-cols-2">
-                    <div className="relative aspect-[3/4] overflow-hidden">
-                      <span className="absolute right-2 top-2 z-10 rounded-full bg-foreground/75 px-3 py-1 text-[10px] font-bold text-ivory backdrop-blur-sm">
-                        {item.beforeLabel || "قبل"}
-                      </span>
-                      {item.before ? (
+              {items.map((item, index) => {
+                const image = resolveTransformationImage(item);
+                const title = resolveTransformationTitle(item);
+                const caption = resolveTransformationCaption(item);
+                const resultText = resolveTransformationResult(item);
+
+                return (
+                  <div
+                    key={`${title || caption || image}-${index}`}
+                    className="overflow-hidden rounded-[1.75rem] border border-champagne/10 bg-white luxury-shadow-lg transition hover:-translate-y-0.5 hover:shadow-2xl"
+                  >
+                    <div className="relative aspect-[16/10] overflow-hidden bg-beige/30 sm:aspect-[5/3]">
+                      {image ? (
                         <Image
-                          src={item.before}
-                          alt={item.beforeLabel || "قبل"}
-                          fill
-                          className="object-cover grayscale-[30%] transition duration-700 hover:grayscale-0"
-                          sizes="50vw"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center bg-beige/50 text-xs text-muted">
-                          صورة قبل
-                        </div>
-                      )}
-                    </div>
-                    <div className="relative aspect-[3/4] overflow-hidden">
-                      <span className="absolute right-2 top-2 z-10 rounded-full bg-champagne px-3 py-1 text-[10px] font-bold text-white shadow-sm">
-                        {item.afterLabel || "بعد"}
-                      </span>
-                      {item.after ? (
-                        <Image
-                          src={item.after}
-                          alt={item.afterLabel || "بعد"}
+                          src={image}
+                          alt={title || caption || "تحول قبل / بعد"}
                           fill
                           className="object-cover"
-                          sizes="50vw"
+                          sizes="(max-width: 768px) 100vw, 50vw"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center bg-beige/50 text-xs text-muted">
-                          صورة بعد
+                        <div className="flex h-full items-center justify-center px-6 text-center text-xs text-muted">
+                          ارفعي صورة التحول الموحدة (قبل / بعد) من المحرر
                         </div>
                       )}
                     </div>
+                    {(title || caption || resultText) && (
+                      <div className="border-t border-champagne/10 bg-gradient-to-b from-white to-beige/20 p-5 text-center sm:p-6">
+                        {title ? (
+                          <h3 className="mb-2 font-serif text-lg font-semibold text-foreground sm:text-xl">
+                            {title}
+                          </h3>
+                        ) : null}
+                        {caption ? (
+                          <p className="text-sm italic leading-relaxed text-foreground/85 sm:text-base">
+                            &ldquo;{caption}&rdquo;
+                          </p>
+                        ) : null}
+                        {resultText ? (
+                          <p className="mt-2 text-xs font-medium text-champagne sm:text-sm">
+                            {resultText}
+                          </p>
+                        ) : null}
+                      </div>
+                    )}
                   </div>
-                  <div className="border-t border-champagne/10 bg-gradient-to-b from-white to-beige/20 p-6 text-center sm:p-8">
-                    {item.days ? (
-                      <p className="mb-2 text-sm font-bold tracking-wide text-champagne">
-                        {item.days}
-                      </p>
-                    ) : null}
-                    {item.quote ? (
-                      <p className="text-base italic leading-relaxed text-foreground/85 sm:text-lg">
-                        &ldquo;{item.quote}&rdquo;
-                      </p>
-                    ) : null}
-                    {item.caption ? (
-                      <p className="mt-3 text-xs font-medium text-muted sm:text-sm">
-                        {item.caption}
-                      </p>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         </section>
@@ -519,22 +503,22 @@ export function renderProductSection(
                       />
                     ) : (
                       <div className="flex h-full flex-col items-center justify-center gap-2 p-5 text-center">
-                        <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-champagne/15 text-3xl">
+                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-champagne/10 text-base">
                           {item.icon || "✦"}
                         </span>
                       </div>
                     )}
                     {item.icon && item.image ? (
-                      <span className="absolute right-3 top-3 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/90 text-lg shadow-sm backdrop-blur-sm">
+                      <span className="absolute right-2.5 top-2.5 inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/90 text-sm shadow-sm backdrop-blur-sm">
                         {item.icon}
                       </span>
                     ) : null}
                   </div>
                   <div className="border-t border-champagne/10 p-4 sm:p-5">
-                    <div className="mb-1 flex items-center gap-2.5">
+                    <div className="mb-1 flex items-center gap-2">
                       {item.icon ? (
                         <span
-                          className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-champagne/10 text-lg"
+                          className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-champagne/8 text-[13px] leading-none"
                           aria-hidden
                         >
                           {item.icon}

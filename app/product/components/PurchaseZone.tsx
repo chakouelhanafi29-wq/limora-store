@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import type { Offer } from "../../lib/product-data";
 import OfferSelection from "./OfferSelection";
+import { HeroTrustBadge } from "./TrustBadgeItem";
 
 type Props = {
   selectedOffer: Offer;
@@ -20,13 +21,7 @@ function CompactTrustBadges({ items }: { items: string[] }) {
   return (
     <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5">
       {items.map((item) => (
-        <span
-          key={item}
-          className="inline-flex items-center gap-1 text-[11px] text-muted"
-        >
-          <span className="text-[10px] text-champagne">✓</span>
-          {item}
-        </span>
+        <HeroTrustBadge key={item} label={item} compact />
       ))}
     </div>
   );

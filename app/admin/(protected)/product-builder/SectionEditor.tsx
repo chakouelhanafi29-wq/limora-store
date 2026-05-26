@@ -785,122 +785,105 @@ function BeforeAfterEditor({
 }: {
   slug: string;
   items: {
-    before: string;
-    after: string;
-    beforeLabel?: string;
-    afterLabel?: string;
-    quote: string;
-    days: string;
+    image?: string;
+    before?: string;
+    after?: string;
+    title?: string;
+    quote?: string;
     caption?: string;
+    resultText?: string;
+    days?: string;
   }[];
   onChange: (
     items: {
-      before: string;
-      after: string;
-      beforeLabel?: string;
-      afterLabel?: string;
-      quote: string;
-      days: string;
+      image?: string;
+      title?: string;
       caption?: string;
+      resultText?: string;
     }[],
   ) => void;
 }) {
   return (
     <div className="space-y-3">
-      <p className="text-xs font-semibold text-muted">قبل / بعد</p>
-      {items.map((item, i) => (
-        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
-          <div className="flex justify-end">
-            <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
-          </div>
-          <ImageUploadField
-            label="صورة قبل"
-            value={item.before}
-            slug={slug}
-            onChange={(v) => {
-              const next = [...items];
-              next[i] = { ...item, before: v };
-              onChange(next);
-            }}
-          />
-          <ImageUploadField
-            label="صورة بعد"
-            value={item.after}
-            slug={slug}
-            onChange={(v) => {
-              const next = [...items];
-              next[i] = { ...item, after: v };
-              onChange(next);
-            }}
-          />
-          <div className="grid grid-cols-2 gap-2">
-            <input
-              value={item.beforeLabel ?? "قبل"}
-              onChange={(e) => {
+      <p className="text-xs font-semibold text-muted">قبل / بعد — صورة موحدة</p>
+      <p className="text-[11px] leading-relaxed text-muted">
+        ارفعي صورة واحدة تجمع قبل/بعد (يسار = قبل · يمين = بعد).
+      </p>
+      {items.map((item, i) => {
+        const image =
+          item.image?.trim() || item.after?.trim() || item.before?.trim() || "";
+        const title = item.title?.trim() || "";
+        const caption = item.quote?.trim() || item.caption?.trim() || "";
+        const resultText = item.resultText?.trim() || item.days?.trim() || "";
+
+        return (
+          <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+            <div className="flex justify-end">
+              <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
+            </div>
+            <ImageUploadField
+              label="صورة التحول الموحدة (قبل / بعد)"
+              value={image}
+              slug={slug}
+              onChange={(v) => {
                 const next = [...items];
-                next[i] = { ...item, beforeLabel: e.target.value };
+                next[i] = {
+                  image: v,
+                  title: next[i].title,
+                  caption: next[i].caption ?? next[i].quote,
+                  resultText: next[i].resultText ?? next[i].days,
+                };
                 onChange(next);
               }}
-              placeholder="تسمية قبل"
+            />
+            <input
+              value={title}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...next[i], title: e.target.value };
+                onChange(next);
+              }}
+              placeholder="عنوان اختياري"
+              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+            <textarea
+              value={caption}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...next[i], caption: e.target.value, quote: e.target.value };
+                onChange(next);
+              }}
+              placeholder="تعليق عاطفي (اختياري)"
+              rows={2}
               className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
             />
             <input
-              value={item.afterLabel ?? "بعد"}
+              value={resultText}
               onChange={(e) => {
                 const next = [...items];
-                next[i] = { ...item, afterLabel: e.target.value };
+                next[i] = {
+                  ...next[i],
+                  resultText: e.target.value,
+                  days: e.target.value,
+                };
                 onChange(next);
               }}
-              placeholder="تسمية بعد"
+              placeholder="نص النتيجة (مثال: 21 يوم · نتيجة حقيقية)"
               className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
             />
           </div>
-          <input
-            value={item.days}
-            onChange={(e) => {
-              const next = [...items];
-              next[i] = { ...item, days: e.target.value };
-              onChange(next);
-            }}
-            placeholder="المدة (مثال: 30 يوم)"
-            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-          />
-          <textarea
-            value={item.quote}
-            onChange={(e) => {
-              const next = [...items];
-              next[i] = { ...item, quote: e.target.value };
-              onChange(next);
-            }}
-            placeholder="الاقتباس العاطفي"
-            rows={2}
-            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-          />
-          <input
-            value={item.caption ?? ""}
-            onChange={(e) => {
-              const next = [...items];
-              next[i] = { ...item, caption: e.target.value };
-              onChange(next);
-            }}
-            placeholder="تعليق النتيجة (اختياري)"
-            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-          />
-        </div>
-      ))}
+        );
+      })}
       <ListControls
         addLabel="تحول"
         onAdd={() =>
           onChange([
             ...items,
             {
-              before: "",
-              after: "",
-              beforeLabel: "قبل",
-              afterLabel: "بعد",
-              quote: "",
-              days: "",
+              image: "",
+              title: "",
               caption: "",
+              resultText: "",
             },
           ])
         }
@@ -931,7 +914,7 @@ function IngredientEditor({
               Emoji / أيقونة (اختياري)
             </span>
             <div className="flex items-center gap-2">
-              <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow-sm ring-1 ring-champagne/15">
+              <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white text-sm shadow-sm ring-1 ring-champagne/15">
                 {item.icon?.trim() || "✦"}
               </span>
               <input

@@ -81,7 +81,7 @@ export function buildProductPageConfigFromProduct(
         product.urgency_text ??
         "✨ شحن مجاني + الدفع عند الاستلام داخل السعودية",
       images: galleryImages.length ? galleryImages : [],
-      codTrust: ["شحن مجاني", "دفع عند الاستلام", "ضمان الجودة", "دعم العملاء"],
+      codTrust: ["شحن سريع", "دفع عند الاستلام", "ضمان الجودة", "حلال"],
       ctaLabel: "أطلب الآن الدفع عند الاستلام",
     },
     offers: mapOffersFromProduct(product),

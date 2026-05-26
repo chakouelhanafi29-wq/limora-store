@@ -263,6 +263,7 @@ export default function ProductBuilder({
                     })
                   }
                   rows={3}
+                  placeholder={"شحن سريع\nدفع عند الاستلام\nضمان الجودة\nحلال"}
                   className="w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm"
                 />
               </label>

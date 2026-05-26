@@ -1,4 +1,5 @@
 import type { FinalCtaConfig } from "@/lib/page-builder/types";
+import { HeroTrustBadge } from "./TrustBadgeItem";
 
 type Props = {
   config: FinalCtaConfig;
@@ -38,13 +39,7 @@ export default function FinalCTASection({
         {config.showTrustBadges && codTrust.length > 0 ? (
           <div className="mb-6 flex flex-wrap items-center justify-center gap-2">
             {codTrust.map((item) => (
-              <span
-                key={item}
-                className="inline-flex items-center gap-1 rounded-full border border-champagne/15 bg-white/80 px-3 py-1.5 text-[11px] font-medium text-foreground/80"
-              >
-                <span className="text-champagne">✓</span>
-                {item}
-              </span>
+              <HeroTrustBadge key={item} label={item} />
             ))}
           </div>
         ) : null}
