@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
-import {
-  resolvePrimaryProductImage,
-  resolveProductGalleryImages,
-  getProductGalleryBySlug,
-} from "@/lib/product-images";
+import { resolveBuilderPrimaryImage } from "@/lib/product-images";
 import { resolveProductSlug } from "@/lib/products/catalog";
 import { getProductBySlug } from "@/lib/supabase/queries";
 import { getProductPageConfig } from "@/lib/page-builder/queries";
@@ -23,12 +19,6 @@ export async function loadProductPage(slug: string) {
   return {
     pageConfig,
     dbProduct,
-    galleryImages: resolveProductGalleryImages(
-      dbProduct?.product_images,
-      pageConfig.hero.images.length
-        ? pageConfig.hero.images
-        : getProductGalleryBySlug(resolvedSlug),
-    ),
   };
 }
 
@@ -44,9 +34,10 @@ export async function buildProductPageMetadata(slug: string): Promise<Metadata> 
     dbProduct?.name_ar || pageConfig.hero.nameAr || "منتج LIMORA";
   const description =
     dbProduct?.subtitle || pageConfig.hero.subtitle || site.seo.description;
-  const primaryImage = resolvePrimaryProductImage(
+  const primaryImage = resolveBuilderPrimaryImage(
+    pageConfig.hero.images,
     dbProduct?.product_images,
-    pageConfig.hero.images[0],
+    resolvedSlug,
   );
 
   return buildPageMetadata(site, {

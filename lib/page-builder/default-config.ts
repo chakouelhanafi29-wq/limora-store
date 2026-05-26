@@ -81,8 +81,10 @@ export function mergeProductPageConfig(
       hero: {
         ...defaults.hero,
         ...saved.hero,
-        images: saved.hero?.images?.length
-          ? saved.hero.images
+        images: Array.isArray(saved.hero?.images)
+          ? saved.hero.images.length
+            ? saved.hero.images
+            : defaults.hero.images
           : defaults.hero.images,
         bullets: saved.hero?.bullets?.length
           ? saved.hero.bullets

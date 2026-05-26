@@ -5,7 +5,7 @@ import {
   loadProductPage,
 } from "@/lib/page-builder/load-product-page";
 import { isOfficialProductSlug } from "@/lib/products/catalog";
-import { resolvePrimaryProductImage } from "@/lib/product-images";
+import { resolveBuilderPrimaryImage } from "@/lib/product-images";
 import { getSiteConfig } from "@/lib/site/config";
 import { buildProductJsonLd, jsonLdScript } from "@/lib/seo/structured-data";
 import { productPagePath } from "@/lib/seo/metadata";
@@ -30,7 +30,7 @@ export default async function ProductSlugPage({ params }: Props) {
   }
 
   const slug = rawSlug;
-  const [site, { pageConfig, dbProduct, galleryImages }] = await Promise.all([
+  const [site, { pageConfig, dbProduct }] = await Promise.all([
     getSiteConfig(),
     loadProductPage(slug),
   ]);
@@ -40,9 +40,10 @@ export default async function ProductSlugPage({ params }: Props) {
   }
 
   const productUrl = `${site.url}${productPagePath(slug)}`;
-  const primaryImage = resolvePrimaryProductImage(
+  const primaryImage = resolveBuilderPrimaryImage(
+    pageConfig.hero.images,
     dbProduct?.product_images,
-    pageConfig.hero.images[0],
+    pageConfig.slug,
   );
   const jsonLd = buildProductJsonLd(pageConfig, {
     url: productUrl,
@@ -58,7 +59,6 @@ export default async function ProductSlugPage({ params }: Props) {
       <ProductPageClient
         pageConfig={pageConfig}
         productId={dbProduct?.id}
-        galleryImages={galleryImages}
       />
     </>
   );

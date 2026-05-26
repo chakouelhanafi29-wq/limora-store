@@ -20,14 +20,12 @@ import StickyMobileCTA from "./components/StickyMobileCTA";
 type Props = {
   pageConfig: ProductPageConfig;
   productId?: string;
-  galleryImages?: string[];
   preview?: boolean;
 };
 
 export default function ProductPageClient({
   pageConfig,
   productId,
-  galleryImages,
   preview = false,
 }: Props) {
   const offers = useMemo(
@@ -40,9 +38,8 @@ export default function ProductPageClient({
         pageConfig.hero,
         pageConfig.slug,
         pageConfig.hero.nameEn,
-        galleryImages,
       ),
-    [pageConfig.hero, pageConfig.slug, galleryImages],
+    [pageConfig.hero, pageConfig.slug],
   );
   const offerLabels = useMemo(
     () =>

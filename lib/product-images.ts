@@ -60,9 +60,36 @@ export function resolveProductGalleryImages(
   return urls.length ? urls : fallbackImages;
 }
 
+/** Product Builder hero gallery always wins when present. */
+export function resolveBuilderGalleryImages(
+  builderImages: string[] | undefined | null,
+  dbImages?: ProductImageRecord[] | null,
+  slug?: string,
+): string[] {
+  if (builderImages?.length) return builderImages;
+
+  return resolveProductGalleryImages(
+    dbImages,
+    slug ? getProductGalleryBySlug(slug) : [...COLLAGEN_GLOW_GALLERY],
+  );
+}
+
 export function resolvePrimaryProductImage(
   dbImages: ProductImageRecord[] | undefined | null,
   fallback: string = COLLAGEN_GLOW_PRIMARY_IMAGE,
 ): string {
   return resolveProductGalleryImages(dbImages, [fallback])[0] ?? fallback;
+}
+
+export function resolveBuilderPrimaryImage(
+  builderImages: string[] | undefined | null,
+  dbImages?: ProductImageRecord[] | null,
+  slug?: string,
+): string {
+  if (builderImages?.length) return builderImages[0];
+
+  return resolvePrimaryProductImage(
+    dbImages,
+    slug ? getPrimaryImageBySlug(slug) : COLLAGEN_GLOW_PRIMARY_IMAGE,
+  );
 }

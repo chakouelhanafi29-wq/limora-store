@@ -18,6 +18,20 @@ export default function ProductGallery({
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const images = product.images;
 
+  useEffect(() => {
+    setActiveIndex(0);
+  }, [images]);
+
+  if (!images.length) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded-3xl border border-dashed border-champagne/20 bg-beige/40 ${aspectClass}`}
+      >
+        <p className="text-sm text-muted">لا توجد صور للمنتج</p>
+      </div>
+    );
+  }
+
   const next = useCallback(() => {
     setActiveIndex((i) => (i + 1) % images.length);
   }, [images.length]);
