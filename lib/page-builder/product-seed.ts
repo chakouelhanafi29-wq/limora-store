@@ -5,6 +5,7 @@ import {
   createSectionId,
   genericSectionScaffolds,
 } from "@/lib/page-builder/section-templates";
+import { createDefaultFinalCta } from "@/lib/page-builder/default-final-cta";
 import type { BuilderOffer, PageSection, ProductPageConfig } from "./types";
 
 function mapOffersFromProduct(product: ProductWithRelations): BuilderOffer[] {
@@ -98,6 +99,7 @@ export function buildProductPageConfigFromProduct(
         "ضمان الجودة",
       ],
     },
+    finalCta: createDefaultFinalCta(product.name_ar),
     sections,
     theme: {
       accentColor: "#D4899A",

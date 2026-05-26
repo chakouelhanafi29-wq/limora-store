@@ -4,6 +4,8 @@ import Link from "next/link";
 import { useCallback, useState } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { upsertProductPageConfigRow } from "@/lib/page-builder/save-config";
+import { uploadBuilderImage } from "@/lib/page-builder/upload-image";
+import { createDefaultFinalCta } from "@/lib/page-builder/default-final-cta";
 import {
   duplicateSection,
   normalizeSectionOrders,
@@ -13,7 +15,7 @@ import { SECTION_LABELS } from "@/lib/page-builder/types";
 import ProductPageClient from "@/app/product/ProductPageClient";
 import SectionEditor, { createBlankSection } from "./SectionEditor";
 
-type Tab = "hero" | "offers" | "sections" | "theme" | "mobile" | "popup";
+type Tab = "hero" | "offers" | "sections" | "finalCta" | "theme" | "mobile" | "popup";
 
 const SECTION_TYPES = Object.keys(SECTION_LABELS) as SectionType[];
 
@@ -28,7 +30,11 @@ export default function ProductBuilder({
   productId?: string;
   productName?: string;
 }) {
-  const [config, setConfig] = useState<ProductPageConfig>(initialConfig);
+  const [config, setConfig] = useState<ProductPageConfig>(() => ({
+    ...initialConfig,
+    finalCta:
+      initialConfig.finalCta ?? createDefaultFinalCta(initialConfig.hero.nameAr),
+  }));
   const [tab, setTab] = useState<Tab>("hero");
   const [selectedSectionId, setSelectedSectionId] = useState<string | null>(
     config.sections[0]?.id ?? null,
@@ -86,17 +92,8 @@ export default function ProductBuilder({
   const uploadHeroImage = async (file: File) => {
     const supabase = createClient();
     if (!supabase) return;
-    const path = `builder/${slug}/${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage
-      .from("product-images")
-      .upload(path, file);
-    if (error) {
-      alert(error.message);
-      return;
-    }
-    const {
-      data: { publicUrl },
-    } = supabase.storage.from("product-images").getPublicUrl(path);
+    const publicUrl = await uploadBuilderImage(supabase, slug, file);
+    if (!publicUrl) return;
     updateConfig({
       hero: { ...config.hero, images: [...config.hero.images, publicUrl] },
     });
@@ -116,6 +113,7 @@ export default function ProductBuilder({
     { id: "hero", label: "Hero" },
     { id: "offers", label: "العروض" },
     { id: "sections", label: "الأقسام" },
+    { id: "finalCta", label: "CTA نهائي" },
     { id: "theme", label: "التصميم" },
     { id: "mobile", label: "الجوال" },
     { id: "popup", label: "نافذة الطلب" },
@@ -173,6 +171,7 @@ export default function ProductBuilder({
                   ["nameAr", "الاسم (AR)"],
                   ["nameEn", "الاسم (EN)"],
                   ["subtitle", "العنوان الفرعي"],
+                  ["emotionalHook", "الخطاف العاطفي"],
                   ["urgency", "رسالة الإلحاح"],
                   ["ctaLabel", "نص زر الطلب"],
                 ] as const
@@ -180,7 +179,7 @@ export default function ProductBuilder({
                 <label key={key} className="block">
                   <span className="mb-1 block text-xs text-muted">{label}</span>
                   <input
-                    value={config.hero[key]}
+                    value={config.hero[key] ?? ""}
                     onChange={(e) =>
                       updateConfig({
                         hero: { ...config.hero, [key]: e.target.value },
@@ -190,6 +189,41 @@ export default function ProductBuilder({
                   />
                 </label>
               ))}
+              <div className="grid grid-cols-2 gap-3">
+                <label className="block">
+                  <span className="mb-1 block text-xs text-muted">التقييم</span>
+                  <input
+                    type="number"
+                    min={1}
+                    max={5}
+                    step={0.1}
+                    value={config.hero.rating}
+                    onChange={(e) =>
+                      updateConfig({
+                        hero: { ...config.hero, rating: Number(e.target.value) },
+                      })
+                    }
+                    className="w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-xs text-muted">عدد التقييمات</span>
+                  <input
+                    type="number"
+                    min={0}
+                    value={config.hero.reviewCount}
+                    onChange={(e) =>
+                      updateConfig({
+                        hero: {
+                          ...config.hero,
+                          reviewCount: Number(e.target.value),
+                        },
+                      })
+                    }
+                    className="w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm"
+                  />
+                </label>
+              </div>
               <label className="block">
                 <span className="mb-1 block text-xs text-muted">النقاط (سطر لكل نقطة)</span>
                 <textarea
@@ -482,6 +516,7 @@ export default function ProductBuilder({
               {selectedSection && (
                 <div className="rounded-xl border border-champagne/10 bg-beige/20 p-4">
                   <SectionEditor
+                    slug={slug}
                     section={selectedSection}
                     onChange={(updated) =>
                       updateConfig({
@@ -493,6 +528,72 @@ export default function ProductBuilder({
                   />
                 </div>
               )}
+            </div>
+          )}
+
+          {tab === "finalCta" && (
+            <div className="space-y-3">
+              <label className="flex items-center gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={config.finalCta.enabled}
+                  onChange={(e) =>
+                    updateConfig({
+                      finalCta: { ...config.finalCta, enabled: e.target.checked },
+                    })
+                  }
+                />
+                إظهار CTA النهائي
+              </label>
+              <label className="flex items-center gap-2 text-xs">
+                <input
+                  type="checkbox"
+                  checked={config.finalCta.showTrustBadges}
+                  onChange={(e) =>
+                    updateConfig({
+                      finalCta: {
+                        ...config.finalCta,
+                        showTrustBadges: e.target.checked,
+                      },
+                    })
+                  }
+                />
+                إظهار شارات الثقة
+              </label>
+              {(
+                [
+                  ["label", "Label (EN)"],
+                  ["title", "العنوان"],
+                  ["subtitle", "الوصف"],
+                  ["footnote", "سطر الثقة السفلي"],
+                ] as const
+              ).map(([key, label]) => (
+                <label key={key} className="block">
+                  <span className="mb-1 block text-xs text-muted">{label}</span>
+                  {key === "subtitle" || key === "footnote" ? (
+                    <textarea
+                      value={config.finalCta[key]}
+                      onChange={(e) =>
+                        updateConfig({
+                          finalCta: { ...config.finalCta, [key]: e.target.value },
+                        })
+                      }
+                      rows={3}
+                      className="w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm"
+                    />
+                  ) : (
+                    <input
+                      value={config.finalCta[key]}
+                      onChange={(e) =>
+                        updateConfig({
+                          finalCta: { ...config.finalCta, [key]: e.target.value },
+                        })
+                      }
+                      className="w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm"
+                    />
+                  )}
+                </label>
+              ))}
             </div>
           )}
 

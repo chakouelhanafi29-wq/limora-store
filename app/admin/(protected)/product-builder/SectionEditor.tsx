@@ -1,9 +1,12 @@
 "use client";
 
+import { createClient } from "@/lib/supabase/client";
+import { uploadBuilderImage } from "@/lib/page-builder/upload-image";
 import type { PageSection, SectionType } from "@/lib/page-builder/types";
 
 type Props = {
   section: PageSection;
+  slug: string;
   onChange: (section: PageSection) => void;
 };
 
@@ -12,11 +15,13 @@ function Field({
   value,
   onChange,
   multiline = false,
+  type = "text",
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   multiline?: boolean;
+  type?: string;
 }) {
   const className =
     "w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm";
@@ -32,6 +37,7 @@ function Field({
         />
       ) : (
         <input
+          type={type}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           className={className}
@@ -41,7 +47,77 @@ function Field({
   );
 }
 
-export default function SectionEditor({ section, onChange }: Props) {
+function ListControls({
+  onAdd,
+  addLabel,
+}: {
+  onAdd: () => void;
+  addLabel: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onAdd}
+      className="rounded-full border border-champagne/30 px-3 py-1.5 text-xs text-champagne hover:bg-beige"
+    >
+      + {addLabel}
+    </button>
+  );
+}
+
+function RemoveButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-xs text-red-500 hover:underline"
+    >
+      حذف
+    </button>
+  );
+}
+
+function ImageUploadField({
+  label,
+  value,
+  slug,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  slug: string;
+  onChange: (url: string) => void;
+}) {
+  const upload = async (file: File) => {
+    const supabase = createClient();
+    if (!supabase) return;
+    const url = await uploadBuilderImage(supabase, slug, file, "builder/sections");
+    if (url) onChange(url);
+  };
+
+  return (
+    <div className="space-y-2">
+      <Field label={label} value={value} onChange={onChange} />
+      {value ? (
+        <img src={value} alt="" className="h-20 w-20 rounded-lg object-cover" />
+      ) : null}
+      <label className="inline-block cursor-pointer rounded-full border border-champagne/30 px-3 py-1.5 text-xs hover:bg-beige">
+        رفع صورة
+        <input
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) upload(file);
+          }}
+        />
+      </label>
+    </div>
+  );
+}
+
+export default function SectionEditor({ section, slug, onChange }: Props) {
   const content = section.content as Record<string, unknown>;
 
   const updateContent = (key: string, value: unknown) => {
@@ -63,13 +139,57 @@ export default function SectionEditor({ section, onChange }: Props) {
         value={String(content.title ?? "")}
         onChange={(v) => updateContent("title", v)}
       />
-      {"subtitle" in content && (
+      {"subtitle" in content || section.type !== "faq" ? (
         <Field
-          label="الوصف"
+          label="الوصف / Subtitle"
           value={String(content.subtitle ?? "")}
           onChange={(v) => updateContent("subtitle", v)}
           multiline
         />
+      ) : null}
+
+      {(section.type === "reviews" || section.type === "guarantee") && (
+        <>
+          <Field
+            label="نص CTA بين الأقسام"
+            value={String(content.ctaSubtitle ?? "")}
+            onChange={(v) => updateContent("ctaSubtitle", v)}
+            multiline
+          />
+          <Field
+            label="سطر الثقة تحت CTA"
+            value={String(content.ctaFootnote ?? "")}
+            onChange={(v) => updateContent("ctaFootnote", v)}
+          />
+        </>
+      )}
+
+      {section.type === "lifestyle" && (
+        <>
+          <Field
+            label="النص العاطفي"
+            value={String(content.body ?? "")}
+            onChange={(v) => updateContent("body", v)}
+            multiline
+          />
+          <ImageUploadField
+            label="صورة Lifestyle"
+            value={String(content.image ?? "")}
+            slug={slug}
+            onChange={(v) => updateContent("image", v)}
+          />
+          <label className="block">
+            <span className="mb-1 block text-xs text-muted">موضع الصورة</span>
+            <select
+              value={String(content.imagePosition ?? "right")}
+              onChange={(e) => updateContent("imagePosition", e.target.value)}
+              className="w-full rounded-xl border border-champagne/20 px-3 py-2 text-sm"
+            >
+              <option value="right">يمين</option>
+              <option value="left">يسار</option>
+            </select>
+          </label>
+        </>
       )}
 
       {section.type === "faq" && (
@@ -80,21 +200,30 @@ export default function SectionEditor({ section, onChange }: Props) {
       )}
 
       {section.type === "benefits" && (
-        <ItemsEditor
-          items={(content.items as { icon: string; title: string; description: string }[]) ?? []}
-          fields={["icon", "title", "description"]}
+        <BenefitsEditor
+          slug={slug}
+          items={
+            (content.items as {
+              icon: string;
+              title: string;
+              description: string;
+              image?: string;
+            }[]) ?? []
+          }
           onChange={(items) => updateContent("items", items)}
         />
       )}
 
       {section.type === "reviews" && (
         <ReviewItemsEditor
+          slug={slug}
           items={
             (content.items as {
               name: string;
               location: string;
               text: string;
               image: string;
+              rating?: number;
             }[]) ?? []
           }
           onChange={(items) => updateContent("items", items)}
@@ -103,6 +232,7 @@ export default function SectionEditor({ section, onChange }: Props) {
 
       {section.type === "transformation" && (
         <BeforeAfterEditor
+          slug={slug}
           items={
             (content.beforeAfter as {
               before: string;
@@ -118,11 +248,21 @@ export default function SectionEditor({ section, onChange }: Props) {
       {section.type === "problem_solution" && (
         <>
           <ItemsEditor
+            label="المشاكل"
             items={
               (content.problems as { title: string; description: string }[]) ?? []
             }
-            fields={["title", "description"]}
+            fields={[
+              { key: "title", label: "العنوان" },
+              { key: "description", label: "الوصف" },
+            ]}
             onChange={(items) => updateContent("problems", items)}
+            onAdd={() =>
+              updateContent("problems", [
+                ...((content.problems as object[]) ?? []),
+                { title: "مشكلة جديدة", description: "" },
+              ])
+            }
           />
           <p className="text-xs font-semibold text-muted">الحل</p>
           <Field
@@ -176,36 +316,59 @@ export default function SectionEditor({ section, onChange }: Props) {
 
       {section.type === "how_to_use" && (
         <ItemsEditor
+          label="الخطوات"
           items={
             (content.steps as { step: string; title: string; description: string }[]) ??
             []
           }
-          fields={["step", "title", "description"]}
+          fields={[
+            { key: "step", label: "رقم" },
+            { key: "title", label: "العنوان" },
+            { key: "description", label: "الوصف" },
+          ]}
           onChange={(items) => updateContent("steps", items)}
+          onAdd={() =>
+            updateContent("steps", [
+              ...((content.steps as object[]) ?? []),
+              { step: "0", title: "خطوة", description: "" },
+            ])
+          }
         />
       )}
 
       {section.type === "ingredients" && (
-        <ItemsEditor
+        <IngredientEditor
+          slug={slug}
           items={(content.items as { name: string; benefit: string; image: string }[]) ?? []}
-          fields={["name", "benefit", "image"]}
           onChange={(items) => updateContent("items", items)}
         />
       )}
 
       {section.type === "guarantee" && (
         <ItemsEditor
+          label="نقاط الضمان"
           items={
             (content.points as { icon: string; title: string; description: string }[]) ??
             []
           }
-          fields={["icon", "title", "description"]}
+          fields={[
+            { key: "icon", label: "أيقونة" },
+            { key: "title", label: "العنوان" },
+            { key: "description", label: "الوصف" },
+          ]}
           onChange={(items) => updateContent("points", items)}
+          onAdd={() =>
+            updateContent("points", [
+              ...((content.points as object[]) ?? []),
+              { icon: "✦", title: "نقطة", description: "" },
+            ])
+          }
         />
       )}
 
       {section.type === "related_products" && (
-        <ItemsEditor
+        <RelatedProductsEditor
+          slug={slug}
           items={
             (content.items as {
               id: string;
@@ -217,7 +380,6 @@ export default function SectionEditor({ section, onChange }: Props) {
               href: string;
             }[]) ?? []
           }
-          fields={["name", "nameEn", "benefit", "price", "image", "href"]}
           onChange={(items) => updateContent("items", items)}
         />
       )}
@@ -236,7 +398,12 @@ function FAQEditor({
     <div className="space-y-3">
       <p className="text-xs font-semibold text-muted">أسئلة FAQ</p>
       {items.map((item, i) => (
-        <div key={i} className="rounded-xl bg-beige/40 p-3 space-y-2">
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton
+              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+            />
+          </div>
           <input
             value={item.question}
             onChange={(e) => {
@@ -260,71 +427,417 @@ function FAQEditor({
           />
         </div>
       ))}
+      <ListControls
+        addLabel="سؤال"
+        onAdd={() => onChange([...items, { question: "", answer: "" }])}
+      />
     </div>
   );
 }
 
 function ItemsEditor({
+  label,
   items,
   fields,
   onChange,
+  onAdd,
 }: {
+  label: string;
   items: Record<string, string>[];
-  fields: string[];
+  fields: { key: string; label: string }[];
   onChange: (items: Record<string, string>[]) => void;
+  onAdd: () => void;
 }) {
   return (
     <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">{label}</p>
       {items.map((item, i) => (
-        <div key={i} className="rounded-xl bg-beige/40 p-3 space-y-2">
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton
+              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+            />
+          </div>
           {fields.map((field) => (
             <input
-              key={field}
-              value={item[field] ?? ""}
+              key={field.key}
+              value={item[field.key] ?? ""}
               onChange={(e) => {
                 const next = [...items];
-                next[i] = { ...item, [field]: e.target.value };
+                next[i] = { ...item, [field.key]: e.target.value };
                 onChange(next);
               }}
-              placeholder={field}
+              placeholder={field.label}
               className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
             />
           ))}
         </div>
       ))}
+      <ListControls addLabel="عنصر" onAdd={onAdd} />
+    </div>
+  );
+}
+
+function BenefitsEditor({
+  slug,
+  items,
+  onChange,
+}: {
+  slug: string;
+  items: { icon: string; title: string; description: string; image?: string }[];
+  onChange: (items: { icon: string; title: string; description: string; image?: string }[]) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">بطاقات الفوائد</p>
+      {items.map((item, i) => (
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
+          </div>
+          <input
+            value={item.icon}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, icon: e.target.value };
+              onChange(next);
+            }}
+            placeholder="أيقونة"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <input
+            value={item.title}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, title: e.target.value };
+              onChange(next);
+            }}
+            placeholder="العنوان"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <textarea
+            value={item.description}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, description: e.target.value };
+              onChange(next);
+            }}
+            placeholder="الوصف"
+            rows={2}
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <ImageUploadField
+            label="صورة (اختياري)"
+            value={item.image ?? ""}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, image: v };
+              onChange(next);
+            }}
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="فائدة"
+        onAdd={() =>
+          onChange([...items, { icon: "✨", title: "فائدة جديدة", description: "" }])
+        }
+      />
     </div>
   );
 }
 
 function ReviewItemsEditor({
+  slug,
   items,
   onChange,
 }: {
-  items: { name: string; location: string; text: string; image: string }[];
-  onChange: (items: { name: string; location: string; text: string; image: string }[]) => void;
+  slug: string;
+  items: { name: string; location: string; text: string; image: string; rating?: number }[];
+  onChange: (items: { name: string; location: string; text: string; image: string; rating?: number }[]) => void;
 }) {
   return (
-    <ItemsEditor
-      items={items}
-      fields={["name", "location", "text", "image"]}
-      onChange={onChange as (items: Record<string, string>[]) => void}
-    />
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">التقييمات</p>
+      {items.map((item, i) => (
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
+          </div>
+          <input
+            value={item.name}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, name: e.target.value };
+              onChange(next);
+            }}
+            placeholder="الاسم"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <input
+            value={item.location}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, location: e.target.value };
+              onChange(next);
+            }}
+            placeholder="المدينة"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <input
+            type="number"
+            min={1}
+            max={5}
+            step={0.1}
+            value={item.rating ?? 5}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, rating: Number(e.target.value) };
+              onChange(next);
+            }}
+            placeholder="التقييم"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <textarea
+            value={item.text}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, text: e.target.value };
+              onChange(next);
+            }}
+            placeholder="التعليق"
+            rows={3}
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <ImageUploadField
+            label="صورة العميلة"
+            value={item.image}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, image: v };
+              onChange(next);
+            }}
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="تقييم"
+        onAdd={() =>
+          onChange([
+            ...items,
+            { name: "", location: "", text: "", image: "", rating: 5 },
+          ])
+        }
+      />
+    </div>
   );
 }
 
 function BeforeAfterEditor({
+  slug,
   items,
   onChange,
 }: {
+  slug: string;
   items: { before: string; after: string; quote: string; days: string }[];
   onChange: (items: { before: string; after: string; quote: string; days: string }[]) => void;
 }) {
   return (
-    <ItemsEditor
-      items={items}
-      fields={["before", "after", "quote", "days"]}
-      onChange={onChange as (items: Record<string, string>[]) => void}
-    />
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">قبل / بعد</p>
+      {items.map((item, i) => (
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
+          </div>
+          <ImageUploadField
+            label="صورة قبل"
+            value={item.before}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, before: v };
+              onChange(next);
+            }}
+          />
+          <ImageUploadField
+            label="صورة بعد"
+            value={item.after}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, after: v };
+              onChange(next);
+            }}
+          />
+          <input
+            value={item.days}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, days: e.target.value };
+              onChange(next);
+            }}
+            placeholder="المدة (مثال: 30 يوم)"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <textarea
+            value={item.quote}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, quote: e.target.value };
+              onChange(next);
+            }}
+            placeholder="الاقتباس"
+            rows={2}
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="تحول"
+        onAdd={() =>
+          onChange([...items, { before: "", after: "", quote: "", days: "" }])
+        }
+      />
+    </div>
+  );
+}
+
+function IngredientEditor({
+  slug,
+  items,
+  onChange,
+}: {
+  slug: string;
+  items: { name: string; benefit: string; image: string }[];
+  onChange: (items: { name: string; benefit: string; image: string }[]) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">المكونات</p>
+      {items.map((item, i) => (
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
+          </div>
+          <input
+            value={item.name}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, name: e.target.value };
+              onChange(next);
+            }}
+            placeholder="اسم المكون"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <input
+            value={item.benefit}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, benefit: e.target.value };
+              onChange(next);
+            }}
+            placeholder="الفائدة"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <ImageUploadField
+            label="صورة المكون"
+            value={item.image}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, image: v };
+              onChange(next);
+            }}
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="مكون"
+        onAdd={() => onChange([...items, { name: "", benefit: "", image: "" }])}
+      />
+    </div>
+  );
+}
+
+function RelatedProductsEditor({
+  slug,
+  items,
+  onChange,
+}: {
+  slug: string;
+  items: {
+    id: string;
+    name: string;
+    nameEn: string;
+    benefit: string;
+    price: string;
+    image: string;
+    href: string;
+  }[];
+  onChange: (items: {
+    id: string;
+    name: string;
+    nameEn: string;
+    benefit: string;
+    price: string;
+    image: string;
+    href: string;
+  }[]) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">منتجات ذات صلة</p>
+      {items.map((item, i) => (
+        <div key={item.id || i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
+          </div>
+          {(["name", "nameEn", "benefit", "price", "href"] as const).map((key) => (
+            <input
+              key={key}
+              value={item[key]}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = { ...item, [key]: e.target.value };
+                onChange(next);
+              }}
+              placeholder={key}
+              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+          ))}
+          <ImageUploadField
+            label="صورة المنتج"
+            value={item.image}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, image: v };
+              onChange(next);
+            }}
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="منتج"
+        onAdd={() =>
+          onChange([
+            ...items,
+            {
+              id: `rel-${Date.now()}`,
+              name: "",
+              nameEn: "",
+              benefit: "",
+              price: "",
+              image: "",
+              href: "/product/",
+            },
+          ])
+        }
+      />
+    </div>
   );
 }
 
@@ -339,7 +852,10 @@ function ComparisonEditor({
     <div className="space-y-3">
       <p className="text-xs font-semibold text-muted">جدول المقارنة</p>
       {rows.map((row, i) => (
-        <div key={i} className="rounded-xl bg-beige/40 p-3 space-y-2">
+        <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+          <div className="flex justify-end">
+            <RemoveButton onClick={() => onChange(rows.filter((_, idx) => idx !== i))} />
+          </div>
           <input
             value={row.feature}
             onChange={(e) => {
@@ -376,9 +892,52 @@ function ComparisonEditor({
           </label>
         </div>
       ))}
+      <ListControls
+        addLabel="صف"
+        onAdd={() =>
+          onChange([...rows, { feature: "ميزة جديدة", limora: true, others: false }])
+        }
+      />
     </div>
   );
 }
+
+const BLANK_SECTION_CONTENT: Record<SectionType, Record<string, unknown>> = {
+  problem_solution: {
+    label: "CONCERNS",
+    title: "عنوان المشاكل",
+    problems: [],
+    solution: { title: "", description: "", highlights: [] },
+  },
+  benefits: { label: "BENEFITS", title: "الفوائد", subtitle: "", items: [] },
+  transformation: {
+    label: "RESULTS",
+    title: "قبل / بعد",
+    subtitle: "",
+    beforeAfter: [],
+  },
+  comparison: { label: "WHY US", title: "المقارنة", subtitle: "", rows: [] },
+  reviews: { label: "REVIEWS", title: "التقييمات", items: [], ctaSubtitle: "" },
+  how_to_use: { label: "HOW TO", title: "طريقة الاستخدام", subtitle: "", steps: [] },
+  ingredients: { label: "FORMULA", title: "المكونات", subtitle: "", items: [] },
+  faq: { label: "FAQ", title: "الأسئلة الشائعة", items: [] },
+  guarantee: {
+    label: "PROMISE",
+    title: "الضمان",
+    subtitle: "",
+    points: [],
+    ctaSubtitle: "",
+  },
+  related_products: { label: "RELATED", title: "منتجات ذات صلة", items: [] },
+  lifestyle: {
+    label: "LIFESTYLE",
+    title: "قصة التحول",
+    subtitle: "",
+    body: "",
+    image: "",
+    imagePosition: "right",
+  },
+};
 
 export function createBlankSection(type: SectionType): PageSection {
   return {
@@ -386,6 +945,6 @@ export function createBlankSection(type: SectionType): PageSection {
     type,
     enabled: true,
     order: 99,
-    content: { label: "NEW", title: "عنوان جديد", subtitle: "" },
+    content: structuredClone(BLANK_SECTION_CONTENT[type]),
   };
 }

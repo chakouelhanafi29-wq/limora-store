@@ -1,3 +1,4 @@
+import { createDefaultFinalCta } from "./default-final-cta";
 import { buildProductPageConfigFromProduct } from "./product-seed";
 import { getStaticProductPageConfig } from "@/lib/products/catalog";
 import type { ProductWithRelations } from "@/lib/types/database";
@@ -53,9 +54,17 @@ export function getDefaultProductPageConfig(
   }
 
   if (typeof structuredClone === "function") {
-    return structuredClone(config);
+    const cloned = structuredClone(config);
+    if (!cloned.finalCta) {
+      cloned.finalCta = createDefaultFinalCta(cloned.hero.nameAr);
+    }
+    return cloned;
   }
-  return JSON.parse(JSON.stringify(config)) as ProductPageConfig;
+  const cloned = JSON.parse(JSON.stringify(config)) as ProductPageConfig;
+  if (!cloned.finalCta) {
+    cloned.finalCta = createDefaultFinalCta(cloned.hero.nameAr);
+  }
+  return cloned;
 }
 
 type MergeProductPageConfigOptions = {
@@ -101,6 +110,9 @@ export function mergeProductPageConfig(
       stickyBar: saved.stickyBar
         ? { ...defaults.stickyBar, ...saved.stickyBar }
         : defaults.stickyBar,
+      finalCta: saved.finalCta
+        ? { ...defaults.finalCta, ...saved.finalCta }
+        : defaults.finalCta,
       sections: Array.isArray(saved.sections)
         ? saved.sections.length
           ? saved.sections
@@ -117,6 +129,9 @@ export function mergeProductPageConfig(
     offers: saved.offers?.length ? saved.offers : defaults.offers,
     orderModal: { ...defaults.orderModal, ...saved.orderModal },
     stickyBar: { ...defaults.stickyBar, ...saved.stickyBar },
+    finalCta: saved.finalCta
+      ? { ...defaults.finalCta, ...saved.finalCta }
+      : defaults.finalCta,
     sections: saved.sections?.length ? saved.sections : defaults.sections,
     theme: { ...defaults.theme, ...saved.theme },
     mobile: { ...defaults.mobile, ...saved.mobile },

@@ -3,6 +3,7 @@ type Props = {
   ctaLabel: string;
   price: number;
   subtitle?: string;
+  footnote?: string;
 };
 
 export default function SectionCTA({
@@ -10,6 +11,7 @@ export default function SectionCTA({
   ctaLabel,
   price,
   subtitle = "دفع عند الاستلام · شحن مجاني · ضمان الجودة",
+  footnote = "✓ الدفع عند الاستلام · ✓ شحن مجاني · ✓ تأكيد سريع",
 }: Props) {
   return (
     <div className="mx-auto max-w-xl px-4 pb-4 pt-2 sm:px-6">
@@ -26,9 +28,9 @@ export default function SectionCTA({
           </span>
           <span className="absolute inset-0 gold-shimmer opacity-0 transition-opacity group-hover:opacity-15" />
         </button>
-        <p className="mt-3 text-[11px] text-muted">
-          ✓ الدفع عند الاستلام · ✓ شحن مجاني · ✓ تأكيد سريع
-        </p>
+        {footnote ? (
+          <p className="mt-3 text-[11px] text-muted">{footnote}</p>
+        ) : null}
       </div>
     </div>
   );

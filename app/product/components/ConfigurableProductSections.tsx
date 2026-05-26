@@ -120,7 +120,13 @@ function renderSection(
       );
     }
     case "benefits": {
-      const items = (content.items as { icon: string; title: string; description: string }[]) ?? [];
+      const items =
+        (content.items as {
+          icon: string;
+          title: string;
+          description: string;
+          image?: string;
+        }[]) ?? [];
       return (
         <section key={section.id} className={`${pad} ${bg || "bg-beige/50"}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -131,10 +137,28 @@ function renderSection(
             />
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {items.map((item) => (
-                <div key={item.title} className="rounded-3xl bg-white p-7 luxury-shadow transition hover:-translate-y-1">
-                  <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-champagne/15 text-xl">{item.icon}</span>
-                  <h3 className="mb-2 font-bold">{item.title}</h3>
-                  <p className="text-sm text-muted">{item.description}</p>
+                <div
+                  key={item.title}
+                  className="overflow-hidden rounded-3xl bg-white luxury-shadow transition hover:-translate-y-1"
+                >
+                  {item.image ? (
+                    <div className="relative aspect-[4/3]">
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                        sizes="33vw"
+                      />
+                    </div>
+                  ) : null}
+                  <div className="p-7">
+                    <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
+                      {item.icon}
+                    </span>
+                    <h3 className="mb-2 font-bold">{item.title}</h3>
+                    <p className="text-sm text-muted">{item.description}</p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -201,7 +225,16 @@ function renderSection(
       );
     }
     case "reviews": {
-      const items = (content.items as { name: string; location: string; rating: number; text: string; image: string }[]) ?? [];
+      const items =
+        (content.items as {
+          name: string;
+          location: string;
+          rating: number;
+          text: string;
+          image: string;
+        }[]) ?? [];
+      const ctaSubtitle = String(content.ctaSubtitle ?? "");
+      const ctaFootnote = String(content.ctaFootnote ?? "");
       return (
         <div key={section.id}>
           <section id="reviews" className={pad}>
@@ -210,7 +243,7 @@ function renderSection(
               <div className="grid gap-6 sm:grid-cols-2">
                 {items.map((review) => (
                   <article key={`${review.name}-${review.text.slice(0, 20)}`} className="rounded-3xl bg-white p-7 luxury-shadow">
-                    <ReviewStars rating={review.rating} />
+                    <ReviewStars rating={review.rating ?? 5} />
                     <blockquote className="mb-6 text-sm leading-relaxed text-foreground/80">&ldquo;{review.text}&rdquo;</blockquote>
                     <div className="flex items-center gap-3 border-t border-champagne/10 pt-4">
                       <div className="relative h-11 w-11 overflow-hidden rounded-full ring-2 ring-champagne/20">
@@ -231,7 +264,11 @@ function renderSection(
               onOrder={cta.onOrder}
               ctaLabel={cta.ctaLabel}
               price={cta.price}
-              subtitle="انضمي لآلاف العميلات السعوديات — اطلبي الآن بالدفع عند الاستلام"
+              subtitle={
+                ctaSubtitle ||
+                "انضمي لآلاف العميلات السعوديات — اطلبي الآن بالدفع عند الاستلام"
+              }
+              footnote={ctaFootnote}
             />
           )}
         </div>
@@ -285,6 +322,8 @@ function renderSection(
     }
     case "guarantee": {
       const points = (content.points as { icon: string; title: string; description: string }[]) ?? [];
+      const ctaSubtitle = String(content.ctaSubtitle ?? "");
+      const ctaFootnote = String(content.ctaFootnote ?? "");
       return (
         <div key={section.id}>
           <section className={pad}>
@@ -306,10 +345,60 @@ function renderSection(
               onOrder={cta.onOrder}
               ctaLabel={cta.ctaLabel}
               price={cta.price}
-              subtitle="ضمان LIMORA — اطلبي بثقة والدفع عند الاستلام"
+              subtitle={ctaSubtitle || "ضمان LIMORA — اطلبي بثقة والدفع عند الاستلام"}
+              footnote={ctaFootnote}
             />
           )}
         </div>
+      );
+    }
+    case "lifestyle": {
+      const imagePosition = content.imagePosition === "left" ? "left" : "right";
+      return (
+        <section key={section.id} className={`${pad} ${bg}`}>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div
+              className={`grid items-center gap-10 lg:grid-cols-2 ${
+                imagePosition === "left" ? "lg:[direction:ltr]" : ""
+              }`}
+            >
+              {imagePosition === "left" && content.image ? (
+                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl luxury-shadow-lg">
+                  <Image
+                    src={String(content.image)}
+                    alt={String(content.title ?? "Lifestyle")}
+                    fill
+                    className="object-cover"
+                    sizes="50vw"
+                  />
+                </div>
+              ) : null}
+              <div className={imagePosition === "left" ? "lg:[direction:rtl]" : ""}>
+                <SectionHeader
+                  label={String(content.label ?? "")}
+                  title={String(content.title ?? "")}
+                  subtitle={String(content.subtitle ?? "")}
+                />
+                {content.body ? (
+                  <p className="mx-auto max-w-xl text-center text-base leading-relaxed text-foreground/80 lg:text-right">
+                    {String(content.body)}
+                  </p>
+                ) : null}
+              </div>
+              {imagePosition === "right" && content.image ? (
+                <div className="relative aspect-[4/5] overflow-hidden rounded-3xl luxury-shadow-lg">
+                  <Image
+                    src={String(content.image)}
+                    alt={String(content.title ?? "Lifestyle")}
+                    fill
+                    className="object-cover"
+                    sizes="50vw"
+                  />
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </section>
       );
     }
     case "related_products": {

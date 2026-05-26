@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Offer } from "../lib/product-data";
 import type { ProductPageConfig } from "@/lib/page-builder/types";
+import { createDefaultFinalCta } from "@/lib/page-builder/default-final-cta";
 import { getOfferDisplayLabel } from "@/lib/storefront";
 import { trackEvent } from "@/lib/analytics/events";
 import ConfigurableProductSections, {
@@ -183,8 +184,12 @@ export default function ProductPageClient({
           selectedPrice={selectedOffer.price}
         />
 
-        {!preview && (
+        {!preview && pageConfig.finalCta?.enabled !== false && (
           <FinalCTASection
+            config={
+              pageConfig.finalCta ??
+              createDefaultFinalCta(product.name)
+            }
             productName={product.name}
             urgency={product.urgency}
             onOrder={openOrder}

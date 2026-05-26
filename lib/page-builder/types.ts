@@ -8,7 +8,8 @@ export type SectionType =
   | "ingredients"
   | "faq"
   | "guarantee"
-  | "related_products";
+  | "related_products"
+  | "lifestyle";
 
 export type PageSection = {
   id: string;
@@ -70,12 +71,22 @@ export type StickyBarConfig = {
   messages: string[];
 };
 
+export type FinalCtaConfig = {
+  enabled: boolean;
+  label: string;
+  title: string;
+  subtitle: string;
+  footnote: string;
+  showTrustBadges: boolean;
+};
+
 export type ProductPageConfig = {
   slug: string;
   hero: ProductPageHero;
   offers: BuilderOffer[];
   orderModal: OrderModalConfig;
   stickyBar: StickyBarConfig;
+  finalCta: FinalCtaConfig;
   sections: PageSection[];
   theme: ProductPageTheme;
   mobile: ProductPageMobile;
@@ -100,4 +111,5 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   faq: "الأسئلة الشائعة",
   guarantee: "الضمان",
   related_products: "منتجات ذات صلة",
+  lifestyle: "لايف ستايل / Banner",
 };

@@ -12,6 +12,7 @@ import {
   relatedProducts,
   transformation,
 } from "@/app/lib/product-data";
+import { createDefaultFinalCta } from "@/lib/page-builder/default-final-cta";
 import type { ProductWithRelations } from "@/lib/types/database";
 import type { PageSection, ProductPageConfig, SectionType } from "./types";
 
@@ -141,6 +142,7 @@ export function buildStaticTemplateConfig(slug: string): ProductPageConfig {
         "جمالك يبدأ من الداخل",
       ],
     },
+    finalCta: createDefaultFinalCta(product.name),
     sections,
     theme: {
       accentColor: "#D4899A",
