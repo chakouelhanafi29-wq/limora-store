@@ -194,8 +194,6 @@ export default function ProductPageClient({
             open={modalOpen}
             onClose={() => setModalOpen(false)}
             offer={selectedOffer}
-            offers={offers}
-            onSelectOffer={handleSelectOffer}
             product={product}
             productId={productId}
             productSlug={pageConfig.slug}

@@ -13,15 +13,12 @@ import {
   isValidSaudiPhone,
   normalizeSaudiPhone,
 } from "@/lib/validation/saudi-phone";
-import { saudiCities, type Offer } from "../../lib/product-data";
-import OfferSelection from "./OfferSelection";
+import type { Offer } from "../../lib/product-data";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   offer: Offer;
-  offers: Offer[];
-  onSelectOffer: (offer: Offer) => void;
   product: StorefrontProduct;
   productId?: string;
   productSlug?: string;
@@ -39,8 +36,6 @@ export default function OrderModal({
   open,
   onClose,
   offer,
-  offers,
-  onSelectOffer,
   product,
   productId,
   productSlug = "glow",
@@ -51,8 +46,6 @@ export default function OrderModal({
   const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
-  const [district, setDistrict] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -68,6 +61,7 @@ export default function OrderModal({
   if (!open) return null;
 
   const offerLabel = getOfferDisplayLabel(offer, offerLabels[offer.id]);
+  const orderSummary = `${product.name} — ${offerLabel} — ${offer.price} ر.س`;
 
   const handlePhoneBlur = () => {
     if (!phone.trim()) {
@@ -92,8 +86,8 @@ export default function OrderModal({
       return;
     }
 
-    if (name.trim().split(/\s+/).length < 2) {
-      setError("يرجى إدخال الاسم الكامل (الاسم الأول واسم العائلة)");
+    if (name.trim().length < 3) {
+      setError("يرجى إدخال الاسم الكامل");
       return;
     }
 
@@ -106,8 +100,6 @@ export default function OrderModal({
         body: JSON.stringify({
           customer_name: name.trim(),
           phone: normalizedPhone,
-          city,
-          district: district.trim(),
           product_id: productId || null,
           product_name: product.orderName,
           product_slug: productSlug,
@@ -149,8 +141,6 @@ export default function OrderModal({
   const handleClose = () => {
     setName("");
     setPhone("");
-    setCity("");
-    setDistrict("");
     setError("");
     setPhoneError("");
     onClose();
@@ -170,7 +160,7 @@ export default function OrderModal({
         onClick={handleClose}
       />
 
-      <div className="relative max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-t-3xl bg-ivory p-6 shadow-2xl sm:rounded-3xl sm:p-8">
+      <div className="relative w-full max-w-md overflow-y-auto rounded-t-3xl bg-ivory p-5 shadow-2xl sm:rounded-3xl sm:p-7">
         <button
           type="button"
           aria-label="إغلاق"
@@ -180,29 +170,24 @@ export default function OrderModal({
           ✕
         </button>
 
-        <div className="mb-6 border-b border-champagne/10 pb-6 pt-2 text-center">
+        <div className="mb-5 border-b border-champagne/10 pb-5 pt-1 text-center">
           <p className="mb-1 text-xs tracking-widest text-champagne">LIMORA</p>
           <h2
             id="order-modal-title"
-            className="font-serif text-2xl font-semibold text-foreground"
+            className="font-serif text-xl font-semibold text-foreground sm:text-2xl"
           >
             {orderModal?.title ?? "أكّدي طلبكِ"}
           </h2>
-          <p className="mt-2 text-sm text-muted">
+          <p className="mt-1.5 text-sm text-muted">
             {orderModal?.subtitle ?? "دفع عند الاستلام · شحن مجاني"}
           </p>
         </div>
 
-        <div className="mb-4 rounded-2xl border border-champagne/15 bg-beige/40 p-4">
-          <p className="mb-3 text-xs font-semibold text-champagne">
-            اختاري العرض
+        <div className="mb-5 rounded-2xl border border-champagne/15 bg-beige/50 px-4 py-3 text-center">
+          <p className="text-sm font-semibold leading-relaxed text-foreground">
+            {orderSummary}
           </p>
-          <OfferSelection
-            selected={offer}
-            onSelect={onSelectOffer}
-            offers={offers}
-            compact
-          />
+          <p className="mt-1 text-[11px] text-muted">الدفع عند الاستلام فقط</p>
         </div>
 
         {error && (
@@ -211,11 +196,11 @@ export default function OrderModal({
           </p>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label
               htmlFor="order-name"
-              className="mb-1.5 block text-sm font-medium text-foreground"
+              className="mb-1 block text-sm font-medium text-foreground"
             >
               الاسم الكامل
             </label>
@@ -224,20 +209,18 @@ export default function OrderModal({
               type="text"
               required
               minLength={3}
+              autoComplete="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="مثال: نورة العتيبي"
-              className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
+              className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3.5 text-base outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
             />
-            <p className="mt-1 text-[11px] text-muted">
-              الاسم الكامل يساعدنا على تأكيد طلبكِ بسرعة
-            </p>
           </div>
 
           <div>
             <label
               htmlFor="order-phone"
-              className="mb-1.5 block text-sm font-medium text-foreground"
+              className="mb-1 block text-sm font-medium text-foreground"
             >
               رقم الجوال
             </label>
@@ -255,70 +238,21 @@ export default function OrderModal({
               }}
               onBlur={handlePhoneBlur}
               placeholder="05XXXXXXXX"
-              className={`w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none transition focus:ring-2 ${
+              className={`w-full rounded-xl border bg-white px-4 py-3.5 text-base outline-none transition focus:ring-2 ${
                 phoneError
                   ? "border-red-300 focus:border-red-400 focus:ring-red-100"
                   : "border-champagne/20 focus:border-champagne focus:ring-champagne/20"
               }`}
             />
-            {phoneError ? (
+            {phoneError && (
               <p className="mt-1 text-xs text-red-600">{phoneError}</p>
-            ) : (
-              <p className="mt-1 text-[11px] text-muted">
-                سنتواصل معكِ على هذا الرقم لتأكيد الطلب
-              </p>
             )}
-          </div>
-
-          <div>
-            <label
-              htmlFor="order-city"
-              className="mb-1.5 block text-sm font-medium text-foreground"
-            >
-              المدينة
-            </label>
-            <select
-              id="order-city"
-              required
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
-              className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
-            >
-              <option value="">اختاري مدينتكِ</option>
-              {saudiCities.map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label
-              htmlFor="order-district"
-              className="mb-1.5 block text-sm font-medium text-foreground"
-            >
-              الحي / المنطقة
-            </label>
-            <input
-              id="order-district"
-              type="text"
-              required
-              minLength={2}
-              value={district}
-              onChange={(e) => setDistrict(e.target.value)}
-              placeholder="مثال: حي النرجس، العليا، اليرموك..."
-              className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3 text-sm outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
-            />
-            <p className="mt-1 text-[11px] text-muted">
-              يساعد مندوب التوصيل على الوصول إليكِ بسرعة
-            </p>
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="group relative mt-2 w-full overflow-hidden rounded-full bg-foreground py-4 text-base font-medium text-ivory transition hover:shadow-xl disabled:opacity-70"
+            className="group relative mt-1 w-full overflow-hidden rounded-full bg-foreground py-4 text-base font-medium text-ivory transition hover:shadow-xl disabled:opacity-70"
           >
             <span className="relative z-10">
               {submitting
@@ -334,8 +268,8 @@ export default function OrderModal({
           </p>
 
           {codTrust.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 pt-1">
-              {codTrust.map((item) => (
+            <div className="flex flex-wrap justify-center gap-2 pt-0.5">
+              {codTrust.slice(0, 3).map((item) => (
                 <span
                   key={item}
                   className="rounded-full bg-beige/60 px-2.5 py-1 text-[10px] text-muted"
