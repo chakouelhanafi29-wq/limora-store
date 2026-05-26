@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { resolveProductSlug } from "@/lib/products/catalog";
 import type { ProductPageConfig } from "./types";
 
 type UpsertResult = {
@@ -23,9 +24,10 @@ export async function upsertProductPageConfigRow(
   config: ProductPageConfig,
   productId?: string,
 ): Promise<UpsertResult> {
+  const resolvedSlug = resolveProductSlug(slug);
   const payload: Record<string, unknown> = {
-    slug,
-    config: { ...config, slug },
+    slug: resolvedSlug,
+    config: { ...config, slug: resolvedSlug },
   };
 
   if (productId) {

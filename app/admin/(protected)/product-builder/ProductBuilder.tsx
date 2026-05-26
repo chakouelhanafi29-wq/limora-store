@@ -68,6 +68,17 @@ export default function ProductBuilder({
     if (result.error) {
       console.warn(result.error);
     }
+
+    try {
+      await fetch("/api/revalidate/product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug }),
+      });
+    } catch (revalidateError) {
+      console.warn("Product page revalidation failed:", revalidateError);
+    }
+
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };

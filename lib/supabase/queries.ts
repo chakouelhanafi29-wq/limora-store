@@ -1,4 +1,5 @@
 import { OFFICIAL_PRODUCT_SLUGS } from "@/lib/product-images";
+import { resolveProductSlug } from "@/lib/products/catalog";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import type {
   AnalyticsStats,
@@ -42,7 +43,7 @@ export async function getProductBySlug(
   slug: string,
 ): Promise<ProductWithRelations | null> {
   if (!isSupabaseConfigured()) return null;
-  const resolvedSlug = slug === "glow" ? "collagen-glow" : slug;
+  const resolvedSlug = resolveProductSlug(slug);
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")

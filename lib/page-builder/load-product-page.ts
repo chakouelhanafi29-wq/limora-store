@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { unstable_noStore as noStore } from "next/cache";
 import {
   resolvePrimaryProductImage,
   resolveProductGalleryImages,
@@ -11,11 +12,13 @@ import { getSiteConfig } from "@/lib/site/config";
 import { buildPageMetadata, productPagePath } from "@/lib/seo/metadata";
 
 export async function loadProductPage(slug: string) {
+  noStore();
+
   const resolvedSlug = resolveProductSlug(slug);
-  const [pageConfig, dbProduct] = await Promise.all([
-    getProductPageConfig(resolvedSlug),
-    getProductBySlug(resolvedSlug),
-  ]);
+  const dbProduct = await getProductBySlug(resolvedSlug);
+  const pageConfig = await getProductPageConfig(resolvedSlug, {
+    product: dbProduct,
+  });
 
   return {
     pageConfig,

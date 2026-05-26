@@ -12,6 +12,7 @@ import { productPagePath } from "@/lib/seo/metadata";
 import ProductPageClient from "../ProductPageClient";
 
 export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type Props = {
   params: Promise<{ slug: string }>;

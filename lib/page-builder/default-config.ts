@@ -58,14 +58,56 @@ export function getDefaultProductPageConfig(
   return JSON.parse(JSON.stringify(config)) as ProductPageConfig;
 }
 
+type MergeProductPageConfigOptions = {
+  /** Saved row from Supabase — use builder content as primary source. */
+  authoritative?: boolean;
+};
+
 export function mergeProductPageConfig(
   saved: Partial<ProductPageConfig> | null,
   slug = "collagen-glow",
   product?: ProductWithRelations | null,
+  options?: MergeProductPageConfigOptions,
 ): ProductPageConfig {
   const resolvedSlug = slug === "glow" ? "collagen-glow" : slug;
   const defaults = getDefaultProductPageConfig(resolvedSlug, product);
   if (!saved) return defaults;
+
+  const authoritative = options?.authoritative ?? false;
+
+  if (authoritative) {
+    return {
+      slug: resolvedSlug,
+      hero: {
+        ...defaults.hero,
+        ...saved.hero,
+        images: saved.hero?.images?.length
+          ? saved.hero.images
+          : defaults.hero.images,
+        bullets: saved.hero?.bullets?.length
+          ? saved.hero.bullets
+          : defaults.hero.bullets,
+      },
+      offers: Array.isArray(saved.offers)
+        ? saved.offers.length
+          ? saved.offers
+          : defaults.offers
+        : defaults.offers,
+      orderModal: saved.orderModal
+        ? { ...defaults.orderModal, ...saved.orderModal }
+        : defaults.orderModal,
+      stickyBar: saved.stickyBar
+        ? { ...defaults.stickyBar, ...saved.stickyBar }
+        : defaults.stickyBar,
+      sections: Array.isArray(saved.sections)
+        ? saved.sections.length
+          ? saved.sections
+          : defaults.sections
+        : defaults.sections,
+      theme: saved.theme ? { ...defaults.theme, ...saved.theme } : defaults.theme,
+      mobile: saved.mobile ? { ...defaults.mobile, ...saved.mobile } : defaults.mobile,
+    };
+  }
 
   return {
     slug: resolvedSlug,
