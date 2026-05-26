@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useState } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { upsertProductPageConfigRow } from "@/lib/page-builder/save-config";
 import {
   duplicateSection,
   normalizeSectionOrders,
@@ -53,20 +54,19 @@ export default function ProductBuilder({
     if (!supabase) return;
 
     setSaving(true);
-    const row: Record<string, unknown> = {
+    const result = await upsertProductPageConfigRow(
+      supabase,
       slug,
-      config: { ...config, slug },
-    };
-    if (productId) {
-      row.product_id = productId;
-    }
-    const { error } = await supabase.from("product_page_configs").upsert(row, {
-      onConflict: "slug",
-    });
+      { ...config, slug },
+      productId,
+    );
     setSaving(false);
-    if (error) {
-      alert(error.message);
+    if (!result.ok) {
+      alert(result.error ?? "تعذر حفظ إعدادات الصفحة");
       return;
+    }
+    if (result.error) {
+      console.warn(result.error);
     }
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);

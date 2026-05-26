@@ -5,6 +5,7 @@ import {
   getDefaultProductPageConfig,
   mergeProductPageConfig,
 } from "@/lib/page-builder/default-config";
+import { upsertProductPageConfigRow } from "@/lib/page-builder/save-config";
 import type { ProductWithRelations } from "@/lib/types/database";
 import type { ProductPageConfig } from "@/lib/page-builder/types";
 
@@ -55,17 +56,14 @@ export async function saveProductPageConfig(
 ) {
   const resolvedSlug = resolveProductSlug(slug);
   const supabase = await createClient();
-  const row: Record<string, unknown> = {
-    slug: resolvedSlug,
-    config: { ...config, slug: resolvedSlug },
-  };
-  if (productId) {
-    row.product_id = productId;
+  const result = await upsertProductPageConfigRow(
+    supabase,
+    resolvedSlug,
+    config,
+    productId,
+  );
+
+  if (!result.ok) {
+    throw new Error(result.error ?? "Failed to save product page config");
   }
-
-  const { error } = await supabase
-    .from("product_page_configs")
-    .upsert(row, { onConflict: "slug" });
-
-  if (error) throw new Error(error.message);
 }
