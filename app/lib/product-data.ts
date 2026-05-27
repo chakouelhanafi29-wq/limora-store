@@ -423,6 +423,53 @@ export const productFaqs = {
   ],
 };
 
+export const qualityTrust = {
+  label: "TRUSTED QUALITY",
+  title: "جودة موثوقة ومعتمدة",
+  subtitle: "منتج حقيقي… بمعايير جودة تستحقين ثقتكِ",
+  reassurance:
+    "تركيبة مصنعة بعناية في بيئة احترافية… لراحة وثقة أكبر مع كل طلب. هذا ليس منتجاً عشوائياً — بل تجربة فاخرة موثوقة.",
+  labImage:
+    "https://images.unsplash.com/photo-1582719471131-67643f839661?w=1200&q=80",
+  certifications: [
+    "مرخص من وزارة الصحة",
+    "معتمد وفق معايير الجودة",
+    "فحص جودة في مختبرات موثوقة",
+  ],
+  badges: [
+    {
+      icon: "🇸🇦",
+      label: "منتج محلي",
+      description: "منتج محلي بمعايير جودة عالية",
+    },
+    {
+      icon: "✦",
+      label: "جودة عالية",
+      description: "معايير فاخرة في كل مرحلة تصنيع",
+    },
+    {
+      icon: "🏭",
+      label: "تصنيع احترافي",
+      description: "بيئة تصنيع نظيفة ومحكمة",
+    },
+    {
+      icon: "🧪",
+      label: "مختبرات موثوقة",
+      description: "فحص وجودة قبل الوصول إليكِ",
+    },
+    {
+      icon: "☪",
+      label: "\u062D\u0644\u0627\u0644",
+      description: "معتمد لراحة وثقة أكبر",
+    },
+    {
+      icon: "💵",
+      label: "الدفع عند الاستلام",
+      description: "ادفعي عند استلام طلبكِ بأمان",
+    },
+  ],
+};
+
 export const guarantee = {
   label: "OUR PROMISE",
   title: "ضمان LIMORA",

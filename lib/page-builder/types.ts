@@ -9,6 +9,7 @@ export type SectionType =
   | "ingredients"
   | "faq"
   | "guarantee"
+  | "quality_trust"
   | "related_products"
   | "lifestyle";
 
@@ -114,6 +115,7 @@ export const SECTION_LABELS: Record<SectionType, string> = {
   ingredients: "المكونات",
   faq: "الأسئلة الشائعة",
   guarantee: "الضمان",
+  quality_trust: "جودة موثوقة ومعتمدة",
   related_products: "منتجات ذات صلة",
   lifestyle: "لايف ستايل / Banner",
 };

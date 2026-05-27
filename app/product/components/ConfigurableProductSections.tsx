@@ -567,6 +567,97 @@ export function renderProductSection(
       const items = (content.items as { question: string; answer: string }[]) ?? [];
       return <FAQBlock key={section.id} pad={pad} label={String(content.label ?? "")} title={String(content.title ?? "")} items={items} />;
     }
+    case "quality_trust": {
+      const badges =
+        (content.badges as { icon: string; label: string; description?: string }[]) ?? [];
+      const certifications = (content.certifications as string[]) ?? [];
+      const reassurance = String(content.reassurance ?? "");
+      const labImage = String(content.labImage ?? "");
+
+      return (
+        <section
+          key={section.id}
+          className={`${pad} bg-gradient-to-b from-ivory via-beige/25 to-ivory`}
+        >
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <SectionHeader
+              label={String(content.label ?? "")}
+              title={String(content.title ?? "")}
+              subtitle={String(content.subtitle ?? "")}
+            />
+
+            <div className={`grid items-center ${gridGap} lg:grid-cols-2 lg:gap-10`}>
+              {labImage ? (
+                <div className="relative overflow-hidden rounded-[2rem] border border-champagne/10 bg-white luxury-shadow-lg">
+                  <div className="relative aspect-[4/3] sm:aspect-[5/4]">
+                    <Image
+                      src={labImage}
+                      alt={String(content.title ?? "جودة موثوقة")}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 50vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
+                    {certifications.length ? (
+                      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
+                        <div className="flex flex-wrap gap-2">
+                          {certifications.map((item) => (
+                            <span
+                              key={item}
+                              className="rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm"
+                            >
+                              {item}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="space-y-6">
+                {reassurance ? (
+                  <p className="rounded-3xl border border-champagne/10 bg-white/80 p-5 text-center text-base leading-relaxed text-foreground/85 shadow-sm sm:p-6 lg:text-right">
+                    {reassurance}
+                  </p>
+                ) : null}
+
+                {!labImage && certifications.length ? (
+                  <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
+                    {certifications.map((item) => (
+                      <span
+                        key={item}
+                        className="rounded-full border border-champagne/20 bg-white px-4 py-2 text-xs font-medium text-foreground/80 shadow-sm"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                  {badges.map((badge) => (
+                    <div
+                      key={`${badge.label}-${badge.icon}`}
+                      className="group rounded-3xl border border-champagne/10 bg-gradient-to-br from-white via-white to-beige/30 p-4 text-center transition hover:-translate-y-0.5 hover:shadow-md sm:p-5"
+                    >
+                      <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-champagne/10 text-xl transition group-hover:bg-champagne/15">
+                        {badge.icon}
+                      </span>
+                      <h3 className="mb-1 text-sm font-bold text-foreground">{badge.label}</h3>
+                      {badge.description ? (
+                        <p className="text-[11px] leading-relaxed text-muted">{badge.description}</p>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
     case "guarantee": {
       const points = (content.points as { icon: string; title: string; description: string }[]) ?? [];
       const ctaSubtitle = String(content.ctaSubtitle ?? "");

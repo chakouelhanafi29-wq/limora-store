@@ -9,6 +9,7 @@ import {
   productFaqs,
   productIngredients,
   productReviews,
+  qualityTrust,
   relatedProducts,
   resultsTimeline,
   transformation,
@@ -50,6 +51,13 @@ export function buildStaticTemplateConfig(slug: string): ProductPageConfig {
       enabled: true,
       order: 3,
       content: structuredClone(comparison),
+    },
+    {
+      id: createSectionId(),
+      type: "quality_trust",
+      enabled: true,
+      order: 4,
+      content: structuredClone(qualityTrust),
     },
     {
       id: createSectionId(),
@@ -232,6 +240,11 @@ export function genericSectionScaffolds(
           { feature: "نتائج طبيعية", limora: true, others: false },
         ],
       },
+    },
+    {
+      type: "quality_trust",
+      enabled: true,
+      content: structuredClone(qualityTrust),
     },
     {
       type: "reviews",

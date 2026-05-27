@@ -427,6 +427,32 @@ export default function SectionEditor({ section, slug, onChange }: Props) {
         />
       )}
 
+      {section.type === "quality_trust" && (
+        <>
+          <Field
+            label="نص الطمأنينة العاطفي"
+            value={String(content.reassurance ?? "")}
+            onChange={(v) => updateContent("reassurance", v)}
+            multiline
+          />
+          <QualityTrustEditor
+            slug={slug}
+            labImage={String(content.labImage ?? "")}
+            certifications={(content.certifications as string[]) ?? []}
+            badges={
+              (content.badges as {
+                icon: string;
+                label: string;
+                description?: string;
+              }[]) ?? []
+            }
+            onLabImageChange={(v) => updateContent("labImage", v)}
+            onCertificationsChange={(items) => updateContent("certifications", items)}
+            onBadgesChange={(items) => updateContent("badges", items)}
+          />
+        </>
+      )}
+
       {section.type === "related_products" && (
         <RelatedProductsEditor
           slug={slug}
@@ -1186,6 +1212,112 @@ function RelatedProductsEditor({
   );
 }
 
+function QualityTrustEditor({
+  slug,
+  labImage,
+  certifications,
+  badges,
+  onLabImageChange,
+  onCertificationsChange,
+  onBadgesChange,
+}: {
+  slug: string;
+  labImage: string;
+  certifications: string[];
+  badges: { icon: string; label: string; description?: string }[];
+  onLabImageChange: (v: string) => void;
+  onCertificationsChange: (items: string[]) => void;
+  onBadgesChange: (items: { icon: string; label: string; description?: string }[]) => void;
+}) {
+  return (
+    <div className="space-y-4">
+      <ImageUploadField
+        label="صورة المختبر / التصنيع / الجودة"
+        value={labImage}
+        slug={slug}
+        onChange={onLabImageChange}
+      />
+      <div className="space-y-3">
+        <p className="text-xs font-semibold text-muted">شارات الاعتماد / التصديق</p>
+        {certifications.map((item, i) => (
+          <div key={i} className="flex items-center gap-2">
+            <input
+              value={item}
+              onChange={(e) => {
+                const next = [...certifications];
+                next[i] = e.target.value;
+                onCertificationsChange(next);
+              }}
+              className="flex-1 rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+            <RemoveButton
+              onClick={() =>
+                onCertificationsChange(certifications.filter((_, idx) => idx !== i))
+              }
+            />
+          </div>
+        ))}
+        <ListControls
+          addLabel="شارة اعتماد"
+          onAdd={() => onCertificationsChange([...certifications, ""])}
+        />
+      </div>
+      <div className="space-y-3">
+        <p className="text-xs font-semibold text-muted">شارات الثقة</p>
+        {badges.map((badge, i) => (
+          <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
+            <div className="flex justify-end">
+              <RemoveButton
+                onClick={() => onBadgesChange(badges.filter((_, idx) => idx !== i))}
+              />
+            </div>
+            <input
+              value={badge.icon}
+              onChange={(e) => {
+                const next = [...badges];
+                next[i] = { ...badge, icon: e.target.value };
+                onBadgesChange(next);
+              }}
+              placeholder="أيقونة (emoji)"
+              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+            <input
+              value={badge.label}
+              onChange={(e) => {
+                const next = [...badges];
+                next[i] = { ...badge, label: e.target.value };
+                onBadgesChange(next);
+              }}
+              placeholder="العنوان"
+              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+            <textarea
+              value={badge.description ?? ""}
+              onChange={(e) => {
+                const next = [...badges];
+                next[i] = { ...badge, description: e.target.value };
+                onBadgesChange(next);
+              }}
+              placeholder="وصف قصير (اختياري)"
+              rows={2}
+              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+            />
+          </div>
+        ))}
+        <ListControls
+          addLabel="شارة ثقة"
+          onAdd={() =>
+            onBadgesChange([
+              ...badges,
+              { icon: "✦", label: "شارة جديدة", description: "" },
+            ])
+          }
+        />
+      </div>
+    </div>
+  );
+}
+
 function ComparisonEditor({
   rows,
   onChange,
@@ -1285,6 +1417,19 @@ const BLANK_SECTION_CONTENT: Record<SectionType, Record<string, unknown>> = {
     subtitle: "",
     points: [],
     ctaSubtitle: "",
+  },
+  quality_trust: {
+    label: "TRUSTED QUALITY",
+    title: "جودة موثوقة ومعتمدة",
+    subtitle: "منتج حقيقي… بمعايير جودة تستحقين ثقتكِ",
+    reassurance:
+      "تركيبة مصنعة بعناية في بيئة احترافية… لراحة وثقة أكبر مع كل طلب.",
+    labImage: "",
+    certifications: ["مرخص من وزارة الصحة", "معتمد وفق معايير الجودة"],
+    badges: [
+      { icon: "🇸🇦", label: "منتج محلي", description: "منتج محلي بمعايير جودة عالية" },
+      { icon: "✦", label: "جودة عالية", description: "معايير فاخرة في كل مرحلة تصنيع" },
+    ],
   },
   related_products: { label: "RELATED", title: "منتجات ذات صلة", items: [] },
   lifestyle: {
