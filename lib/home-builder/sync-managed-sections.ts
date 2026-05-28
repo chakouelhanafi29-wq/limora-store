@@ -17,7 +17,7 @@ export const HOME_MANAGED_CONTENT_REVISION = 5;
 export const HOME_BEFORE_AFTER_CONTENT_REVISION = 3;
 
 /** Bump when featured products section UI/content defaults change in code. */
-export const HOME_PRODUCTS_CONTENT_REVISION = 2;
+export const HOME_PRODUCTS_CONTENT_REVISION = 3;
 
 const EXPECTED_TRANSFORMATION_IMAGES = [
   HOME_TRANSFORMATION_IMAGES.collagenGlow,

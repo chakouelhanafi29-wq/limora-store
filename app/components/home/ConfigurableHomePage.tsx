@@ -176,7 +176,13 @@ function renderSection(
           label={String(content.label ?? "")}
           title={String(content.title ?? "")}
           subtitle={String(content.subtitle ?? "")}
-          className={pad}
+          className={
+            theme.sectionSpacing === "compact"
+              ? "featured-collection-section--compact"
+              : theme.sectionSpacing === "spacious"
+                ? "featured-collection-section--spacious"
+                : ""
+          }
           buttonRadius={btn}
         />
       );
