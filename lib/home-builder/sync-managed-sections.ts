@@ -273,12 +273,24 @@ export function syncManagedHomeSections(
 ): HomePageConfig {
   const defaultBeforeAfter = getBeforeAfterSection(defaults.sections);
 
-  let sections = config.sections
-    .filter((section) => section.enabled !== false)
-    .map(sanitizeSection);
+  let sections = config.sections.filter((section) => section.enabled !== false);
 
-  sections = removeDuplicateBrandStorySections(sections);
-  sections = removeBrandStoryAfterFaq(sections);
+  if (config.customized) {
+    sections = sections.map((section) => {
+      if (
+        section.type === "before_after" &&
+        transformationHasLegacyDetox(section.content as Record<string, unknown>)
+      ) {
+        return syncBeforeAfterSection(section);
+      }
+      return section;
+    });
+  } else {
+    sections = sections.map(sanitizeSection);
+    sections = removeDuplicateBrandStorySections(sections);
+    sections = removeBrandStoryAfterFaq(sections);
+  }
+
   sections = ensureProductsSection(sections, defaults);
 
   if (defaultBeforeAfter && !sections.some((section) => section.type === "before_after")) {

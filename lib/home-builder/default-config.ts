@@ -177,7 +177,14 @@ export function getOrderedHomeSections(
   mobile = false,
 ) {
   const enabled = config.sections
-    .filter((section) => section.enabled)
+    .filter((section) => {
+      if (!section.enabled) return false;
+      if (mobile) {
+        const style = (section.content.style ?? {}) as { hideOnMobile?: boolean };
+        if (style.hideOnMobile) return false;
+      }
+      return true;
+    })
     .sort((a, b) => a.order - b.order);
 
   if (mobile && config.mobile.sectionOrder?.length) {

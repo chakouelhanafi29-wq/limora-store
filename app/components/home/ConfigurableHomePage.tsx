@@ -7,12 +7,17 @@ import AnnouncementBar from "@/app/components/AnnouncementBar";
 import Testimonials from "@/app/components/Testimonials";
 import { getOrderedHomeSections } from "@/lib/home-builder/default-config";
 import { isValidImageSrc } from "@/lib/home-builder/image-utils";
+import {
+  getSectionStyle,
+  resolveSectionSurface,
+} from "@/lib/home-builder/section-style";
 import type {
   HomePageConfig,
   HomePageTheme,
   HomeSection,
 } from "@/lib/home-builder/types";
 import type { FeaturedProductCard } from "@/lib/storefront";
+import { resolveHomepageFeaturedProducts } from "@/lib/storefront/homepage-featured-products";
 import ConfigurableNavbar from "./ConfigurableNavbar";
 import FeaturedProductsSection from "./FeaturedProductsSection";
 import HomeFAQSection from "./HomeFAQSection";
@@ -82,10 +87,13 @@ function renderSection(
   theme: HomePageTheme,
   products: FeaturedProductCard[],
   testimonials: TestimonialsData,
+  isMobile: boolean,
 ) {
   const pad = spacingClass(theme);
   const btn = buttonRadius(theme);
   const content = section.content as Record<string, unknown>;
+  const sectionStyle = getSectionStyle(content);
+  const surface = resolveSectionSurface(theme, sectionStyle, pad);
 
   switch (section.type) {
     case "announcement_bar": {
@@ -96,8 +104,17 @@ function renderSection(
       const stats = (content.stats as { value: string; label: string }[]) ?? [];
       const floatCard1 = content.floatCard1 as { title: string; subtitle: string };
       const floatCard2 = content.floatCard2 as { label: string; title: string };
+      const mobileImage = String(content.imageMobile ?? "");
+      const heroImage =
+        isMobile && isValidImageSrc(mobileImage)
+          ? mobileImage
+          : String(content.image ?? "");
       return (
-        <section key={section.id} className={`relative ${heroGradientClass(theme)}`}>
+        <section
+          key={section.id}
+          className={`relative ${heroGradientClass(theme)} ${sectionStyle.backgroundClass ?? ""}`.trim()}
+          style={surface.style}
+        >
           <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
             <div className="text-center lg:text-right">
               <span className="section-label mb-6 inline-block rounded-full border border-champagne/30 bg-white/50 px-5 py-2 text-xs font-medium text-champagne">
@@ -116,13 +133,13 @@ function renderSection(
               <p className="mb-8 text-sm text-champagne">{String(content.trustLine ?? "")}</p>
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
                 <a
-                  href="/product/collagen-glow"
+                  href={String(content.ctaPrimaryHref ?? "/product/collagen-glow")}
                   className={`${btn} luxury-focus-ring bg-foreground px-10 py-4 text-base font-medium text-ivory transition-all hover:bg-champagne hover:text-foreground hover:shadow-xl hover:shadow-champagne/20 active:scale-[0.99]`}
                 >
                   {String(content.ctaPrimary ?? "")}
                 </a>
                 <a
-                  href="#results"
+                  href={String(content.ctaSecondaryHref ?? "#results")}
                   className={`${btn} luxury-focus-ring border border-champagne/40 bg-white/60 px-10 py-4 text-base font-medium text-foreground backdrop-blur-sm transition-all hover:border-champagne hover:bg-white active:scale-[0.99]`}
                 >
                   {String(content.ctaSecondary ?? "")}
@@ -143,7 +160,7 @@ function renderSection(
             <div className="relative mx-auto aspect-[4/5] max-w-md overflow-visible lg:max-w-none">
               <div className="relative overflow-hidden rounded-[2rem] luxury-shadow-lg">
                 <Image
-                  src={String(content.image ?? "")}
+                  src={heroImage}
                   alt={String(content.headline ?? "LIMORA — جمالٌ يُولَد من الداخل")}
                   width={900}
                   height={1125}
@@ -176,7 +193,7 @@ function renderSection(
           label={String(content.label ?? "")}
           title={String(content.title ?? "")}
           subtitle={String(content.subtitle ?? "")}
-          className={pad}
+          className={surface.className}
           buttonRadius={btn}
         />
       );
@@ -203,7 +220,12 @@ function renderSection(
       const visibleItems = items.filter((item) => isValidImageSrc(item.image));
 
       return (
-        <section key={section.id} id="results" className={`bg-beige/50 ${pad}`}>
+        <section
+          key={section.id}
+          id="results"
+          className={`bg-beige/50 ${surface.className}`.trim()}
+          style={surface.style}
+        >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               label={String(content.label ?? "")}
@@ -276,7 +298,7 @@ function renderSection(
     case "benefits": {
       const pillars = (content.pillars as { icon: string; title: string; description: string }[]) ?? [];
       return (
-        <section key={section.id} id="why" className={pad}>
+        <section key={section.id} id="why" className={surface.className} style={surface.style}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
             <div className="grid gap-6 sm:grid-cols-2">
@@ -300,7 +322,7 @@ function renderSection(
         subtitle: String(content.subtitle ?? ""),
         items: content.useDynamicReviews ? testimonials.items : staticItems,
       };
-      return <Testimonials key={section.id} testimonials={data} className={pad} />;
+      return <Testimonials key={section.id} testimonials={data} className={surface.className} />;
     }
     case "faq":
       return (
@@ -310,7 +332,8 @@ function renderSection(
           title={String(content.title ?? "")}
           subtitle={String(content.subtitle ?? "")}
           items={(content.items as { question: string; answer: string }[]) ?? []}
-          className={`bg-beige/50 ${pad}`}
+          className={`bg-beige/50 ${surface.className}`.trim()}
+          style={surface.style}
         />
       );
     case "brand_story": {
@@ -329,7 +352,7 @@ function renderSection(
       }
 
       return (
-        <section key={section.id} id="about" className={pad}>
+        <section key={section.id} id="about" className={surface.className} style={surface.style}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className={`grid items-center gap-12 ${showImage ? "lg:grid-cols-2" : ""}`}>
               {showImage ? (
@@ -368,10 +391,12 @@ function renderSection(
       return (
         <section
           key={section.id}
-          className={pad}
+          className={surface.className}
           style={{
+            ...surface.style,
             background: String(
               content.backgroundColor ??
+                surface.style.background ??
                 "linear-gradient(135deg, #3d2e2a, #2a201e)",
             ),
           }}
@@ -428,7 +453,11 @@ function renderSection(
     }
     case "countdown_banner":
       return (
-        <section key={section.id} className="bg-champagne/10 py-6 text-center">
+        <section
+          key={section.id}
+          className={`bg-champagne/10 py-6 text-center ${sectionStyle.backgroundClass ?? ""}`.trim()}
+          style={surface.style}
+        >
           <p className="text-sm font-medium text-champagne">{String(content.message ?? "")}</p>
           <p className="font-serif text-2xl font-semibold text-foreground">{String(content.title ?? "")}</p>
           <p className="text-xs text-muted">{String(content.endDate ?? "")}</p>
@@ -491,6 +520,7 @@ export default function ConfigurableHomePage({
 
   const sections = getOrderedHomeSections(config, isMobile);
   const hasFooterSection = sections.some((s) => s.type === "footer");
+  const featuredProducts = resolveHomepageFeaturedProducts(config, products);
 
   return (
     <div
@@ -505,7 +535,7 @@ export default function ConfigurableHomePage({
       <main>
         {sections
           .map((section) =>
-            renderSection(section, config.theme, products, testimonials),
+            renderSection(section, config.theme, featuredProducts, testimonials, isMobile),
           )
           .filter(Boolean)}
       </main>

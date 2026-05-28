@@ -1,4 +1,5 @@
 import { OFFICIAL_PRODUCT_SLUGS } from "@/lib/product-images";
+import type { HomePageConfig } from "@/lib/home-builder/types";
 import { mapFeaturedProducts, type FeaturedProductCard } from "@/lib/storefront";
 import type { ProductWithRelations } from "@/lib/types/database";
 
@@ -24,6 +25,30 @@ export function buildHomepageFeaturedProductCards(
   return cards.map((card) => ({
     ...card,
     price: HOMEPAGE_FEATURED_DISPLAY_PRICE,
+    originalPrice: "",
+  }));
+}
+
+export function resolveHomepageFeaturedProducts(
+  config: HomePageConfig,
+  catalogProducts: FeaturedProductCard[],
+): FeaturedProductCard[] {
+  const section = config.sections.find((item) => item.type === "products");
+  if (!section) return catalogProducts;
+
+  const content = section.content as Record<string, unknown>;
+  if (content.useDynamicProducts === false) {
+    const manual = content.productCards as FeaturedProductCard[] | undefined;
+    if (manual?.length) return manual;
+    return catalogProducts;
+  }
+
+  const displayPrice = String(
+    content.homepageDisplayPrice ?? HOMEPAGE_FEATURED_DISPLAY_PRICE,
+  );
+  return catalogProducts.map((product) => ({
+    ...product,
+    price: displayPrice,
     originalPrice: "",
   }));
 }

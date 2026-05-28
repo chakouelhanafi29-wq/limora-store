@@ -46,6 +46,8 @@ export type HomePageConfig = {
   sections: HomeSection[];
   theme: HomePageTheme;
   mobile: HomePageMobile;
+  /** Set when saved from admin builder — preserves user edits on load. */
+  customized?: boolean;
 };
 
 export const HOME_SECTION_LABELS: Record<HomeSectionType, string> = {

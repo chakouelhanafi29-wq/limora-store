@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 
 type FAQItem = { question: string; answer: string };
 
@@ -10,17 +10,19 @@ export default function HomeFAQSection({
   subtitle,
   items,
   className = "bg-beige/50 py-20 sm:py-28",
+  style,
 }: {
   label: string;
   title: string;
   subtitle: string;
   items: FAQItem[];
   className?: string;
+  style?: CSSProperties;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className={className}>
+    <section id="faq" className={className} style={style}>
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <span className="section-label mb-4 inline-block text-xs font-medium tracking-[0.25em] text-champagne">
