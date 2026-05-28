@@ -2,6 +2,11 @@
 
 import { useMemo } from "react";
 import type { AnalyticsDashboardData } from "@/lib/types/analytics-dashboard";
+import {
+  formatAdminInteger,
+  formatAdminMoney,
+  formatAdminPercent,
+} from "@/lib/admin/format";
 import { useAdminAnalytics } from "@/lib/analytics/use-admin-analytics";
 import AnalyticsDateFilter from "./AnalyticsDateFilter";
 
@@ -53,7 +58,7 @@ function BarRows({
         <div key={item.key ?? item.label}>
           <div className="mb-1.5 flex justify-between text-sm">
             <span className="font-medium">{item.label}</span>
-            <span className="text-muted">{item.count.toLocaleString("ar-SA")}</span>
+            <span className="text-muted">{formatAdminInteger(item.count)}</span>
           </div>
           <div className="h-2.5 overflow-hidden rounded-full bg-beige">
             <div
@@ -81,9 +86,11 @@ function OrdersChart({
         <div
           key={point.date}
           className="flex min-w-[2.25rem] flex-1 flex-col items-center gap-2"
-          title={`${point.count} طلب · ${Math.round(point.revenue)} ر.س`}
+          title={`${formatAdminInteger(point.count)} طلب · ${formatAdminMoney(Math.round(point.revenue))}`}
         >
-          <span className="text-[10px] font-medium text-foreground">{point.count}</span>
+          <span className="text-[10px] font-medium text-foreground">
+            {formatAdminInteger(point.count)}
+          </span>
           <div
             className="w-full rounded-t-xl bg-champagne"
             style={{ height: `${Math.max((point.count / max) * 100, 10)}%` }}
@@ -115,15 +122,15 @@ function DeviceCard({
           <p className="font-semibold text-foreground">{label}</p>
           <p className="mt-1 text-sm text-muted">
             {visitsOnly
-              ? `${sessions.toLocaleString("ar-SA")} زيارة`
-              : `${(orders ?? 0).toLocaleString("ar-SA")} طلب · ${sessions.toLocaleString("ar-SA")} زيارة`}
+              ? `${formatAdminInteger(sessions)} زيارة`
+              : `${formatAdminInteger(orders ?? 0)} طلب · ${formatAdminInteger(sessions)} زيارة`}
           </p>
           {visitsOnly ? (
             <p className="mt-1 text-xs text-muted">معدل تحويل الجوال (تقريبي)</p>
           ) : null}
         </div>
         <span className="rounded-full bg-white px-3 py-1 text-sm font-medium text-champagne ring-1 ring-champagne/20">
-          {conversionRate}%
+          {formatAdminPercent(conversionRate)}
         </span>
       </div>
     </div>
@@ -136,9 +143,6 @@ export default function AnalyticsDashboard({
   initialData: AnalyticsDashboardData;
 }) {
   const { data, appliedFilter, applyFilter, isPending } = useAdminAnalytics(initialData);
-
-  const fmt = (n: number) => n.toLocaleString("ar-SA");
-  const money = (n: number) => `${fmt(Math.round(n))} ر.س`;
 
   const confirmedOrders =
     data.cod.confirmed + data.cod.shipped + data.cod.delivered;
@@ -200,16 +204,23 @@ export default function AnalyticsDashboard({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <HeroMetric label="عدد الزوار" value={fmt(data.traffic.totalVisitors)} accent />
-        <HeroMetric label="عدد الطلبات" value={fmt(data.cod.totalOrders)} />
-        <HeroMetric label="معدل التحويل" value={`${data.conversion.conversionRate}%`} />
-        <HeroMetric label="الإيرادات" value={money(data.cod.totalRevenue)} accent />
+        <HeroMetric
+          label="عدد الزوار"
+          value={formatAdminInteger(data.traffic.totalVisitors)}
+          accent
+        />
+        <HeroMetric label="عدد الطلبات" value={formatAdminInteger(data.cod.totalOrders)} />
+        <HeroMetric
+          label="معدل التحويل"
+          value={formatAdminPercent(data.conversion.conversionRate)}
+        />
+        <HeroMetric label="الإيرادات" value={formatAdminMoney(data.cod.totalRevenue)} accent />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <HeroMetric label="الطلبات المؤكدة" value={fmt(confirmedOrders)} />
-        <HeroMetric label="الطلبات الملغاة" value={fmt(data.cod.cancelled)} />
-        <HeroMetric label="نسبة التوصيل" value={`${data.cod.deliveredRate}%`} />
+        <HeroMetric label="الطلبات المؤكدة" value={formatAdminInteger(confirmedOrders)} />
+        <HeroMetric label="الطلبات الملغاة" value={formatAdminInteger(data.cod.cancelled)} />
+        <HeroMetric label="نسبة التوصيل" value={formatAdminPercent(data.cod.deliveredRate)} />
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
@@ -250,9 +261,9 @@ export default function AnalyticsDashboard({
                 {data.products.slice(0, 5).map((product) => (
                   <tr key={product.slug} className="border-b border-champagne/5">
                     <td className="py-4 font-medium">{product.name}</td>
-                    <td className="py-4">{fmt(product.purchases)}</td>
-                    <td className="py-4">{money(product.revenue)}</td>
-                    <td className="py-4">{product.conversionRate}%</td>
+                    <td className="py-4">{formatAdminInteger(product.purchases)}</td>
+                    <td className="py-4">{formatAdminMoney(product.revenue)}</td>
+                    <td className="py-4">{formatAdminPercent(product.conversionRate)}</td>
                   </tr>
                 ))}
               </tbody>

@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
+import { formatAdminInteger } from "@/lib/admin/format";
 import { getSupabaseHealth } from "@/lib/supabase/health";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
 import { getEnvSiteUrl } from "@/lib/env";
@@ -228,7 +229,7 @@ function StatusCard({
 function Metric({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-xl bg-beige/40 p-4 text-center">
-      <p className="text-2xl font-semibold">{value}</p>
+      <p className="text-2xl font-semibold">{formatAdminInteger(value)}</p>
       <p className="text-xs text-muted">{label}</p>
     </div>
   );

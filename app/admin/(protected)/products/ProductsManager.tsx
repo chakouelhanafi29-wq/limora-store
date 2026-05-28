@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { sortProductImages } from "@/lib/product-images";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { formatAdminMoney } from "@/lib/admin/format";
+import { sortProductImages } from "@/lib/product-images";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { Product, ProductOffer } from "@/lib/types/database";
 
@@ -202,10 +203,10 @@ export default function ProductsManager({
               </h3>
               <p className="mt-1 text-sm text-muted">{product.subtitle}</p>
               <p className="mt-2 font-semibold">
-                {product.price} ر.س
+                {formatAdminMoney(product.price)}
                 {product.original_price && (
                   <span className="mr-2 text-sm text-muted line-through">
-                    {product.original_price}
+                    {formatAdminMoney(product.original_price)}
                   </span>
                 )}
               </p>

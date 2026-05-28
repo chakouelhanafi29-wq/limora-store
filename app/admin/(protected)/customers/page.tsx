@@ -1,5 +1,6 @@
 export const dynamic = "force-dynamic";
 
+import { formatAdminInteger, formatAdminMoney } from "@/lib/admin/format";
 import { getCustomersFromOrders } from "@/lib/supabase/queries";
 
 export default async function AdminCustomersPage() {
@@ -40,10 +41,11 @@ export default async function AdminCustomersPage() {
                     {c.phone}
                   </td>
                   <td className="px-4 py-3">{c.city}</td>
-                  <td className="px-4 py-3">{c.orders.length}</td>
+                  <td className="px-4 py-3">{formatAdminInteger(c.orders.length)}</td>
                   <td className="px-4 py-3">
-                    {c.orders.reduce((s, o) => s + Number(o.total_price), 0)}{" "}
-                    ر.س
+                    {formatAdminMoney(
+                      c.orders.reduce((s, o) => s + Number(o.total_price), 0),
+                    )}
                   </td>
                 </tr>
               ))

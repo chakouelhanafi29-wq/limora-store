@@ -1,6 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  formatAdminDateTime,
+  formatAdminMoney,
+} from "@/lib/admin/format";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import type { Order, OrderStatus } from "@/lib/types/database";
 
@@ -113,7 +117,7 @@ export default function OrdersManager({
                   <p>{order.product_name}</p>
                   <p className="text-xs text-muted">{order.offer_label}</p>
                 </td>
-                <td className="px-4 py-3">{order.total_price} ر.س</td>
+                <td className="px-4 py-3">{formatAdminMoney(order.total_price)}</td>
                 <td className="px-4 py-3">
                   {order.traffic_source ? (
                     <span
@@ -150,7 +154,7 @@ export default function OrdersManager({
                   </select>
                 </td>
                 <td className="px-4 py-3 text-muted">
-                  {new Date(order.created_at).toLocaleString("ar-SA")}
+                  {formatAdminDateTime(order.created_at)}
                 </td>
               </tr>
             ))}

@@ -3,6 +3,12 @@
 import Link from "next/link";
 import type { AnalyticsDashboardData } from "@/lib/types/analytics-dashboard";
 import type { OrderStatus } from "@/lib/types/database";
+import {
+  formatAdminDate,
+  formatAdminInteger,
+  formatAdminMoney,
+  formatAdminPercent,
+} from "@/lib/admin/format";
 import { useAdminAnalytics } from "@/lib/analytics/use-admin-analytics";
 import AnalyticsDateFilter from "./analytics/AnalyticsDateFilter";
 
@@ -52,8 +58,6 @@ type Props = {
 export default function AdminHomeDashboard({ initialData }: Props) {
   const { data, appliedFilter, applyFilter, isPending } = useAdminAnalytics(initialData);
 
-  const fmt = (n: number) => n.toLocaleString("ar-SA");
-  const money = (n: number) => `${fmt(Math.round(n))} ر.س`;
   const confirmedOrders =
     data.cod.confirmed + data.cod.shipped + data.cod.delivered;
 
@@ -76,16 +80,23 @@ export default function AdminHomeDashboard({ initialData }: Props) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard label="عدد الزوار" value={fmt(data.traffic.totalVisitors)} accent />
-        <MetricCard label="عدد الطلبات" value={fmt(data.cod.totalOrders)} />
-        <MetricCard label="معدل التحويل" value={`${data.conversion.conversionRate}%`} />
-        <MetricCard label="الإيرادات" value={money(data.cod.totalRevenue)} accent />
+        <MetricCard
+          label="عدد الزوار"
+          value={formatAdminInteger(data.traffic.totalVisitors)}
+          accent
+        />
+        <MetricCard label="عدد الطلبات" value={formatAdminInteger(data.cod.totalOrders)} />
+        <MetricCard
+          label="معدل التحويل"
+          value={formatAdminPercent(data.conversion.conversionRate)}
+        />
+        <MetricCard label="الإيرادات" value={formatAdminMoney(data.cod.totalRevenue)} accent />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <MetricCard label="الطلبات المؤكدة" value={fmt(confirmedOrders)} />
-        <MetricCard label="الطلبات الملغاة" value={fmt(data.cod.cancelled)} />
-        <MetricCard label="نسبة التوصيل" value={`${data.cod.deliveredRate}%`} />
+        <MetricCard label="الطلبات المؤكدة" value={formatAdminInteger(confirmedOrders)} />
+        <MetricCard label="الطلبات الملغاة" value={formatAdminInteger(data.cod.cancelled)} />
+        <MetricCard label="نسبة التوصيل" value={formatAdminPercent(data.cod.deliveredRate)} />
       </div>
 
       <section className="rounded-2xl border border-champagne/10 bg-white luxury-shadow">
@@ -115,9 +126,9 @@ export default function AdminHomeDashboard({ initialData }: Props) {
                 {data.products.slice(0, 5).map((product) => (
                   <tr key={product.slug} className="border-b border-champagne/5">
                     <td className="px-6 py-4 font-medium">{product.name}</td>
-                    <td className="px-6 py-4">{fmt(product.purchases)}</td>
-                    <td className="px-6 py-4">{money(product.revenue)}</td>
-                    <td className="px-6 py-4">{product.conversionRate}%</td>
+                    <td className="px-6 py-4">{formatAdminInteger(product.purchases)}</td>
+                    <td className="px-6 py-4">{formatAdminMoney(product.revenue)}</td>
+                    <td className="px-6 py-4">{formatAdminPercent(product.conversionRate)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -164,7 +175,7 @@ export default function AdminHomeDashboard({ initialData }: Props) {
                       </p>
                     </td>
                     <td className="px-6 py-4">{order.product_name}</td>
-                    <td className="px-6 py-4">{order.total_price} ر.س</td>
+                    <td className="px-6 py-4">{formatAdminMoney(order.total_price)}</td>
                     <td className="px-6 py-4">
                       <span
                         className={`rounded-full px-2.5 py-1 text-xs font-medium ${statusColors[order.status]}`}
@@ -173,7 +184,7 @@ export default function AdminHomeDashboard({ initialData }: Props) {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-muted">
-                      {new Date(order.created_at).toLocaleDateString("ar-SA")}
+                      {formatAdminDate(order.created_at)}
                     </td>
                   </tr>
                 ))
