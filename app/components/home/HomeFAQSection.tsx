@@ -9,16 +9,18 @@ export default function HomeFAQSection({
   title,
   subtitle,
   items,
+  className = "bg-beige/50 py-20 sm:py-28",
 }: {
   label: string;
   title: string;
   subtitle: string;
   items: FAQItem[];
+  className?: string;
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="bg-beige/50 py-20 sm:py-28">
+    <section id="faq" className={className}>
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <span className="section-label mb-4 inline-block text-xs font-medium tracking-[0.25em] text-champagne">
@@ -43,7 +45,7 @@ export default function HomeFAQSection({
                   onClick={() => setOpenIndex(isOpen ? null : index)}
                 >
                   <span className="text-base font-bold text-foreground">{faq.question}</span>
-                  <span className={`text-champagne transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
+                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-lg text-champagne transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
                 </button>
                 {isOpen && (
                   <p className="px-6 pb-6 text-sm leading-relaxed text-muted">{faq.answer}</p>

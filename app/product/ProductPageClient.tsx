@@ -140,8 +140,8 @@ export default function ProductPageClient({
 
   const aspectClass =
     pageConfig.mobile.imageAspect === "portrait"
-      ? "aspect-[4/5]"
-      : "aspect-square";
+      ? "aspect-[4/5] lg:aspect-[4/5]"
+      : "aspect-square lg:aspect-square";
 
   const sectionCta =
     selectedOffer.price > 0
@@ -181,6 +181,7 @@ export default function ProductPageClient({
                 codTrust={heroTrustBadges}
                 buttonStyle={pageConfig.theme.buttonStyle}
                 ctaSize={pageConfig.mobile.ctaSize}
+                hideMobileInlineCta={showStickyCta}
               />
             </div>
           </div>
@@ -203,6 +204,7 @@ export default function ProductPageClient({
           price={selectedOffer.price}
           codTrust={heroTrustBadges}
           surfaceClass={pageSurface}
+          theme={pageConfig.theme}
         />
       );
     }
@@ -239,6 +241,7 @@ export default function ProductPageClient({
                   codTrust={heroTrustBadges}
                   buttonStyle={pageConfig.theme.buttonStyle}
                   ctaSize={pageConfig.mobile.ctaSize}
+                  hideMobileInlineCta={showStickyCta}
                 />
               </div>
             </div>
@@ -286,7 +289,9 @@ export default function ProductPageClient({
           preview
             ? ""
             : showStickyCta
-              ? "pb-[calc(5.5rem+env(safe-area-inset-bottom))] md:pb-0"
+              ? heroTrustBadges.length
+                ? "pb-[calc(8.5rem+env(safe-area-inset-bottom))] md:pb-0"
+                : "pb-[calc(6.5rem+env(safe-area-inset-bottom))] md:pb-0"
               : "pb-6 md:pb-0"
         }`}
         style={{
@@ -306,6 +311,8 @@ export default function ProductPageClient({
             ctaLabel={pageConfig.hero.ctaLabel}
             visible={showStickyCta}
             codTrust={heroTrustBadges}
+            buttonStyle={pageConfig.theme.buttonStyle}
+            ctaSize={pageConfig.mobile.ctaSize}
           />
           <OrderModal
             open={modalOpen}

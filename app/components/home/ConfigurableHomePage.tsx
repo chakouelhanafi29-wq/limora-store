@@ -66,7 +66,7 @@ function SectionHeader({
 }) {
   return (
     <div className="mb-16 text-center">
-      <span className="section-label mb-4 inline-block text-xs font-medium tracking-[0.25em] text-champagne">
+      <span className="section-label mb-4 inline-block text-xs font-medium text-champagne">
         {label}
       </span>
       <h2 className="mb-4 font-serif text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl">
@@ -97,10 +97,10 @@ function renderSection(
       const floatCard1 = content.floatCard1 as { title: string; subtitle: string };
       const floatCard2 = content.floatCard2 as { label: string; title: string };
       return (
-        <section key={section.id} className={`relative overflow-hidden ${heroGradientClass(theme)}`}>
+        <section key={section.id} className={`relative ${heroGradientClass(theme)}`}>
           <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8 lg:py-28">
             <div className="text-center lg:text-right">
-              <span className="section-label mb-6 inline-block rounded-full border border-champagne/30 bg-white/50 px-5 py-2 text-xs font-medium tracking-[0.25em] text-champagne">
+              <span className="section-label mb-6 inline-block rounded-full border border-champagne/30 bg-white/50 px-5 py-2 text-xs font-medium text-champagne">
                 {String(content.label ?? "")}
               </span>
               <h1 className="mb-6 font-serif text-4xl font-semibold leading-[1.15] text-foreground sm:text-5xl lg:text-6xl">
@@ -117,13 +117,13 @@ function renderSection(
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:justify-center lg:justify-start">
                 <a
                   href="/product/collagen-glow"
-                  className={`${btn} bg-foreground px-10 py-4 text-base font-medium text-ivory transition-all hover:shadow-xl hover:shadow-champagne/20`}
+                  className={`${btn} luxury-focus-ring bg-foreground px-10 py-4 text-base font-medium text-ivory transition-all hover:bg-champagne hover:text-foreground hover:shadow-xl hover:shadow-champagne/20 active:scale-[0.99]`}
                 >
                   {String(content.ctaPrimary ?? "")}
                 </a>
                 <a
                   href="#results"
-                  className={`${btn} border border-champagne/40 bg-white/60 px-10 py-4 text-base font-medium text-foreground backdrop-blur-sm transition-all hover:border-champagne hover:bg-white`}
+                  className={`${btn} luxury-focus-ring border border-champagne/40 bg-white/60 px-10 py-4 text-base font-medium text-foreground backdrop-blur-sm transition-all hover:border-champagne hover:bg-white active:scale-[0.99]`}
                 >
                   {String(content.ctaSecondary ?? "")}
                 </a>
@@ -140,11 +140,11 @@ function renderSection(
                 ))}
               </div>
             </div>
-            <div className="relative mx-auto aspect-[4/5] max-w-md lg:max-w-none">
+            <div className="relative mx-auto aspect-[4/5] max-w-md overflow-visible lg:max-w-none">
               <div className="relative overflow-hidden rounded-[2rem] luxury-shadow-lg">
                 <Image
                   src={String(content.image ?? "")}
-                  alt="LIMORA Hero"
+                  alt={String(content.headline ?? "LIMORA — جمالٌ يُولَد من الداخل")}
                   width={900}
                   height={1125}
                   className="h-full w-full object-cover"
@@ -152,13 +152,13 @@ function renderSection(
                 />
               </div>
               {floatCard1 && (
-                <div className="absolute -bottom-6 -right-4 glass-card rounded-2xl p-5 luxury-shadow lg:-right-8">
+                <div className="absolute bottom-4 right-4 hidden glass-card rounded-2xl p-5 luxury-shadow lg:block lg:-bottom-6 lg:-right-8">
                   <p className="text-sm font-bold text-foreground">{floatCard1.title}</p>
                   <p className="text-xs text-muted">{floatCard1.subtitle}</p>
                 </div>
               )}
               {floatCard2 && (
-                <div className="absolute -top-4 -left-4 glass-card rounded-2xl p-4 luxury-shadow lg:-left-8">
+                <div className="absolute top-4 left-4 hidden glass-card rounded-2xl p-4 luxury-shadow lg:block lg:-top-4 lg:-left-8">
                   <p className="text-xs font-medium text-champagne">{floatCard2.label}</p>
                   <p className="font-serif text-lg font-semibold text-foreground">{floatCard2.title}</p>
                 </div>
@@ -215,7 +215,7 @@ function renderSection(
                 const accent = item.accent ?? "gold";
                 const card = (
                   <article
-                    className={`group relative overflow-hidden rounded-[1.75rem] bg-white ring-1 ring-champagne/10 luxury-shadow-lg transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl hover:shadow-champagne/10 ${item.href ? "cursor-pointer" : ""}`}
+                    className={`group relative overflow-hidden rounded-[1.75rem] bg-white ring-1 ring-champagne/10 luxury-shadow-lg transition-all duration-500 hover:-translate-y-1 hover:shadow-2xl hover:shadow-champagne/10 ${item.href ? "cursor-pointer" : ""}`}
                   >
                     <div className="relative aspect-[4/5] overflow-hidden sm:aspect-[3/4]">
                       <Image
@@ -281,7 +281,7 @@ function renderSection(
             <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
             <div className="grid gap-6 sm:grid-cols-2">
               {pillars.map((pillar) => (
-                <div key={pillar.title} className="rounded-3xl border border-champagne/10 bg-white/60 p-8 luxury-shadow">
+                <div key={pillar.title} className="luxury-card-hover rounded-3xl border border-champagne/10 bg-white/60 p-8 luxury-shadow hover:border-champagne/25">
                   <span className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-champagne/15 text-xl text-champagne">{pillar.icon}</span>
                   <h3 className="mb-3 text-lg font-bold">{pillar.title}</h3>
                   <p className="text-sm text-muted">{pillar.description}</p>
@@ -300,7 +300,7 @@ function renderSection(
         subtitle: String(content.subtitle ?? ""),
         items: content.useDynamicReviews ? testimonials.items : staticItems,
       };
-      return <Testimonials key={section.id} testimonials={data} />;
+      return <Testimonials key={section.id} testimonials={data} className={pad} />;
     }
     case "faq":
       return (
@@ -310,6 +310,7 @@ function renderSection(
           title={String(content.title ?? "")}
           subtitle={String(content.subtitle ?? "")}
           items={(content.items as { question: string; answer: string }[]) ?? []}
+          className={`bg-beige/50 ${pad}`}
         />
       );
     case "brand_story": {
@@ -333,7 +334,7 @@ function renderSection(
             <div className={`grid items-center gap-12 ${showImage ? "lg:grid-cols-2" : ""}`}>
               {showImage ? (
                 <div className="relative overflow-hidden rounded-[1.5rem] luxury-shadow-lg">
-                  <Image src={imageSrc} alt="LIMORA" width={800} height={900} className="aspect-[4/5] w-full object-cover" />
+                  <Image src={imageSrc} alt={String(content.title ?? "عن LIMORA")} width={800} height={900} className="aspect-[4/5] w-full object-cover" />
                 </div>
               ) : null}
               <div className="text-center lg:text-right">
@@ -416,7 +417,7 @@ function renderSection(
               </div>
               <a
                 href={String(content.ctaHref ?? "/product/collagen-glow")}
-                className={`${btn} bg-champagne px-8 py-3 text-sm font-medium text-white`}
+                className={`${btn} luxury-focus-ring bg-champagne px-8 py-3 text-sm font-medium text-white transition-all hover:bg-rose-gold hover:shadow-lg active:scale-[0.99]`}
               >
                 {String(content.ctaLabel ?? "اطلبي الآن")}
               </a>

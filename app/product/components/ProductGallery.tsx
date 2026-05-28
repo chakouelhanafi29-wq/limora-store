@@ -101,16 +101,24 @@ export default function ProductGallery({
           ‹
         </button>
 
-        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-1.5 md:hidden">
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2 md:hidden">
           {images.map((_, i) => (
-            <span
+            <button
               key={i}
-              className={`h-1.5 rounded-full transition-all ${
-                i === activeIndex
-                  ? "w-6 bg-champagne"
-                  : "w-1.5 bg-white/60"
-              }`}
-            />
+              type="button"
+              aria-label={`عرض الصورة ${i + 1}`}
+              aria-current={i === activeIndex ? "true" : undefined}
+              onClick={() => setActiveIndex(i)}
+              className="flex h-11 w-11 items-center justify-center"
+            >
+              <span
+                className={`block rounded-full transition-all ${
+                  i === activeIndex
+                    ? "h-1.5 w-6 bg-champagne"
+                    : "h-1.5 w-1.5 bg-white/60"
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

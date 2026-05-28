@@ -33,4 +33,35 @@ export const PRODUCT_OFFER_TITLE_CLASS =
 export const PRODUCT_PRICE_CLASS = "font-arabic-kufi text-heading font-bold";
 
 export const PRODUCT_CTA_BUTTON_BASE =
-  "group relative overflow-hidden bg-heading font-arabic-kufi font-bold text-ivory transition hover:shadow-xl hover:brightness-110";
+  "group relative overflow-hidden bg-heading font-arabic-kufi font-bold text-ivory transition hover:shadow-xl hover:brightness-110 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne active:scale-[0.99]";
+
+export const LUXURY_FOCUS_RING =
+  "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-champagne";
+
+export function getCtaButtonRadius(
+  buttonStyle: "rounded-full" | "rounded-xl" = "rounded-full",
+): string {
+  return buttonStyle === "rounded-xl" ? "rounded-xl" : "rounded-full";
+}
+
+export function getCtaSizeClass(ctaSize: "sm" | "md" | "lg" = "md"): string {
+  if (ctaSize === "sm") return "py-3 text-sm";
+  if (ctaSize === "lg") return "py-5 text-lg";
+  return "py-4 text-base";
+}
+
+export function buildPrimaryCtaClassName(options?: {
+  buttonStyle?: "rounded-full" | "rounded-xl";
+  sizeClass?: string;
+  fullWidth?: boolean;
+  attention?: boolean;
+}): string {
+  const parts = [
+    PRODUCT_CTA_BUTTON_BASE,
+    getCtaButtonRadius(options?.buttonStyle),
+    options?.sizeClass ?? getCtaSizeClass("md"),
+  ];
+  if (options?.fullWidth !== false) parts.push("w-full");
+  if (options?.attention) parts.push("purchase-zone-cta-attention");
+  return parts.join(" ");
+}

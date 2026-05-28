@@ -27,11 +27,11 @@ export default function AnnouncementBar({ announcements }: Props) {
   if (!announcements.length) return null;
 
   return (
-    <div className="relative overflow-hidden bg-[#3d2e2a] py-3 text-center text-sm text-ivory">
+    <div className="relative overflow-hidden bg-gradient-to-b from-[#4a382f] to-[#3d2e2a] py-3 text-center text-sm text-ivory/95 ring-1 ring-champagne/10">
       <div className="absolute inset-0 gold-shimmer animate-shimmer opacity-15" />
-      <div className="relative z-10 mx-auto flex h-5 max-w-4xl items-center justify-center px-4">
+      <div className="relative z-10 mx-auto flex min-h-5 max-w-4xl items-center justify-center px-4 py-0.5">
         <p
-          className={`announcement-fade font-medium tracking-wide ${
+          className={`announcement-fade text-xs font-medium leading-relaxed tracking-wide sm:text-sm ${
             visible ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
           }`}
         >

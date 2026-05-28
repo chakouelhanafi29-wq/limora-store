@@ -1,8 +1,10 @@
 import type { FinalCtaConfig } from "@/lib/page-builder/types";
 import { resolveHeroTrustBadges } from "@/lib/page-builder/hero-trust";
+import { getSectionPaddingClass } from "@/lib/page-builder/section-spacing";
 import {
-  PRODUCT_CTA_BUTTON_BASE,
+  buildPrimaryCtaClassName,
 } from "@/lib/page-builder/product-page-theme";
+import type { ProductPageTheme } from "@/lib/page-builder/types";
 import { HeroTrustBadge } from "./TrustBadgeItem";
 
 type Props = {
@@ -14,6 +16,7 @@ type Props = {
   price: number;
   codTrust: string[];
   surfaceClass?: string;
+  theme?: ProductPageTheme;
 };
 
 export default function FinalCTASection({
@@ -25,6 +28,7 @@ export default function FinalCTASection({
   price,
   codTrust,
   surfaceClass = "bg-ivory",
+  theme,
 }: Props) {
   if (!config.enabled) return null;
 
@@ -32,9 +36,11 @@ export default function FinalCTASection({
   const subtitle = config.subtitle || urgency;
 
   const trustBadges = resolveHeroTrustBadges(codTrust);
+  const paddingClass = theme ? getSectionPaddingClass(theme) : "py-12 sm:py-14";
+  const buttonStyle = theme?.buttonStyle ?? "rounded-full";
 
   return (
-    <section className={`border-t border-champagne/10 ${surfaceClass} py-12 sm:py-14`}>
+    <section className={`border-t border-champagne/10 ${surfaceClass} ${paddingClass}`}>
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         {config.label ? (
           <p className="section-label mb-3 text-xs text-champagne">{config.label}</p>
@@ -55,7 +61,7 @@ export default function FinalCTASection({
         <button
           type="button"
           onClick={onOrder}
-          className={`${PRODUCT_CTA_BUTTON_BASE} mx-auto w-full max-w-md rounded-full py-4 text-lg`}
+          className={`${buildPrimaryCtaClassName({ buttonStyle, sizeClass: "py-4 text-lg", fullWidth: false })} mx-auto max-w-md`}
         >
           <span className="relative z-10">{ctaLabel}</span>
           <span className="relative z-10 mr-2 text-champagne-light">

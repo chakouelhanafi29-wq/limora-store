@@ -1,7 +1,10 @@
 "use client";
 
 import type { Offer } from "../../lib/product-data";
-import { PRODUCT_CTA_BUTTON_BASE, PRODUCT_PRICE_CLASS } from "@/lib/page-builder/product-page-theme";
+import {
+  buildPrimaryCtaClassName,
+  getCtaSizeClass,
+} from "@/lib/page-builder/product-page-theme";
 
 type Props = {
   offer: Offer;
@@ -9,6 +12,8 @@ type Props = {
   ctaLabel: string;
   visible: boolean;
   codTrust?: string[];
+  buttonStyle?: "rounded-full" | "rounded-xl";
+  ctaSize?: "sm" | "md" | "lg";
 };
 
 export default function StickyMobileCTA({
@@ -17,7 +22,11 @@ export default function StickyMobileCTA({
   ctaLabel,
   visible,
   codTrust = [],
+  buttonStyle = "rounded-full",
+  ctaSize = "md",
 }: Props) {
+  const sizeClass = getCtaSizeClass(ctaSize);
+
   return (
     <div
       aria-hidden={!visible}
@@ -29,31 +38,30 @@ export default function StickyMobileCTA({
       style={{ paddingBottom: "max(0.75rem, env(safe-area-inset-bottom))" }}
     >
       <div className="mx-auto max-w-lg">
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0 shrink">
-            <p className="truncate text-[11px] text-muted">{offer.label}</p>
-            <p className={`${PRODUCT_PRICE_CLASS} text-lg`}>
-              {offer.price}{" "}
-              <span className="text-xs font-normal text-muted">ر.س</span>
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={onOrder}
-            className={`${PRODUCT_CTA_BUTTON_BASE} shrink-0 rounded-full px-5 py-3.5 text-xs leading-snug shadow-lg shadow-heading/10 sm:text-sm`}
-          >
-            {ctaLabel}
-          </button>
-        </div>
-        {codTrust.length > 0 && (
-          <div className="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-0.5">
+        {codTrust.length > 0 ? (
+          <div className="mb-2 flex flex-wrap justify-center gap-x-3 gap-y-0.5">
             {codTrust.slice(0, 3).map((item) => (
               <span key={item} className="text-[10px] text-muted">
                 ✓ {item}
               </span>
             ))}
           </div>
-        )}
+        ) : null}
+        <button
+          type="button"
+          onClick={onOrder}
+          className={buildPrimaryCtaClassName({
+            buttonStyle,
+            sizeClass: `${sizeClass} min-h-[48px]`,
+            attention: true,
+          })}
+        >
+          <span className="relative z-10">{ctaLabel}</span>
+          <span className="relative z-10 mr-2 text-champagne-light">
+            — {offer.price} ر.س
+          </span>
+          <span className="absolute inset-0 gold-shimmer opacity-0 transition-opacity group-hover:opacity-15" />
+        </button>
       </div>
     </div>
   );

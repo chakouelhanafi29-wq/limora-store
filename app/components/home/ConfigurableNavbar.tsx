@@ -39,7 +39,8 @@ export default function ConfigurableNavbar({ navbar }: { navbar: HomeNavbar }) {
           <button
             type="button"
             aria-label="القائمة"
-            className="rounded-full p-2.5 text-foreground lg:hidden"
+            aria-expanded={open}
+            className="luxury-focus-ring rounded-full p-2.5 text-foreground lg:hidden"
             onClick={() => setOpen(!open)}
           >
             <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -60,7 +61,7 @@ export default function ConfigurableNavbar({ navbar }: { navbar: HomeNavbar }) {
               <li key={link.href}>
                 <a
                   href={link.href}
-                  className="block py-2 text-base font-medium text-foreground/80"
+                  className="luxury-focus-ring block rounded-lg py-2 text-base font-medium text-foreground/80 transition-colors hover:text-champagne"
                   onClick={() => setOpen(false)}
                 >
                   {link.label}

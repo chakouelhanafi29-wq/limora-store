@@ -444,7 +444,8 @@ export function renderProductSection(
         <section key={section.id} className={`${pad} ${surface}`}>
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
-            <div className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg">
+            <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+              <div className="min-w-[28rem] overflow-hidden rounded-3xl bg-white luxury-shadow-lg">
               <div className="grid grid-cols-3 border-b border-champagne/10 bg-beige/50 p-4 text-center text-xs font-bold sm:text-sm">
                 <div className="text-muted">الميزة</div>
                 <div className="text-champagne">LIMORA</div>
@@ -457,6 +458,7 @@ export function renderProductSection(
                   <div className="text-muted/50">{row.others ? "✓" : "✗"}</div>
                 </div>
               ))}
+              </div>
             </div>
           </div>
         </section>
@@ -520,6 +522,7 @@ export function renderProductSection(
               onOrder={cta.onOrder}
               ctaLabel={cta.ctaLabel}
               price={cta.price}
+              buttonStyle={theme.buttonStyle}
               subtitle={
                 ctaSubtitle ||
                 "انضمي لآلاف العميلات السعوديات — اطلبي الآن بالدفع عند الاستلام"
@@ -693,15 +696,6 @@ export function renderProductSection(
               </div>
             </div>
           </section>
-          {cta && (
-            <SectionCTA
-              onOrder={cta.onOrder}
-              ctaLabel={cta.ctaLabel}
-              price={cta.price}
-              subtitle={ctaSubtitle || "ضمان LIMORA — اطلبي بثقة والدفع عند الاستلام"}
-              footnote={ctaFootnote}
-            />
-          )}
         </div>
       );
     }
@@ -809,7 +803,7 @@ function FAQBlock({
               <div key={faq.question} className="overflow-hidden rounded-2xl border border-champagne/10 bg-white">
                 <button type="button" className="flex w-full items-center justify-between gap-4 p-5 text-right" onClick={() => setOpenIndex(isOpen ? null : index)}>
                   <span className="font-arabic-kufi text-heading text-sm font-bold">{faq.question}</span>
-                  <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-beige text-champagne transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
+                  <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-beige text-champagne transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
                 </button>
                 {isOpen && <p className="px-5 pb-5 text-sm leading-relaxed text-muted">{faq.answer}</p>}
               </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Offer } from "../../lib/product-data";
-import { PRODUCT_CTA_BUTTON_BASE } from "@/lib/page-builder/product-page-theme";
+import { PRODUCT_CTA_BUTTON_BASE, getCtaSizeClass } from "@/lib/page-builder/product-page-theme";
 import OfferSelection from "./OfferSelection";
 import PurchaseTrustStrip from "./PurchaseTrustStrip";
 
@@ -16,6 +16,7 @@ type Props = {
   codTrust: string[];
   buttonStyle?: "rounded-full" | "rounded-xl";
   ctaSize?: "sm" | "md" | "lg";
+  hideMobileInlineCta?: boolean;
 };
 
 function OrderButton({
@@ -58,15 +59,11 @@ export default function PurchaseZone({
   codTrust,
   buttonStyle = "rounded-full",
   ctaSize = "md",
+  hideMobileInlineCta = false,
 }: Props) {
   const zoneRef = useRef<HTMLDivElement>(null);
 
-  const sizeClass =
-    ctaSize === "sm"
-      ? "py-3 text-sm"
-      : ctaSize === "lg"
-        ? "py-5 text-lg"
-        : "py-4 text-base";
+  const sizeClass = getCtaSizeClass(ctaSize);
 
   useEffect(() => {
     const node = zoneRef.current;
@@ -98,7 +95,7 @@ export default function PurchaseZone({
         offers={offers}
       />
 
-      <div className="mt-8 md:hidden">
+      <div className={`mt-8 md:hidden ${hideMobileInlineCta ? "hidden" : ""}`}>
         <OrderButton
           onOrder={onOrder}
           ctaLabel={ctaLabel}

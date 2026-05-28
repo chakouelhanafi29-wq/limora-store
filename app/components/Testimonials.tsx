@@ -31,11 +31,12 @@ function Stars({ count }: { count: number }) {
 
 type Props = {
   testimonials: TestimonialsData;
+  className?: string;
 };
 
-export default function Testimonials({ testimonials }: Props) {
+export default function Testimonials({ testimonials, className = "py-20 sm:py-28" }: Props) {
   return (
-    <section id="reviews" className="py-20 sm:py-28">
+    <section id="reviews" className={className}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-16 text-center">
           <span className="section-label mb-4 inline-block text-xs font-medium tracking-[0.25em] text-champagne">
