@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { trackEvent } from "@/lib/analytics/events";
+import { resolvePurchaseEventId } from "@/lib/tracking/event-id";
 
 type Props = {
   product: string;
@@ -16,8 +17,16 @@ export default function ThankYouTracker({
   price,
   orderId,
 }: Props) {
+  const tracked = useRef(false);
+
   useEffect(() => {
+    if (tracked.current) return;
+    tracked.current = true;
+
+    const purchaseEventId = resolvePurchaseEventId(orderId);
+
     trackEvent("Purchase", {
+      event_id: purchaseEventId,
       product_name: product,
       offer_label: offer,
       value: price,

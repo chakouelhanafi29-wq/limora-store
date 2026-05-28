@@ -6,6 +6,15 @@ export type TrafficPlatform =
   | "organic"
   | "direct";
 
+export type ClickIds = {
+  fbclid: string | null;
+  gclid: string | null;
+  ttclid: string | null;
+  sc_click_id: string | null;
+  fbp: string | null;
+  fbc: string | null;
+};
+
 export type Attribution = {
   traffic_source: string;
   traffic_platform: TrafficPlatform;
@@ -18,9 +27,12 @@ export type Attribution = {
   device_type: "mobile" | "tablet" | "desktop";
   landing_page: string;
   session_id: string;
+  first_touch_platform: TrafficPlatform;
+  click_ids: ClickIds;
 };
 
 const STORAGE_KEY = "limora_attribution";
+const FIRST_TOUCH_KEY = "limora_first_touch";
 const SESSION_KEY = "limora_session_id";
 
 const PLATFORM_LABELS: Record<TrafficPlatform, string> = {
@@ -61,7 +73,8 @@ function detectPlatform(
     source.includes("instagram") ||
     medium.includes("facebook") ||
     ref.includes("facebook.com") ||
-    ref.includes("instagram.com")
+    ref.includes("instagram.com") ||
+    searchParams.has("fbclid")
   ) {
     return "facebook";
   }
@@ -69,7 +82,8 @@ function detectPlatform(
   if (
     source.includes("tiktok") ||
     medium.includes("tiktok") ||
-    ref.includes("tiktok.com")
+    ref.includes("tiktok.com") ||
+    searchParams.has("ttclid")
   ) {
     return "tiktok";
   }
@@ -78,7 +92,9 @@ function detectPlatform(
     source.includes("snapchat") ||
     source.includes("snap") ||
     medium.includes("snapchat") ||
-    ref.includes("snapchat.com")
+    ref.includes("snapchat.com") ||
+    searchParams.has("ScCid") ||
+    searchParams.has("sc_cid")
   ) {
     return "snapchat";
   }
@@ -119,6 +135,63 @@ function getSessionId() {
   return id;
 }
 
+function readCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const pattern = new RegExp(
+    `(?:^|; )${name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}=([^;]*)`,
+  );
+  const match = document.cookie.match(pattern);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function buildFbc(fbclid: string | null): string | null {
+  if (!fbclid) return null;
+  return `fb.1.${Date.now()}.${fbclid}`;
+}
+
+function extractClickIds(searchParams: URLSearchParams): ClickIds {
+  const fbclid = searchParams.get("fbclid");
+  const fbp = readCookie("_fbp");
+  let fbc = readCookie("_fbc");
+  if (!fbc && fbclid) fbc = buildFbc(fbclid);
+
+  return {
+    fbclid,
+    gclid: searchParams.get("gclid"),
+    ttclid: searchParams.get("ttclid"),
+    sc_click_id: searchParams.get("ScCid") ?? searchParams.get("sc_cid"),
+    fbp,
+    fbc,
+  };
+}
+
+function hasFreshPaidParams(searchParams: URLSearchParams): boolean {
+  return Boolean(
+    searchParams.get("utm_source") ||
+      searchParams.get("fbclid") ||
+      searchParams.get("ttclid") ||
+      searchParams.get("gclid") ||
+      searchParams.get("ScCid") ||
+      searchParams.get("sc_cid"),
+  );
+}
+
+function refreshClickIds(attribution: Attribution, searchParams: URLSearchParams): Attribution {
+  const latest = extractClickIds(searchParams);
+  return {
+    ...attribution,
+    click_ids: {
+      ...attribution.click_ids,
+      fbp: latest.fbp ?? attribution.click_ids.fbp,
+      fbc: latest.fbc ?? attribution.click_ids.fbc,
+      fbclid: latest.fbclid ?? attribution.click_ids.fbclid,
+      ttclid: latest.ttclid ?? attribution.click_ids.ttclid,
+      gclid: latest.gclid ?? attribution.click_ids.gclid,
+      sc_click_id: latest.sc_click_id ?? attribution.click_ids.sc_click_id,
+    },
+  };
+}
+
 export function captureAttribution(
   pathname = "/",
   search = "",
@@ -136,19 +209,25 @@ export function captureAttribution(
       device_type: "desktop",
       landing_page: pathname,
       session_id: "server",
+      first_touch_platform: "direct",
+      click_ids: {
+        fbclid: null,
+        gclid: null,
+        ttclid: null,
+        sc_click_id: null,
+        fbp: null,
+        fbc: null,
+      },
     };
   }
 
-  const existing = sessionStorage.getItem(STORAGE_KEY);
-  if (existing) {
-    try {
-      return JSON.parse(existing) as Attribution;
-    } catch {
-      sessionStorage.removeItem(STORAGE_KEY);
-    }
+  const params = new URLSearchParams(search);
+  const existing = getStoredAttribution();
+
+  if (existing && !hasFreshPaidParams(params)) {
+    return refreshClickIds(existing, params);
   }
 
-  const params = new URLSearchParams(search);
   const utm_source = params.get("utm_source");
   const utm_medium = params.get("utm_medium");
   const utm_campaign = params.get("utm_campaign");
@@ -156,6 +235,19 @@ export function captureAttribution(
   const utm_term = params.get("utm_term");
   const referrer = document.referrer || null;
   const platform = detectPlatform(utm_source, utm_medium, referrer, params);
+  const click_ids = extractClickIds(params);
+
+  let first_touch_platform = platform;
+  const storedFirstTouch = sessionStorage.getItem(FIRST_TOUCH_KEY);
+  if (storedFirstTouch) {
+    try {
+      first_touch_platform = JSON.parse(storedFirstTouch) as TrafficPlatform;
+    } catch {
+      sessionStorage.setItem(FIRST_TOUCH_KEY, JSON.stringify(platform));
+    }
+  } else {
+    sessionStorage.setItem(FIRST_TOUCH_KEY, JSON.stringify(platform));
+  }
 
   const attribution: Attribution = {
     traffic_source: getPlatformLabel(platform),
@@ -169,6 +261,8 @@ export function captureAttribution(
     device_type: detectDeviceType(),
     landing_page: pathname + search,
     session_id: getSessionId(),
+    first_touch_platform,
+    click_ids,
   };
 
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(attribution));
@@ -180,8 +274,39 @@ export function getStoredAttribution(): Attribution | null {
   const raw = sessionStorage.getItem(STORAGE_KEY);
   if (!raw) return null;
   try {
-    return JSON.parse(raw) as Attribution;
+    const parsed = JSON.parse(raw) as Attribution;
+    if (!parsed.click_ids) {
+      parsed.click_ids = {
+        fbclid: null,
+        gclid: null,
+        ttclid: null,
+        sc_click_id: null,
+        fbp: null,
+        fbc: null,
+      };
+    }
+    return parsed;
   } catch {
     return null;
   }
+}
+
+export function attributionToTrackingPayload(attribution: Attribution) {
+  return {
+    traffic_source: attribution.traffic_source,
+    traffic_platform: attribution.traffic_platform,
+    utm_source: attribution.utm_source,
+    utm_medium: attribution.utm_medium,
+    utm_campaign: attribution.utm_campaign,
+    utm_content: attribution.utm_content,
+    utm_term: attribution.utm_term,
+    referrer: attribution.referrer,
+    device_type: attribution.device_type,
+    landing_page: attribution.landing_page,
+    session_id: attribution.session_id,
+  };
+}
+
+export function clickIdsFromAttribution(attribution: Attribution) {
+  return { ...attribution.click_ids };
 }

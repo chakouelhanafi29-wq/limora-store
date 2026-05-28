@@ -1,8 +1,11 @@
 import {
+  attributionToTrackingPayload,
   captureAttribution,
+  clickIdsFromAttribution,
   getStoredAttribution,
   type Attribution,
 } from "./attribution";
+import { createTrackingEventId } from "@/lib/tracking/event-id";
 
 export type AnalyticsEventName =
   | "PageView"
@@ -20,6 +23,11 @@ export type EventPayload = {
   value?: number;
   currency?: string;
   order_id?: string;
+  /** Shared with server CAPI for deduplication — pass explicitly for Lead/Purchase. */
+  event_id?: string;
+  /** Hashed server-side when sent to CAPI providers. */
+  phone?: string;
+  customer_name?: string;
 };
 
 declare global {
@@ -45,7 +53,11 @@ function getAttribution(): Attribution {
   );
 }
 
-function firePixelEvents(name: AnalyticsEventName, payload: EventPayload) {
+function firePixelEvents(
+  name: AnalyticsEventName,
+  payload: EventPayload,
+  eventId: string,
+) {
   if (typeof window === "undefined") return;
 
   const value = payload.value ?? 0;
@@ -64,14 +76,19 @@ function firePixelEvents(name: AnalyticsEventName, payload: EventPayload) {
     const fbEvent = fbMap[name];
     if (fbEvent) {
       if (name === "PageView") {
-        window.fbq("track", "PageView");
+        window.fbq("track", "PageView", {}, { eventID: eventId });
       } else {
-        window.fbq("track", fbEvent, {
-          content_name: contentName,
-          content_ids: payload.product_slug ? [payload.product_slug] : undefined,
-          value,
-          currency,
-        });
+        window.fbq(
+          "track",
+          fbEvent,
+          {
+            content_name: contentName,
+            content_ids: payload.product_slug ? [payload.product_slug] : undefined,
+            value,
+            currency,
+          },
+          { eventID: eventId },
+        );
       }
     }
   }
@@ -90,12 +107,16 @@ function firePixelEvents(name: AnalyticsEventName, payload: EventPayload) {
       if (name === "PageView") {
         window.ttq.page();
       } else {
-        window.ttq.track(ttEvent, {
-          content_name: contentName,
-          content_id: payload.product_slug,
-          value,
-          currency,
-        });
+        window.ttq.track(
+          ttEvent,
+          {
+            content_name: contentName,
+            content_id: payload.product_slug,
+            value,
+            currency,
+          },
+          { event_id: eventId },
+        );
       }
     }
   }
@@ -112,9 +133,12 @@ function firePixelEvents(name: AnalyticsEventName, payload: EventPayload) {
     const snapEvent = snapMap[name];
     if (snapEvent) {
       window.snaptr("track", snapEvent, {
+        uuid_c1: eventId,
+        client_dedup_id: eventId,
         item_ids: payload.product_slug ? [payload.product_slug] : undefined,
         price: value,
         currency,
+        transaction_id: payload.order_id,
       });
     }
   }
@@ -140,41 +164,41 @@ function firePixelEvents(name: AnalyticsEventName, payload: EventPayload) {
           items: payload.product_name
             ? [{ item_name: payload.product_name, price: value }]
             : undefined,
-          transaction_id: payload.order_id,
+          transaction_id: payload.order_id ?? eventId,
         });
       }
     }
   }
 }
 
-async function persistEvent(
+async function persistAndDispatchServerEvent(
   name: AnalyticsEventName,
   payload: EventPayload,
   attribution: Attribution,
+  eventId: string,
 ) {
   try {
-    await fetch("/api/analytics/event", {
+    await fetch("/api/tracking/event", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      keepalive: true,
       body: JSON.stringify({
         event_name: name,
+        event_id: eventId,
         page_path: payload.page_path ?? window.location.pathname,
+        event_source_url: `${window.location.pathname}${window.location.search}`,
         product_name: payload.product_name ?? null,
         product_slug: payload.product_slug ?? null,
         offer_label: payload.offer_label ?? null,
         value: payload.value ?? null,
         currency: payload.currency ?? "SAR",
         order_id: payload.order_id ?? null,
-        traffic_source: attribution.traffic_source,
-        traffic_platform: attribution.traffic_platform,
-        utm_source: attribution.utm_source,
-        utm_medium: attribution.utm_medium,
-        utm_campaign: attribution.utm_campaign,
-        utm_content: attribution.utm_content,
-        utm_term: attribution.utm_term,
-        referrer: attribution.referrer,
-        device_type: attribution.device_type,
-        session_id: attribution.session_id,
+        user: {
+          phone: payload.phone ?? null,
+          firstName: payload.customer_name ?? null,
+        },
+        click_ids: clickIdsFromAttribution(attribution),
+        attribution: attributionToTrackingPayload(attribution),
       }),
     });
   } catch {
@@ -182,27 +206,33 @@ async function persistEvent(
   }
 }
 
-export function trackEvent(name: AnalyticsEventName, payload: EventPayload = {}) {
+export function trackEvent(
+  name: AnalyticsEventName,
+  payload: EventPayload = {},
+  options?: { server?: boolean },
+) {
   if (typeof window === "undefined") return;
 
   const attribution = getAttribution();
-  firePixelEvents(name, payload);
-  void persistEvent(name, payload, attribution);
+  const eventId = payload.event_id ?? createTrackingEventId(name.toLowerCase());
+
+  firePixelEvents(name, payload, eventId);
+  if (options?.server !== false) {
+    void persistAndDispatchServerEvent(name, payload, attribution, eventId);
+  }
+
+  return eventId;
 }
 
 export function getAttributionForOrder() {
   const attribution = getAttribution();
   return {
-    traffic_source: attribution.traffic_source,
-    traffic_platform: attribution.traffic_platform,
-    utm_source: attribution.utm_source,
-    utm_medium: attribution.utm_medium,
-    utm_campaign: attribution.utm_campaign,
-    utm_content: attribution.utm_content,
-    utm_term: attribution.utm_term,
-    referrer: attribution.referrer,
-    device_type: attribution.device_type,
-    landing_page: attribution.landing_page,
-    session_id: attribution.session_id,
+    ...attributionToTrackingPayload(attribution),
+    click_ids: clickIdsFromAttribution(attribution),
+    first_touch_platform: attribution.first_touch_platform,
   };
+}
+
+export function createLeadEventId() {
+  return createTrackingEventId("lead");
 }

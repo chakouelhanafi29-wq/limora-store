@@ -4,10 +4,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getOfferDisplayLabel } from "@/lib/storefront";
 import type { StorefrontProduct } from "@/lib/storefront";
-import {
-  getAttributionForOrder,
-  trackEvent,
-} from "@/lib/analytics/events";
+import { createLeadEventId, getAttributionForOrder, trackEvent } from "@/lib/analytics/events";
 import {
   formatSaudiPhoneDisplay,
   isValidSaudiPhone,
@@ -98,6 +95,9 @@ export default function OrderModal({
 
     setSubmitting(true);
 
+    const leadEventId = createLeadEventId();
+    const attribution = getAttributionForOrder();
+
     try {
       const res = await fetch("/api/orders", {
         method: "POST",
@@ -113,20 +113,40 @@ export default function OrderModal({
           offer_label: offerLabel,
           offer_quantity: offer.quantity,
           total_price: offer.price,
-          ...getAttributionForOrder(),
+          event_id: leadEventId,
+          click_ids: attribution.click_ids,
+          traffic_platform: attribution.traffic_platform,
+          traffic_source: attribution.traffic_source,
+          device_type: attribution.device_type,
+          utm_source: attribution.utm_source,
+          utm_medium: attribution.utm_medium,
+          utm_campaign: attribution.utm_campaign,
+          utm_content: attribution.utm_content,
+          utm_term: attribution.utm_term,
+          referrer: attribution.referrer,
+          landing_page: attribution.landing_page,
+          session_id: attribution.session_id,
         }),
       });
 
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "فشل إرسال الطلب");
 
-      trackEvent("Lead", {
-        product_name: product.orderName,
-        product_slug: productSlug,
-        offer_label: offerLabel,
-        value: offer.price,
-        page_path: `/product/${productSlug}`,
-      });
+      trackEvent(
+        "Lead",
+        {
+          event_id: leadEventId,
+          phone: normalizedPhone,
+          customer_name: name.trim(),
+          product_name: product.orderName,
+          product_slug: productSlug,
+          offer_label: offerLabel,
+          value: offer.price,
+          order_id: data.id ? String(data.id) : undefined,
+          page_path: `/product/${productSlug}`,
+        },
+        { server: false },
+      );
 
       const params = new URLSearchParams({
         product: product.orderName,
