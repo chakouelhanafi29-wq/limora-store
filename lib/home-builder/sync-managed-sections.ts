@@ -14,7 +14,7 @@ import type { HomePageConfig, HomeSection } from "./types";
 /** Bump when managed homepage section content changes in code. */
 export const HOME_MANAGED_CONTENT_REVISION = 5;
 
-export const HOME_BEFORE_AFTER_CONTENT_REVISION = 3;
+export const HOME_BEFORE_AFTER_CONTENT_REVISION = 4;
 
 /** Bump when featured products section UI/content defaults change in code. */
 export const HOME_PRODUCTS_CONTENT_REVISION = 3;
@@ -23,6 +23,12 @@ const EXPECTED_TRANSFORMATION_IMAGES = [
   HOME_TRANSFORMATION_IMAGES.collagenGlow,
   HOME_TRANSFORMATION_IMAGES.hairRevive,
   HOME_TRANSFORMATION_IMAGES.feminineBalance,
+] as const;
+
+const OFFICIAL_TRANSFORMATION_HREFS = [
+  "/product/collagen-glow",
+  "/product/hair-revive",
+  "/product/feminine-balance",
 ] as const;
 
 function clone<T>(value: T): T {
@@ -46,16 +52,33 @@ function getDefaultBeforeAfterContent() {
   };
 }
 
-function transformationImages(content: Record<string, unknown>): string[] {
+function transformationHasLegacyDetox(content: Record<string, unknown>): boolean {
+  const raw = JSON.stringify(content).toLowerCase();
+  return raw.includes("detox") || raw.includes("detox-cleanse");
+}
+
+function beforeAfterContentIsOfficial(content: Record<string, unknown>): boolean {
+  if (transformationHasLegacyDetox(content)) return false;
+
   const items = content.transformations;
-  if (!Array.isArray(items)) return [];
-  return items
-    .map((item) =>
-      item && typeof item === "object" && "image" in item
-        ? String((item as { image: unknown }).image)
-        : "",
-    )
-    .filter(Boolean);
+  if (!Array.isArray(items) || items.length !== OFFICIAL_TRANSFORMATION_HREFS.length) {
+    return false;
+  }
+
+  return items.every((item, index) => {
+    if (!item || typeof item !== "object") return false;
+
+    const row = item as Record<string, unknown>;
+    const href = String(row.href ?? "");
+    const image = String(row.image ?? "");
+    const name = String(row.productName ?? "").toLowerCase();
+
+    if (name.includes("detox") || href.includes("detox")) return false;
+    if (href !== OFFICIAL_TRANSFORMATION_HREFS[index]) return false;
+    if (image !== EXPECTED_TRANSFORMATION_IMAGES[index]) return false;
+
+    return true;
+  });
 }
 
 export function beforeAfterSectionNeedsSync(section: HomeSection | null): boolean {
@@ -64,13 +87,9 @@ export function beforeAfterSectionNeedsSync(section: HomeSection | null): boolea
   const content = section.content as Record<string, unknown>;
   const revision = Number(content.contentRevision ?? 1);
   if (revision < HOME_BEFORE_AFTER_CONTENT_REVISION) return true;
+  if (!beforeAfterContentIsOfficial(content)) return true;
 
-  const images = transformationImages(content);
-  if (images.length !== EXPECTED_TRANSFORMATION_IMAGES.length) return true;
-
-  return EXPECTED_TRANSFORMATION_IMAGES.some(
-    (expected, index) => images[index] !== expected,
-  );
+  return false;
 }
 
 function syncBeforeAfterSection(section: HomeSection): HomeSection {

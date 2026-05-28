@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { unstable_noStore as noStore } from "next/cache";
 import { resolveBuilderPrimaryImage } from "@/lib/product-images";
 import { resolveProductSlug } from "@/lib/products/catalog";
-import { getProductBySlug } from "@/lib/supabase/queries";
+import { getOfficialProductsWithOffers, getProductBySlug } from "@/lib/supabase/queries";
 import { getProductPageConfig } from "@/lib/page-builder/queries";
+import { applyDynamicProductPagePricing } from "@/lib/storefront/product-pricing";
 import { getSiteConfig } from "@/lib/site/config";
 import { buildPageMetadata, productPagePath } from "@/lib/seo/metadata";
 
@@ -11,13 +12,16 @@ export async function loadProductPage(slug: string) {
   noStore();
 
   const resolvedSlug = resolveProductSlug(slug);
-  const dbProduct = await getProductBySlug(resolvedSlug);
+  const [dbProduct, catalog] = await Promise.all([
+    getProductBySlug(resolvedSlug),
+    getOfficialProductsWithOffers(),
+  ]);
   const pageConfig = await getProductPageConfig(resolvedSlug, {
     product: dbProduct,
   });
 
   return {
-    pageConfig,
+    pageConfig: applyDynamicProductPagePricing(pageConfig, catalog),
     dbProduct,
   };
 }

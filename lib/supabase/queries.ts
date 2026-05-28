@@ -18,20 +18,46 @@ export async function getSettings(): Promise<Settings | null> {
   return data as Settings | null;
 }
 
-export async function getFeaturedProducts(): Promise<Product[]> {
+const PRODUCT_SELECT =
+  "*, product_images(url, sort_order, is_primary), product_offers(*)";
+
+export async function getOfficialProductsWithOffers(): Promise<ProductWithRelations[]> {
   if (!isSupabaseConfigured()) return [];
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")
-    .select("*, product_images(url, sort_order, is_primary)")
+    .select("*, product_images(*), product_offers(*)")
+    .eq("is_active", true)
+    .order("sort_order");
+
+  return (
+    (data as ProductWithRelations[])
+      ?.filter((product) => isOfficialProductSlugValue(product.slug))
+      .map(normalizeProductRelations) ?? []
+  );
+}
+
+export async function getFeaturedProducts(): Promise<ProductWithRelations[]> {
+  if (!isSupabaseConfigured()) return [];
+  const supabase = await createClient();
+
+  const { data: featured } = await supabase
+    .from("products")
+    .select(PRODUCT_SELECT)
     .eq("is_active", true)
     .eq("is_featured", true)
     .order("sort_order");
-  return (
-    (data as Product[])?.filter((product) =>
-      isOfficialProductSlugValue(product.slug),
-    ) ?? []
-  );
+
+  let products =
+    (featured as ProductWithRelations[])
+      ?.filter((product) => isOfficialProductSlugValue(product.slug))
+      .map(normalizeProductRelations) ?? [];
+
+  if (!products.length) {
+    products = await getOfficialProductsWithOffers();
+  }
+
+  return products;
 }
 
 function normalizeProductRelations(

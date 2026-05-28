@@ -176,7 +176,7 @@ export const realResults = {
   title: "تحولٌ حقيقي… تستحقينه",
   subtitle:
     "وراء كل إشراقة امرأة اختارت نفسها. LIMORA لا تغيّر مظهركِ فقط — بل تُعيد إليكِ ثقتكِ.",
-  contentRevision: 3,
+  contentRevision: 4,
   transformations: [
     {
       productName: "LIMORA Collagen Glow",

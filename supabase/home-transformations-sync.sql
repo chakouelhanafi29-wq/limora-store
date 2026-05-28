@@ -19,7 +19,7 @@ declare
   "label": "REAL TRANSFORMATIONS",
   "title": "تحولٌ حقيقي… تستحقينه",
   "subtitle": "وراء كل إشراقة امرأة اختارت نفسها. LIMORA لا تغيّر مظهركِ فقط — بل تُعيد إليكِ ثقتكِ.",
-  "contentRevision": 3,
+  "contentRevision": 4,
   "transformations": [
     {
       "productName": "LIMORA Collagen Glow",
@@ -72,7 +72,8 @@ begin
   for i in 0 .. jsonb_array_length(sections) - 1 loop
     elem := sections->i;
     if elem->>'type' = 'before_after' then
-      if coalesce((elem->'content'->>'contentRevision')::int, 1) < 3
+      if coalesce((elem->'content'->>'contentRevision')::int, 1) < 4
+         or lower(elem->'content'::text) like '%detox%'
          or elem->'content'->'transformations'->2->>'image'
             is distinct from '/home/transformations/feminine-balance.webp' then
         elem := jsonb_set(elem, '{content}', managed_content, true);

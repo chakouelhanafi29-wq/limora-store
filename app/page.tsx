@@ -9,11 +9,13 @@ import { buildPageMetadata } from "@/lib/seo/metadata";
 import {
   getActiveReviews,
   getFeaturedProducts,
+  getOfficialProductsWithOffers,
 } from "@/lib/supabase/queries";
 import {
   mapFeaturedProducts,
   mapHomeReviews,
 } from "@/lib/storefront";
+import { applyDynamicHomePricing } from "@/lib/storefront/product-pricing";
 
 export async function generateMetadata(): Promise<Metadata> {
   const site = await getSiteConfig();
@@ -25,13 +27,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [pageConfig, featuredProducts, reviews] = await Promise.all([
+  const [pageConfig, featuredProducts, reviews, catalog] = await Promise.all([
     getHomePageConfig("home"),
     getFeaturedProducts(),
     getActiveReviews(),
+    getOfficialProductsWithOffers(),
   ]);
 
-  const products = mapFeaturedProducts(featuredProducts);
+  const products = mapFeaturedProducts(
+    featuredProducts.length ? featuredProducts : catalog,
+  );
+  const config = applyDynamicHomePricing(pageConfig, catalog);
   const dynamicReviews = mapHomeReviews(reviews);
   const testimonials = dynamicReviews.items.length
     ? dynamicReviews
@@ -39,7 +45,7 @@ export default async function Home() {
 
   return (
     <ConfigurableHomePage
-      config={pageConfig}
+      config={config}
       products={products}
       testimonials={testimonials}
     />

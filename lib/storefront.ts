@@ -20,6 +20,10 @@ import {
   type Offer,
 } from "@/app/lib/product-data";
 import type { ProductImageRecord } from "@/lib/product-images";
+import {
+  formatPriceNumber,
+  resolveProductDisplayPrice,
+} from "@/lib/storefront/product-pricing";
 import type {
   Product,
   ProductOffer,
@@ -72,7 +76,7 @@ export function getAnnouncements(settings: Settings | null): string[] {
 }
 
 export function mapFeaturedProducts(
-  products: Product[],
+  products: (Product | ProductWithRelations)[],
 ): FeaturedProductCard[] {
   if (!products.length) {
     return staticFeaturedProducts.map((product) => ({
@@ -92,6 +96,9 @@ export function mapFeaturedProducts(
       staticFeaturedProducts.find((item) => item.id === product.slug)?.image ??
         getPrimaryImageBySlug(product.slug),
     );
+    const { price, originalPrice } = resolveProductDisplayPrice(
+      product as ProductWithRelations,
+    );
 
     return {
       id: product.id,
@@ -100,10 +107,8 @@ export function mapFeaturedProducts(
       nameEn: product.name_en,
       benefit: product.subtitle ?? "",
       description: product.description ?? "",
-      price: String(product.price),
-      originalPrice: product.original_price
-        ? String(product.original_price)
-        : "",
+      price: formatPriceNumber(price),
+      originalPrice: originalPrice ? formatPriceNumber(originalPrice) : "",
       badge: product.badge,
       image,
       cta: `اختاري ${product.name_en.split(" ").pop() ?? "LIMORA"}`,
