@@ -1,8 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Droid+Arabic+Kufi:wght@400;700&display=swap");
 @import "tailwindcss";
 
 :root {
   --background: #faf7f2;
   --foreground: #3d2e2a;
+  --heading: #4a382f;
+  --heading-soft: #5c4638;
   --ivory: #faf7f2;
   --beige: #f5ede4;
   --nude: #e8d5c4;
@@ -16,6 +19,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-heading: var(--heading);
+  --color-heading-soft: var(--heading-soft);
   --color-ivory: var(--ivory);
   --color-beige: var(--beige);
   --color-nude: var(--nude);
@@ -26,6 +31,7 @@
   --color-card: var(--card);
   --font-sans: var(--font-tajawal);
   --font-serif: var(--font-cormorant);
+  --font-arabic-kufi: "Droid Arabic Kufi", var(--font-tajawal), sans-serif;
 }
 
 * {
@@ -238,6 +244,11 @@ body {
 
 .section-label {
   letter-spacing: 0.2em;
+}
+
+.product-page-shell {
+  background: var(--ivory);
+  color: var(--foreground);
 }
 
 .announcement-track {

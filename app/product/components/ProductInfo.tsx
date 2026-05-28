@@ -1,3 +1,6 @@
+import {
+  PRODUCT_PAGE_TITLE_CLASS,
+} from "@/lib/page-builder/product-page-theme";
 import type { StorefrontProduct } from "@/lib/storefront";
 
 type Props = {
@@ -41,7 +44,7 @@ export default function ProductInfo({ product }: Props) {
       >
         {product.nameEn}
       </p>
-      <h1 className="mb-2 font-serif text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl">
+      <h1 className={`mb-2 ${PRODUCT_PAGE_TITLE_CLASS}`}>
         {product.name}
       </h1>
       <p className="mb-4 text-lg font-medium text-rose-gold">{product.subtitle}</p>
@@ -49,7 +52,7 @@ export default function ProductInfo({ product }: Props) {
       <Stars rating={product.rating} reviewCount={product.reviewCount} />
 
       {product.emotionalHook ? (
-        <p className="mb-5 rounded-2xl border border-rose-200/40 bg-rose-50/50 px-4 py-3 text-sm font-semibold leading-relaxed text-rose-gold/95">
+        <p className="mb-5 rounded-2xl border border-champagne/15 bg-beige/40 px-4 py-3 text-sm font-semibold leading-relaxed text-heading-soft">
           {product.emotionalHook}
         </p>
       ) : null}
@@ -66,7 +69,7 @@ export default function ProductInfo({ product }: Props) {
         ))}
       </ul>
 
-      <p className="mb-2 rounded-2xl border border-champagne/30 bg-champagne/10 px-4 py-3 text-sm font-medium text-foreground">
+      <p className="mb-2 rounded-2xl border border-champagne/20 bg-champagne/10 px-4 py-3 text-sm font-medium text-heading-soft">
         {product.urgency}
       </p>
     </div>

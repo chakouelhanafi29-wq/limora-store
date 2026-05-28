@@ -1,6 +1,10 @@
 "use client";
 
 import type { Offer } from "../../lib/product-data";
+import {
+  PRODUCT_OFFER_TITLE_CLASS,
+  PRODUCT_PRICE_CLASS,
+} from "@/lib/page-builder/product-page-theme";
 
 type Props = {
   selected: Offer;
@@ -16,7 +20,7 @@ export default function OfferSelection({ selected, onSelect, offers, compact }: 
     <section className={compact ? "" : "mt-10"}>
       {!compact && (
         <>
-          <h2 className="mb-2 font-serif text-2xl font-semibold text-foreground">
+          <h2 className={`mb-2 ${PRODUCT_OFFER_TITLE_CLASS}`}>
             اختاري عرضكِ
           </h2>
           <p className="mb-6 text-sm text-muted">
@@ -62,7 +66,7 @@ export default function OfferSelection({ selected, onSelect, offers, compact }: 
                 </div>
 
                 <div className="flex-1">
-                  <p className="font-bold text-foreground">{offer.label}</p>
+                  <p className="font-arabic-kufi font-bold text-heading">{offer.label}</p>
                   {savings > 0 && (
                     <p className="mt-1 text-xs font-medium text-champagne">
                       وفّري {savings} ر.س
@@ -76,7 +80,7 @@ export default function OfferSelection({ selected, onSelect, offers, compact }: 
                 </div>
 
                 <div className="text-left">
-                  <p className="font-serif text-2xl font-semibold text-foreground">
+                  <p className={`${PRODUCT_PRICE_CLASS} text-2xl`}>
                     {offer.price}
                     <span className="mr-1 text-sm font-normal text-muted">
                       ر.س

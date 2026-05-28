@@ -1,3 +1,5 @@
+import { PRODUCT_CTA_BUTTON_BASE } from "@/lib/page-builder/product-page-theme";
+
 type Props = {
   onOrder: () => void;
   ctaLabel: string;
@@ -20,7 +22,7 @@ export default function SectionCTA({
         <button
           type="button"
           onClick={onOrder}
-          className="group relative w-full overflow-hidden rounded-full bg-foreground py-4 text-base font-medium text-ivory transition hover:shadow-xl"
+          className={`${PRODUCT_CTA_BUTTON_BASE} w-full rounded-full py-4 text-base`}
         >
           <span className="relative z-10">{ctaLabel}</span>
           <span className="relative z-10 mr-2 text-champagne-light">

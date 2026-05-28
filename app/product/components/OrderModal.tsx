@@ -13,6 +13,10 @@ import {
   isValidSaudiPhone,
   normalizeSaudiPhone,
 } from "@/lib/validation/saudi-phone";
+import {
+  PRODUCT_CTA_BUTTON_BASE,
+  PRODUCT_SECTION_TITLE_CLASS,
+} from "@/lib/page-builder/product-page-theme";
 import type { Offer } from "../../lib/product-data";
 
 type Props = {
@@ -174,7 +178,7 @@ export default function OrderModal({
           <p className="mb-1 text-xs tracking-widest text-champagne">LIMORA</p>
           <h2
             id="order-modal-title"
-            className="font-serif text-xl font-semibold text-foreground sm:text-2xl"
+            className={`${PRODUCT_SECTION_TITLE_CLASS} text-xl sm:text-2xl`}
           >
             {orderModal?.title ?? "أكّدي طلبكِ"}
           </h2>
@@ -184,7 +188,7 @@ export default function OrderModal({
         </div>
 
         <div className="mb-5 rounded-2xl border border-champagne/15 bg-beige/50 px-4 py-3 text-center">
-          <p className="text-sm font-semibold leading-relaxed text-foreground">
+          <p className="text-sm font-semibold leading-relaxed text-heading-soft">
             {orderSummary}
           </p>
           <p className="mt-1 text-[11px] text-muted">الدفع عند الاستلام فقط</p>
@@ -268,7 +272,7 @@ export default function OrderModal({
           <button
             type="submit"
             disabled={submitting}
-            className="group relative mt-1 w-full overflow-hidden rounded-full bg-foreground py-4 text-base font-medium text-ivory transition hover:shadow-xl disabled:opacity-70"
+            className={`${PRODUCT_CTA_BUTTON_BASE} mt-1 w-full rounded-full py-4 text-base disabled:opacity-70`}
           >
             <span className="relative z-10">
               {submitting

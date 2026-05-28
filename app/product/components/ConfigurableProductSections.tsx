@@ -17,6 +17,16 @@ import {
   type TransformationCardContent,
 } from "@/lib/page-builder/transformation-content";
 import { getEnabledQualityTrustItems } from "@/lib/page-builder/quality-trust-content";
+import {
+  getProductPageSurfaceClass,
+  PRODUCT_CARD_TITLE_CLASS,
+  PRODUCT_CARD_TITLE_LG_CLASS,
+  PRODUCT_CARD_TITLE_XL_CLASS,
+  PRODUCT_CARD_TITLE_2XL_CLASS,
+  PRODUCT_PRICE_CLASS,
+  PRODUCT_SECTION_SUBTITLE_CLASS,
+  PRODUCT_SECTION_TITLE_CLASS,
+} from "@/lib/page-builder/product-page-theme";
 import type { PageSection, ProductPageConfig, ProductPageTheme } from "@/lib/page-builder/types";
 import { getOrderedSections } from "@/lib/page-builder/default-config";
 import ReviewAvatar from "./ReviewAvatar";
@@ -49,12 +59,12 @@ function SectionHeader({
         {label}
       </span>
       <h2
-        className={`mb-3 font-serif text-3xl font-semibold sm:text-4xl ${dark ? "text-ivory" : "text-foreground"}`}
+        className={`mb-3 ${PRODUCT_SECTION_TITLE_CLASS} ${dark ? "!text-ivory" : ""}`}
       >
         {title}
       </h2>
       {subtitle && (
-        <p className={`mx-auto max-w-2xl ${dark ? "text-ivory/60" : "text-muted"}`}>
+        <p className={`mx-auto max-w-2xl ${PRODUCT_SECTION_SUBTITLE_CLASS} ${dark ? "text-ivory/70" : ""}`}>
           {subtitle}
         </p>
       )}
@@ -96,7 +106,7 @@ function QualityTrustCardBody({
           </span>
         </span>
         <div className={centered ? "" : "min-w-0 flex-1"}>
-          <h3 className="mb-1 text-sm font-bold text-foreground sm:text-base">{item.title}</h3>
+          <h3 className={`mb-1 ${PRODUCT_CARD_TITLE_CLASS}`}>{item.title}</h3>
           <p className="text-xs leading-relaxed text-muted sm:text-sm">{item.description}</p>
         </div>
       </div>
@@ -110,12 +120,7 @@ export function renderProductSection(
   cta?: { onOrder: () => void; ctaLabel: string; price: number },
 ) {
   const pad = spacingClass(theme);
-  const bg =
-    theme.sectionBackground === "beige"
-      ? "bg-beige/50"
-      : theme.sectionBackground === "white"
-        ? "bg-white"
-        : "";
+  const surface = getProductPageSurfaceClass(theme);
 
   const content = section.content as Record<string, unknown>;
 
@@ -139,7 +144,7 @@ export function renderProductSection(
       return (
         <section
           key={section.id}
-          className={`${pad} bg-gradient-to-b from-ivory via-rose-50/20 to-beige/30`}
+          className={`${pad} ${surface}`}
         >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
@@ -180,7 +185,7 @@ export function renderProductSection(
                           {problem.icon}
                         </span>
                       ) : null}
-                      <h3 className="mb-1.5 text-sm font-bold text-foreground sm:text-base">
+                      <h3 className={`mb-1.5 ${PRODUCT_CARD_TITLE_CLASS}`}>
                         {problem.title}
                       </h3>
                       <p className="text-xs leading-relaxed text-muted sm:text-sm">
@@ -199,7 +204,7 @@ export function renderProductSection(
                     <span className="section-label mb-3 inline-block text-[10px] tracking-[0.25em] text-champagne">
                       THE SOLUTION
                     </span>
-                    <h3 className="mb-3 font-serif text-2xl font-semibold text-foreground sm:text-3xl">
+                    <h3 className={`mb-3 ${PRODUCT_CARD_TITLE_2XL_CLASS}`}>
                       {solution.title}
                     </h3>
                     <p className="mb-4 max-w-xl leading-relaxed text-muted">
@@ -257,7 +262,7 @@ export function renderProductSection(
           image?: string;
         }[]) ?? [];
       return (
-        <section key={section.id} className={`${pad} ${bg || "bg-beige/50"}`}>
+        <section key={section.id} className={`${pad} ${surface}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               label={String(content.label ?? "")}
@@ -285,7 +290,7 @@ export function renderProductSection(
                     <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
                       {item.icon}
                     </span>
-                    <h3 className="mb-2 font-bold">{item.title}</h3>
+                    <h3 className={`mb-2 ${PRODUCT_CARD_TITLE_CLASS}`}>{item.title}</h3>
                     <p className="text-sm text-muted">{item.description}</p>
                   </div>
                 </div>
@@ -298,7 +303,7 @@ export function renderProductSection(
     case "transformation": {
       const items = (content.beforeAfter as TransformationCardContent[]) ?? [];
       return (
-        <section key={section.id} className={`${pad} bg-gradient-to-b from-ivory to-beige/30`}>
+        <section key={section.id} className={`${pad} ${surface}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               label={String(content.label ?? "")}
@@ -335,7 +340,7 @@ export function renderProductSection(
                     {(title || caption || resultText) && (
                       <div className="border-t border-champagne/10 bg-gradient-to-b from-white to-beige/20 p-5 text-center sm:p-6">
                         {title ? (
-                          <h3 className="mb-2 font-serif text-lg font-semibold text-foreground sm:text-xl">
+                          <h3 className={`mb-2 ${PRODUCT_CARD_TITLE_LG_CLASS}`}>
                             {title}
                           </h3>
                         ) : null}
@@ -371,7 +376,7 @@ export function renderProductSection(
       return (
         <section
           key={section.id}
-          className={`${pad} bg-gradient-to-b from-rose-50/40 via-ivory to-beige/30`}
+          className={`${pad} ${surface}`}
         >
           <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
@@ -408,7 +413,7 @@ export function renderProductSection(
                         ) : null}
                         <div className="p-5 sm:p-6">
                           <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-                            <h3 className="font-serif text-xl font-semibold text-foreground sm:text-2xl">
+                            <h3 className={PRODUCT_CARD_TITLE_XL_CLASS}>
                               {week.title}
                             </h3>
                             <span className="rounded-full bg-champagne/10 px-3 py-1 text-xs font-bold text-champagne">
@@ -438,7 +443,7 @@ export function renderProductSection(
     case "comparison": {
       const rows = (content.rows as { feature: string; limora: boolean; others: boolean }[]) ?? [];
       return (
-        <section key={section.id} className={`${pad} bg-beige/50`}>
+        <section key={section.id} className={`${pad} ${surface}`}>
           <div className="mx-auto max-w-3xl px-4 sm:px-6">
             <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
             <div className="overflow-hidden rounded-3xl bg-white luxury-shadow-lg">
@@ -473,7 +478,7 @@ export function renderProductSection(
       const ctaFootnote = String(content.ctaFootnote ?? "");
       return (
         <div key={section.id}>
-          <section id="reviews" className={pad}>
+          <section id="reviews" className={`${pad} ${surface}`}>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} />
               <div className="grid gap-4 sm:grid-cols-2">
@@ -530,14 +535,14 @@ export function renderProductSection(
     case "how_to_use": {
       const steps = (content.steps as { step: string; title: string; description: string }[]) ?? [];
       return (
-        <section key={section.id} className={`${pad} bg-beige/50`}>
+        <section key={section.id} className={`${pad} ${surface}`}>
           <div className="mx-auto max-w-4xl px-4 sm:px-6">
             <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
             <div className={`grid ${gridGap} md:grid-cols-3`}>
               {steps.map((step) => (
                 <div key={step.step} className="text-center">
-                  <span className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-champagne/15 font-serif text-xl font-semibold text-champagne">{step.step}</span>
-                  <h3 className="mb-2 font-bold">{step.title}</h3>
+                  <span className="mb-4 inline-flex h-14 w-14 items-center justify-center rounded-full bg-champagne/15 font-arabic-kufi text-xl font-bold text-champagne">{step.step}</span>
+                  <h3 className={`mb-2 ${PRODUCT_CARD_TITLE_CLASS}`}>{step.title}</h3>
                   <p className="text-sm text-muted">{step.description}</p>
                 </div>
               ))}
@@ -551,7 +556,7 @@ export function renderProductSection(
         (content.items as { name: string; benefit: string; image: string; icon?: string }[]) ??
         [];
       return (
-        <section key={section.id} className={`${pad} ${bg || "bg-beige/50"}`}>
+        <section key={section.id} className={`${pad} ${surface}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
               label={String(content.label ?? "")}
@@ -579,7 +584,7 @@ export function renderProductSection(
                     <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-champagne/15 text-xl">
                       {item.icon || "✦"}
                     </span>
-                    <h3 className="mb-2 font-bold">{item.name}</h3>
+                    <h3 className={`mb-2 ${PRODUCT_CARD_TITLE_CLASS}`}>{item.name}</h3>
                     <p className="text-sm text-muted">{item.benefit}</p>
                   </div>
                 </div>
@@ -591,7 +596,7 @@ export function renderProductSection(
     }
     case "faq": {
       const items = (content.items as { question: string; answer: string }[]) ?? [];
-      return <FAQBlock key={section.id} pad={pad} label={String(content.label ?? "")} title={String(content.title ?? "")} items={items} />;
+      return <FAQBlock key={section.id} pad={pad} surface={surface} label={String(content.label ?? "")} title={String(content.title ?? "")} items={items} />;
     }
     case "quality_trust": {
       const items = getEnabledQualityTrustItems(content);
@@ -600,7 +605,7 @@ export function renderProductSection(
       return (
         <section
           key={section.id}
-          className={`${pad} bg-gradient-to-b from-ivory via-beige/20 to-ivory`}
+          className={`${pad} ${surface}`}
         >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
@@ -676,14 +681,14 @@ export function renderProductSection(
       const ctaFootnote = String(content.ctaFootnote ?? "");
       return (
         <div key={section.id}>
-          <section className={pad}>
+          <section className={`${pad} ${surface}`}>
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
               <SectionHeader label={String(content.label ?? "")} title={String(content.title ?? "")} subtitle={String(content.subtitle ?? "")} />
               <div className={`grid ${gridGap} sm:grid-cols-2 lg:grid-cols-4`}>
                 {points.map((point) => (
                   <div key={point.title} className="rounded-3xl border border-champagne/15 bg-white p-5 text-center luxury-shadow sm:p-6">
                     <span className="mb-3 block text-2xl text-champagne">{point.icon}</span>
-                    <h3 className="mb-2 text-sm font-bold">{point.title}</h3>
+                    <h3 className={`mb-2 font-arabic-kufi text-heading font-bold text-sm`}>{point.title}</h3>
                     <p className="text-xs text-muted">{point.description}</p>
                   </div>
                 ))}
@@ -705,7 +710,7 @@ export function renderProductSection(
     case "lifestyle": {
       const imagePosition = content.imagePosition === "left" ? "left" : "right";
       return (
-        <section key={section.id} className={`${pad} ${bg}`}>
+        <section key={section.id} className={`${pad} ${surface}`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div
               className={`grid items-center ${gridGap} lg:grid-cols-2 lg:gap-6 ${
@@ -754,7 +759,7 @@ export function renderProductSection(
     case "related_products": {
       const items = (content.items as { id: string; name: string; nameEn: string; benefit: string; price: string; image: string; href: string }[]) ?? [];
       return (
-        <section key={section.id} className={`${pad} border-t border-champagne/10 bg-beige/30`}>
+        <section key={section.id} className={`${pad} ${surface} border-t border-champagne/10`}>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader label={String(content.label ?? "YOU MAY ALSO LOVE")} title={String(content.title ?? "منتجات قد تعجبكِ")} />
             <div className={`grid ${gridGap} md:grid-cols-3`}>
@@ -765,9 +770,9 @@ export function renderProductSection(
                   </div>
                   <div className="p-5">
                     <p className="text-xs uppercase text-champagne">{item.nameEn}</p>
-                    <h3 className="font-serif text-xl font-semibold">{item.name}</h3>
+                    <h3 className={PRODUCT_CARD_TITLE_XL_CLASS}>{item.name}</h3>
                     <p className="mt-1 text-sm text-muted">{item.benefit}</p>
-                    <p className="mt-3 font-serif text-lg font-semibold">{item.price} <span className="text-sm text-muted">ر.س</span></p>
+                    <p className={`mt-3 ${PRODUCT_PRICE_CLASS} text-lg`}>{item.price} <span className="text-sm font-normal text-muted">ر.س</span></p>
                   </div>
                 </Link>
               ))}
@@ -783,18 +788,20 @@ export function renderProductSection(
 
 function FAQBlock({
   pad,
+  surface,
   label,
   title,
   items,
 }: {
   pad: string;
+  surface: string;
   label: string;
   title: string;
   items: { question: string; answer: string }[];
 }) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
   return (
-    <section id="faq" className={`${pad} bg-beige/50`}>
+    <section id="faq" className={`${pad} ${surface}`}>
       <div className="mx-auto max-w-3xl px-4 sm:px-6">
         <SectionHeader label={label} title={title} />
         <div className="space-y-3">
@@ -803,7 +810,7 @@ function FAQBlock({
             return (
               <div key={faq.question} className="overflow-hidden rounded-2xl border border-champagne/10 bg-white">
                 <button type="button" className="flex w-full items-center justify-between gap-4 p-5 text-right" onClick={() => setOpenIndex(isOpen ? null : index)}>
-                  <span className="text-sm font-bold">{faq.question}</span>
+                  <span className="font-arabic-kufi text-heading text-sm font-bold">{faq.question}</span>
                   <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-beige text-champagne transition-transform ${isOpen ? "rotate-180" : ""}`}>▾</span>
                 </button>
                 {isOpen && <p className="px-5 pb-5 text-sm leading-relaxed text-muted">{faq.answer}</p>}

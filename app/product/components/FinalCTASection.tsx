@@ -1,5 +1,9 @@
 import type { FinalCtaConfig } from "@/lib/page-builder/types";
 import { resolveHeroTrustBadges } from "@/lib/page-builder/hero-trust";
+import {
+  PRODUCT_CTA_BUTTON_BASE,
+  PRODUCT_SECTION_TITLE_CLASS,
+} from "@/lib/page-builder/product-page-theme";
 import { HeroTrustBadge } from "./TrustBadgeItem";
 
 type Props = {
@@ -10,6 +14,7 @@ type Props = {
   ctaLabel: string;
   price: number;
   codTrust: string[];
+  surfaceClass?: string;
 };
 
 export default function FinalCTASection({
@@ -20,6 +25,7 @@ export default function FinalCTASection({
   ctaLabel,
   price,
   codTrust,
+  surfaceClass = "bg-ivory",
 }: Props) {
   if (!config.enabled) return null;
 
@@ -29,12 +35,12 @@ export default function FinalCTASection({
   const trustBadges = resolveHeroTrustBadges(codTrust);
 
   return (
-    <section className="border-t border-champagne/10 bg-gradient-to-b from-beige/60 to-ivory py-12 sm:py-14">
+    <section className={`border-t border-champagne/10 ${surfaceClass} py-12 sm:py-14`}>
       <div className="mx-auto max-w-3xl px-4 text-center sm:px-6">
         {config.label ? (
           <p className="section-label mb-3 text-xs text-champagne">{config.label}</p>
         ) : null}
-        <h2 className="mb-4 font-serif text-3xl font-semibold text-foreground sm:text-4xl">
+        <h2 className={`mb-4 ${PRODUCT_SECTION_TITLE_CLASS}`}>
           {title}
         </h2>
         <p className="mx-auto mb-6 max-w-lg text-muted">{subtitle}</p>
@@ -50,7 +56,7 @@ export default function FinalCTASection({
         <button
           type="button"
           onClick={onOrder}
-          className="group relative mx-auto w-full max-w-md overflow-hidden rounded-full bg-foreground py-4 text-lg font-medium text-ivory transition hover:shadow-2xl"
+          className={`${PRODUCT_CTA_BUTTON_BASE} mx-auto w-full max-w-md rounded-full py-4 text-lg`}
         >
           <span className="relative z-10">{ctaLabel}</span>
           <span className="relative z-10 mr-2 text-champagne-light">

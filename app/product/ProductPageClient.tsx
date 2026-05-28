@@ -11,6 +11,8 @@ import {
   PAGE_BLOCK_OFFERS,
   getResolvedPageLayoutOrder,
 } from "@/lib/page-builder/page-layout";
+import { getSectionPaddingClass } from "@/lib/page-builder/section-spacing";
+import { getProductPageSurfaceClass } from "@/lib/page-builder/product-page-theme";
 import { getOfferDisplayLabel } from "@/lib/storefront";
 import { trackEvent } from "@/lib/analytics/events";
 import {
@@ -133,14 +135,8 @@ export default function ProductPageClient({
     setModalOpen(true);
   }, [preview, product.orderName, pageConfig.slug, selectedOffer, offerLabels]);
 
-  const heroGradient =
-    pageConfig.theme.heroGradient === "pink"
-      ? "luxury-pink-gradient"
-      : pageConfig.theme.heroGradient === "soft"
-        ? "bg-gradient-to-b from-beige/80 to-ivory"
-        : pageConfig.theme.heroGradient === "minimal"
-          ? "bg-ivory"
-          : "luxury-gradient";
+  const pageSurface = getProductPageSurfaceClass(pageConfig.theme);
+  const heroPadding = getSectionPaddingClass(pageConfig.theme);
 
   const aspectClass =
     pageConfig.mobile.imageAspect === "portrait"
@@ -159,8 +155,8 @@ export default function ProductPageClient({
   function renderLayoutBlock(blockId: string): ReactNode {
     if (blockId === PAGE_BLOCK_HERO) {
       return (
-        <section key={blockId} className={heroGradient}>
-          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-12">
+        <section key={blockId} className={`${pageSurface} ${heroPadding}`}>
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8">
             <ProductGallery product={product} aspectClass={aspectClass} />
             <ProductInfo product={product} />
           </div>
@@ -170,8 +166,8 @@ export default function ProductPageClient({
 
     if (blockId === PAGE_BLOCK_OFFERS) {
       return (
-        <section key={blockId} className={heroGradient}>
-          <div className="mx-auto max-w-7xl px-4 pb-8 sm:px-6 lg:px-8 lg:pb-12">
+        <section key={blockId} className={`${pageSurface} ${heroPadding}`}>
+          <div className="mx-auto max-w-7xl px-4 pb-2 sm:px-6 lg:px-8">
             <div className="lg:mr-auto lg:max-w-xl lg:justify-self-end">
               <PurchaseZone
                 selectedOffer={selectedOffer}
@@ -206,6 +202,7 @@ export default function ProductPageClient({
           ctaLabel={pageConfig.hero.ctaLabel}
           price={selectedOffer.price}
           codTrust={heroTrustBadges}
+          surfaceClass={pageSurface}
         />
       );
     }
@@ -225,8 +222,8 @@ export default function ProductPageClient({
 
       if (blockId === PAGE_BLOCK_HERO && nextBlockId === PAGE_BLOCK_OFFERS) {
         blocks.push(
-          <section key={`${blockId}-${nextBlockId}`} className={heroGradient}>
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8 lg:py-12">
+          <section key={`${blockId}-${nextBlockId}`} className={`${pageSurface} ${heroPadding}`}>
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:grid lg:grid-cols-2 lg:gap-12 lg:px-8">
               <ProductGallery product={product} aspectClass={aspectClass} />
               <div>
                 <ProductInfo product={product} />
@@ -266,11 +263,11 @@ export default function ProductPageClient({
       />
 
       {!preview && (
-        <header className="border-b border-rose-200/40 bg-[#fff9fb]/90 backdrop-blur-xl">
+        <header className="border-b border-champagne/10 bg-ivory/95 backdrop-blur-xl">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
             <a
               href="/"
-              className="font-serif text-2xl font-semibold tracking-[0.15em] text-foreground"
+              className="font-serif text-2xl font-semibold tracking-[0.15em] text-heading"
             >
               LIMORA
             </a>
@@ -285,7 +282,7 @@ export default function ProductPageClient({
       )}
 
       <main
-        className={`product-builder-page ${
+        className={`product-builder-page product-page-shell ${pageSurface} ${
           preview
             ? ""
             : showStickyCta

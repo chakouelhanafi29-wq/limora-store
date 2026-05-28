@@ -1,6 +1,7 @@
 "use client";
 
 import type { Offer } from "../../lib/product-data";
+import { PRODUCT_CTA_BUTTON_BASE, PRODUCT_PRICE_CLASS } from "@/lib/page-builder/product-page-theme";
 
 type Props = {
   offer: Offer;
@@ -31,7 +32,7 @@ export default function StickyMobileCTA({
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 shrink">
             <p className="truncate text-[11px] text-muted">{offer.label}</p>
-            <p className="font-serif text-lg font-semibold text-foreground">
+            <p className={`${PRODUCT_PRICE_CLASS} text-lg`}>
               {offer.price}{" "}
               <span className="text-xs font-normal text-muted">ر.س</span>
             </p>
@@ -39,7 +40,7 @@ export default function StickyMobileCTA({
           <button
             type="button"
             onClick={onOrder}
-            className="shrink-0 rounded-full bg-foreground px-5 py-3.5 text-xs font-medium leading-snug text-ivory shadow-lg shadow-foreground/10 transition hover:bg-champagne sm:text-sm"
+            className={`${PRODUCT_CTA_BUTTON_BASE} shrink-0 rounded-full px-5 py-3.5 text-xs leading-snug shadow-lg shadow-heading/10 sm:text-sm`}
           >
             {ctaLabel}
           </button>

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import type { Offer } from "../../lib/product-data";
+import { PRODUCT_CTA_BUTTON_BASE } from "@/lib/page-builder/product-page-theme";
 import OfferSelection from "./OfferSelection";
 import PurchaseTrustStrip from "./PurchaseTrustStrip";
 
@@ -36,7 +37,7 @@ function OrderButton({
     <button
       type="button"
       onClick={onOrder}
-      className={`group relative w-full overflow-hidden ${btnRadius} bg-foreground ${sizeClass} font-medium text-ivory transition hover:shadow-xl`}
+      className={`${PRODUCT_CTA_BUTTON_BASE} w-full ${btnRadius} ${sizeClass}`}
     >
       <span className="relative z-10">{ctaLabel}</span>
       <span className="relative z-10 mr-2 text-champagne-light">
