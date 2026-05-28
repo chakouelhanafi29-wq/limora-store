@@ -77,12 +77,12 @@ function feminineBalanceSections(sections: PageSection[]): PageSection[] {
                       subtitle: "راحة أكثر… ثقة أهدأ… عناية يومية تستحقينها.",
                       beforeAfter: [
                         {
-                          title: "قبل",
+                          title: "بداية الرحلة",
                           caption: "قلق… عدم راحة… ثقة أقل",
                           image: FEMININE_BALANCE_PRIMARY_IMAGE,
                         },
                         {
-                          title: "بعد",
+                          title: "بعد 21 يوم",
                           caption: "انتعاش… توازن… ثقة طبيعية",
                           image: HOME_TRANSFORMATION_IMAGES.feminineBalance,
                         },

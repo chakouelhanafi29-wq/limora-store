@@ -9,7 +9,7 @@ import {
 type Props = {
   selected: Offer;
   onSelect: (offer: Offer) => void;
-  offers: Offer[];
+  offers: (Offer & { savingsText?: string | null })[];
   compact?: boolean;
 };
 
@@ -67,14 +67,18 @@ export default function OfferSelection({ selected, onSelect, offers, compact }: 
 
                 <div className="flex-1">
                   <p className="font-arabic-kufi font-bold text-heading">{offer.label}</p>
-                  {savings > 0 && (
+                  {offer.savingsText ? (
+                    <p className="mt-1 text-xs font-medium text-champagne">
+                      {offer.savingsText}
+                    </p>
+                  ) : savings > 0 ? (
                     <p className="mt-1 text-xs font-medium text-champagne">
                       وفّري {savings} ر.س
                     </p>
-                  )}
+                  ) : null}
                   {offer.quantity > 1 && (
-                    <p className="text-xs text-muted">
-                      {Math.round(offer.unitPrice)} ر.س / قطعة
+                    <p className="text-xs text-muted line-through">
+                      {basePrice * offer.quantity} ر.س
                     </p>
                   )}
                 </div>

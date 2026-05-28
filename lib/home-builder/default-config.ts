@@ -45,20 +45,15 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
       content: {
         ...clone(hero),
         image: COLLAGEN_GLOW_PRIMARY_IMAGE,
+        ctaPrimaryHref: "#products",
+        ctaSecondaryHref: "#results",
       },
-    },
-    {
-      id: createId(),
-      type: "brand_story",
-      enabled: true,
-      order: 2,
-      content: clone(emotionalMessage),
     },
     {
       id: createId(),
       type: "products",
       enabled: true,
-      order: 3,
+      order: 2,
       content: {
         label: "FEATURED COLLECTION",
         title: "مختارات LIMORA الفاخرة",
@@ -67,6 +62,13 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
         useDynamicProducts: true,
         contentRevision: 3,
       },
+    },
+    {
+      id: createId(),
+      type: "brand_story",
+      enabled: true,
+      order: 3,
+      content: clone(emotionalMessage),
     },
     {
       id: createId(),
@@ -133,7 +135,7 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
     navbar: {
       brandName: "LIMORA",
       ctaLabel: "اطلبي الآن",
-      ctaHref: "/product/collagen-glow",
+      ctaHref: "#products",
       links: clone(navLinks),
     },
     sections,

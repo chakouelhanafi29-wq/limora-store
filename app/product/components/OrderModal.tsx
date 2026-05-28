@@ -17,6 +17,7 @@ import {
   PRODUCT_CTA_BUTTON_BASE,
 } from "@/lib/page-builder/product-page-theme";
 import type { Offer } from "../../lib/product-data";
+import { saudiCities } from "../../lib/product-data";
 
 type Props = {
   open: boolean;
@@ -49,6 +50,7 @@ export default function OrderModal({
   const router = useRouter();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("الرياض");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -103,6 +105,7 @@ export default function OrderModal({
         body: JSON.stringify({
           customer_name: name.trim(),
           phone: normalizedPhone,
+          city: city.trim() || "الرياض",
           product_id: productId || null,
           product_name: product.orderName,
           product_slug: productSlug,
@@ -144,6 +147,7 @@ export default function OrderModal({
   const handleClose = () => {
     setName("");
     setPhone("");
+    setCity("الرياض");
     setError("");
     setPhoneError("");
     onClose();
@@ -268,6 +272,30 @@ export default function OrderModal({
             )}
           </div>
 
+          <div>
+            <label
+              htmlFor="order-city"
+              className="mb-1 block text-sm font-medium text-foreground"
+            >
+              المدينة
+            </label>
+            <select
+              id="order-city"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="w-full rounded-xl border border-champagne/20 bg-white px-4 py-3.5 text-base outline-none transition focus:border-champagne focus:ring-2 focus:ring-champagne/20"
+            >
+              {saudiCities.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+            <p className="mt-1 text-[11px] text-muted">
+              نؤكّد العنوان معكِ هاتفياً قبل الشحن — COD آمن
+            </p>
+          </div>
+
           <button
             type="submit"
             disabled={submitting}
@@ -287,8 +315,8 @@ export default function OrderModal({
           </p>
 
           {codTrust.length > 0 && (
-            <div className="flex flex-wrap justify-center gap-2 pt-0.5">
-              {codTrust.slice(0, 3).map((item) => (
+            <div className="grid grid-cols-2 gap-2 pt-0.5">
+              {codTrust.map((item) => (
                 <span
                   key={item}
                   className="rounded-full bg-beige/60 px-2.5 py-1 text-[10px] text-muted"

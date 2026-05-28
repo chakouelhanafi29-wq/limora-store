@@ -21,6 +21,7 @@ import { resolveHomepageFeaturedProducts } from "@/lib/storefront/homepage-featu
 import ConfigurableNavbar from "./ConfigurableNavbar";
 import FeaturedProductsSection from "./FeaturedProductsSection";
 import HomeFAQSection from "./HomeFAQSection";
+import HomeStickyMobileCTA from "./HomeStickyMobileCTA";
 
 type TestimonialsData = {
   label: string;
@@ -169,15 +170,15 @@ function renderSection(
                 />
               </div>
               {floatCard1 && (
-                <div className="absolute bottom-4 right-4 hidden glass-card rounded-2xl p-5 luxury-shadow lg:block lg:-bottom-6 lg:-right-8">
+                <div className="absolute bottom-4 right-4 glass-card rounded-2xl p-4 luxury-shadow sm:p-5 lg:-bottom-6 lg:-right-8">
                   <p className="text-sm font-bold text-foreground">{floatCard1.title}</p>
                   <p className="text-xs text-muted">{floatCard1.subtitle}</p>
                 </div>
               )}
               {floatCard2 && (
-                <div className="absolute top-4 left-4 hidden glass-card rounded-2xl p-4 luxury-shadow lg:block lg:-top-4 lg:-left-8">
+                <div className="absolute top-4 left-4 glass-card rounded-2xl p-3 luxury-shadow sm:p-4 lg:-top-4 lg:-left-8">
                   <p className="text-xs font-medium text-champagne">{floatCard2.label}</p>
-                  <p className="font-serif text-lg font-semibold text-foreground">{floatCard2.title}</p>
+                  <p className="font-serif text-base font-semibold text-foreground sm:text-lg">{floatCard2.title}</p>
                 </div>
               )}
             </div>
@@ -485,7 +486,23 @@ function renderSection(
                 </ul>
               </div>
             </div>
-            <p className="mt-12 border-t border-ivory/10 pt-8 text-center text-xs text-ivory/40">
+            <div className="mt-10 flex flex-wrap justify-center gap-3 border-t border-ivory/10 pt-8">
+              {[
+                "شحن مجاني داخل السعودية",
+                "الدفع عند الاستلام",
+                "تأكيد هاتفي قبل الشحن",
+                "ضمان الجودة",
+              ].map((item) => (
+                <span
+                  key={item}
+                  className="inline-flex items-center gap-2 rounded-full border border-ivory/10 bg-ivory/5 px-4 py-2 text-xs text-ivory/60"
+                >
+                  <span className="text-champagne-light">✓</span>
+                  {item}
+                </span>
+              ))}
+            </div>
+            <p className="mt-8 border-t border-ivory/10 pt-8 text-center text-xs text-ivory/40">
               © 2026 {String(content.brandName ?? "LIMORA")}. جميع الحقوق محفوظة.
             </p>
           </div>
@@ -539,9 +556,10 @@ export default function ConfigurableHomePage({
           )
           .filter(Boolean)}
       </main>
-      {preview && hasFooterSection && (
+      {!preview && hasFooterSection && (
         <p className="sr-only">Footer rendered in sections</p>
       )}
+      <HomeStickyMobileCTA preview={preview || previewMobile} />
     </div>
   );
 }

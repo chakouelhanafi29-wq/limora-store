@@ -147,14 +147,17 @@ export const problemSolution = {
     },
     {
       title: "مسام واسعة",
+      icon: "🔍",
       description: "ملمس غير متجانس يقلّل ثقتكِ بنفسك.",
     },
     {
       title: "عدم توحد لون البشرة",
+      icon: "🎨",
       description: "بقع وبهتان يمنعان الإشراقة الطبيعية.",
     },
     {
       title: "ضعف الشعر والأظافر",
+      icon: "💅",
       description: "جمالكِ يحتاج دعماً من الداخل — لا من الخارج فقط.",
     },
   ],
@@ -222,7 +225,7 @@ export const transformation = {
       resultText: "21 يوم · نتيجة حقيقية مع الاستمرار اليومي",
     },
     {
-      image: COLLAGEN_GLOW_GALLERY[1],
+      image: COLLAGEN_GLOW_GALLERY[0],
       title: "إشراقة ومرونة ملحوظة",
       caption: "مرونة وترطيب حسيت فيهم من الأسبوع الثاني — جدة",
       resultText: "14 يوم · توهج طبيعي… بثقة أنثوية",

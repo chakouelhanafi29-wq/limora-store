@@ -39,8 +39,8 @@ export default function StickyMobileCTA({
     >
       <div className="mx-auto max-w-lg">
         {codTrust.length > 0 ? (
-          <div className="mb-2 flex flex-wrap justify-center gap-x-3 gap-y-0.5">
-            {codTrust.slice(0, 3).map((item) => (
+          <div className="mb-2 grid grid-cols-2 gap-x-2 gap-y-0.5">
+            {codTrust.map((item) => (
               <span key={item} className="text-[10px] text-muted">
                 ✓ {item}
               </span>

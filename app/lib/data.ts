@@ -110,7 +110,7 @@ export const limoraBundle = {
     "Collagen Glow + Hair Revive + Feminine Balance — نظام جمال متكامل: بشرة، شعر، وعناية أنثوية… في مجموعة واحدة فاخرة.",
   priceNote: "599 ر.س بدلاً من 677 ر.س — شحن مجاني + الدفع عند الاستلام",
   ctaLabel: "اطلبي المجموعة الآن",
-  ctaHref: "/product/collagen-glow",
+  ctaHref: "#products",
   products: [
     {
       name: "Collagen Glow",

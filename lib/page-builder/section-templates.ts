@@ -97,7 +97,7 @@ export function buildStaticTemplateConfig(slug: string): ProductPageConfig {
     {
       id: createSectionId(),
       type: "related_products",
-      enabled: false,
+      enabled: true,
       order: 10,
       content: {
         label: "YOU MAY ALSO LOVE",
@@ -314,7 +314,7 @@ export function genericSectionScaffolds(
     },
     {
       type: "related_products",
-      enabled: false,
+      enabled: true,
       content: {
         label: "YOU MAY ALSO LOVE",
         title: "منتجات قد تعجبكِ",

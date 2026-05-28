@@ -171,7 +171,6 @@ export function renderProductSection(
                           <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-white/70 text-xl shadow-sm ring-1 ring-champagne/10">
                             {problem.icon || "✦"}
                           </span>
-                          <p className="text-[10px] text-muted">ارفعي صورة من المحرر</p>
                         </div>
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-foreground/15 to-transparent sm:bg-gradient-to-l sm:from-transparent sm:via-transparent sm:to-white/10" />
@@ -696,6 +695,19 @@ export function renderProductSection(
               </div>
             </div>
           </section>
+          {cta && (
+            <SectionCTA
+              onOrder={cta.onOrder}
+              ctaLabel={cta.ctaLabel}
+              price={cta.price}
+              buttonStyle={theme.buttonStyle}
+              subtitle={
+                ctaSubtitle ||
+                "اطلبي الآن بالدفع عند الاستلام — نؤكّد طلبكِ هاتفياً"
+              }
+              footnote={ctaFootnote}
+            />
+          )}
         </div>
       );
     }

@@ -3,7 +3,13 @@ import type { HomePageConfig } from "@/lib/home-builder/types";
 import { mapFeaturedProducts, type FeaturedProductCard } from "@/lib/storefront";
 import type { ProductWithRelations } from "@/lib/types/database";
 
-/** Homepage featured cards only — does not affect checkout or product pages. */
+/** Homepage featured cards — display prices only; checkout uses real offer prices. */
+export const HOMEPAGE_FEATURED_DISPLAY_PRICES: Record<string, string> = {
+  "collagen-glow": "199",
+  "hair-revive": "249",
+  "feminine-balance": "229",
+};
+
 export const HOMEPAGE_FEATURED_DISPLAY_PRICE = "199";
 
 export function buildHomepageFeaturedProductCards(
@@ -24,7 +30,7 @@ export function buildHomepageFeaturedProductCards(
 
   return cards.map((card) => ({
     ...card,
-    price: HOMEPAGE_FEATURED_DISPLAY_PRICE,
+    price: HOMEPAGE_FEATURED_DISPLAY_PRICES[card.slug] ?? HOMEPAGE_FEATURED_DISPLAY_PRICE,
     originalPrice: "",
   }));
 }
@@ -48,7 +54,9 @@ export function resolveHomepageFeaturedProducts(
   );
   return catalogProducts.map((product) => ({
     ...product,
-    price: displayPrice,
+    price: content.homepageDisplayPrice
+      ? displayPrice
+      : HOMEPAGE_FEATURED_DISPLAY_PRICES[product.slug] ?? HOMEPAGE_FEATURED_DISPLAY_PRICE,
     originalPrice: "",
   }));
 }

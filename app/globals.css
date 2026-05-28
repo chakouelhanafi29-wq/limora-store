@@ -271,7 +271,7 @@ body {
 }
 
 .section-label {
-  letter-spacing: 0.2em;
+  letter-spacing: 0.06em;
 }
 
 .luxury-focus-ring:focus-visible {
@@ -596,6 +596,22 @@ body {
 .featured-product-card__cta:focus-visible {
   outline: 2px solid rgba(201, 169, 98, 0.55);
   outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  .featured-product-card__media img {
+    object-fit: cover !important;
+    padding: 0 !important;
+  }
+
+  .featured-product-card__cta {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .featured-product-card__footer {
+    align-items: stretch;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

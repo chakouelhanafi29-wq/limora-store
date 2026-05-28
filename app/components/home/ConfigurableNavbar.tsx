@@ -31,7 +31,7 @@ export default function ConfigurableNavbar({ navbar }: { navbar: HomeNavbar }) {
         <div className="flex items-center gap-3">
           <a
             href={navbar.ctaHref}
-            className="hidden rounded-full bg-foreground px-6 py-2.5 text-sm font-medium text-ivory transition-all hover:bg-champagne hover:shadow-lg sm:inline-block"
+            className="rounded-full bg-foreground px-4 py-2 text-xs font-medium text-ivory transition-all hover:bg-champagne sm:px-6 sm:py-2.5 sm:text-sm"
           >
             {navbar.ctaLabel}
           </a>

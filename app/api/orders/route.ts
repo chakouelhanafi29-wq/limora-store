@@ -32,6 +32,7 @@ export async function POST(request: Request) {
     const {
       customer_name,
       phone,
+      city,
       product_id,
       product_name,
       product_slug,
@@ -64,6 +65,8 @@ export async function POST(request: Request) {
     }
 
     const normalizedPhone = normalizeSaudiPhone(phone)!;
+    const orderCity =
+      typeof city === "string" && city.trim() ? city.trim() : COD_PENDING_CITY;
     const notes = buildAttributionNotes({
       traffic_platform,
       traffic_source,
@@ -87,7 +90,7 @@ export async function POST(request: Request) {
     const orderPayload = {
       p_customer_name: customer_name.trim(),
       p_phone: normalizedPhone,
-      p_city: COD_PENDING_CITY,
+      p_city: orderCity,
       p_product_id: product_id || null,
       p_product_name: product_name,
       p_product_slug: product_slug || null,
@@ -112,7 +115,7 @@ export async function POST(request: Request) {
     const { error: insertError } = await supabase.from("orders").insert({
       customer_name: customer_name.trim(),
       phone: normalizedPhone,
-      city: COD_PENDING_CITY,
+      city: orderCity,
       product_id: product_id || null,
       product_name,
       product_slug: product_slug || null,
