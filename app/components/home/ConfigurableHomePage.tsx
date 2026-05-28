@@ -14,6 +14,7 @@ import type {
 } from "@/lib/home-builder/types";
 import type { FeaturedProductCard } from "@/lib/storefront";
 import ConfigurableNavbar from "./ConfigurableNavbar";
+import FeaturedProductsSection from "./FeaturedProductsSection";
 import HomeFAQSection from "./HomeFAQSection";
 
 type TestimonialsData = {
@@ -169,44 +170,15 @@ function renderSection(
     }
     case "products":
       return (
-        <section key={section.id} id="products" className={`bg-beige/50 ${pad}`}>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <SectionHeader
-              label={String(content.label ?? "")}
-              title={String(content.title ?? "")}
-              subtitle={String(content.subtitle ?? "")}
-            />
-            <div className="grid gap-8 md:grid-cols-3">
-              {products.map((product) => (
-                <article
-                  key={product.id}
-                  className="group relative flex flex-col overflow-hidden rounded-3xl bg-white luxury-shadow transition-all duration-500 hover:-translate-y-2"
-                >
-                  {product.badge && (
-                    <span className="absolute top-4 right-4 z-10 rounded-full bg-champagne px-3 py-1 text-xs font-bold text-white">
-                      {product.badge}
-                    </span>
-                  )}
-                  <div className="relative aspect-[4/5] overflow-hidden bg-beige">
-                    <Image src={product.image} alt={product.name} fill className="object-cover transition duration-700 group-hover:scale-105" sizes="33vw" />
-                  </div>
-                  <div className="flex flex-1 flex-col p-7">
-                    <p className="text-xs uppercase tracking-widest text-champagne">{product.nameEn}</p>
-                    <h3 className="mt-1 font-serif text-2xl font-semibold">{product.name}</h3>
-                    <p className="mt-2 text-sm text-muted">{product.benefit}</p>
-                    <p className="mt-4 font-serif text-2xl font-semibold">
-                      {product.price} <span className="text-sm text-muted line-through">{product.originalPrice}</span>
-                      <span className="text-sm text-muted"> ر.س</span>
-                    </p>
-                    <Link href={`/product/${product.slug}`} className={`mt-auto inline-block ${btn} bg-foreground px-6 py-3 text-center text-sm text-ivory transition hover:bg-champagne`}>
-                      {product.cta}
-                    </Link>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </section>
+        <FeaturedProductsSection
+          key={section.id}
+          products={products}
+          label={String(content.label ?? "")}
+          title={String(content.title ?? "")}
+          subtitle={String(content.subtitle ?? "")}
+          className={pad}
+          buttonRadius={btn}
+        />
       );
     case "before_after": {
       type TransformationCard = {

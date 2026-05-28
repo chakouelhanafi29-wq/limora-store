@@ -16,6 +16,9 @@ export const HOME_MANAGED_CONTENT_REVISION = 5;
 
 export const HOME_BEFORE_AFTER_CONTENT_REVISION = 3;
 
+/** Bump when featured products section UI/content defaults change in code. */
+export const HOME_PRODUCTS_CONTENT_REVISION = 2;
+
 const EXPECTED_TRANSFORMATION_IMAGES = [
   HOME_TRANSFORMATION_IMAGES.collagenGlow,
   HOME_TRANSFORMATION_IMAGES.hairRevive,
@@ -190,12 +193,50 @@ function removeBrandStoryAfterFaq(sections: HomeSection[]): HomeSection[] {
   );
 }
 
+function syncProductsSection(section: HomeSection): HomeSection {
+  const content = section.content as Record<string, unknown>;
+  const revision = Number(content.contentRevision ?? 1);
+
+  if (revision >= HOME_PRODUCTS_CONTENT_REVISION) {
+    return {
+      ...section,
+      content: {
+        ...content,
+        useDynamicProducts: content.useDynamicProducts ?? true,
+      },
+    };
+  }
+
+  return {
+    ...section,
+    content: {
+      ...content,
+      contentRevision: HOME_PRODUCTS_CONTENT_REVISION,
+      useDynamicProducts: content.useDynamicProducts ?? true,
+    },
+  };
+}
+
+function ensureProductsSection(
+  sections: HomeSection[],
+  defaults: HomePageConfig,
+): HomeSection[] {
+  if (sections.some((section) => section.type === "products")) {
+    return sections;
+  }
+
+  const fallback = defaults.sections.find((section) => section.type === "products");
+  return fallback ? [...sections, clone(fallback)] : sections;
+}
+
 function sanitizeSection(section: HomeSection): HomeSection {
   switch (section.type) {
     case "before_after":
       return beforeAfterSectionNeedsSync(section)
         ? syncBeforeAfterSection(section)
         : section;
+    case "products":
+      return syncProductsSection(section);
     case "brand_story":
       return syncBrandStorySection(section);
     case "reviews":
@@ -219,6 +260,7 @@ export function syncManagedHomeSections(
 
   sections = removeDuplicateBrandStorySections(sections);
   sections = removeBrandStoryAfterFaq(sections);
+  sections = ensureProductsSection(sections, defaults);
 
   if (defaultBeforeAfter && !sections.some((section) => section.type === "before_after")) {
     sections.push({

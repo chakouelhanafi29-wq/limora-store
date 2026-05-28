@@ -65,6 +65,7 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
         subtitle:
           "Collagen Glow · Hair Revive · Feminine Balance — ثلاث تركيبات… ثلاثة تحولات.",
         useDynamicProducts: true,
+        contentRevision: 2,
       },
     },
     {
