@@ -13,6 +13,50 @@ alter table settings add column if not exists seo_keywords text;
 alter table settings add column if not exists og_image_url text;
 alter table settings add column if not exists twitter_handle text;
 
+-- Tracking & analytics pixel columns (Admin → Settings)
+alter table settings add column if not exists facebook_pixel_id text;
+alter table settings add column if not exists tiktok_pixel_id text;
+alter table settings add column if not exists snapchat_pixel_id text;
+alter table settings add column if not exists google_analytics_id text;
+alter table settings add column if not exists google_tag_manager_id text;
+alter table settings add column if not exists whatsapp_number text;
+alter table settings add column if not exists free_shipping boolean default true;
+alter table settings add column if not exists cod_enabled boolean default true;
+alter table settings add column if not exists announcement_1 text;
+alter table settings add column if not exists announcement_2 text;
+alter table settings add column if not exists announcement_3 text;
+alter table settings add column if not exists updated_at timestamptz default now();
+
+insert into settings (id) values (1) on conflict (id) do nothing;
+
+-- Server-side tracking credentials (admin-only)
+create table if not exists tracking_secrets (
+  id int primary key default 1 check (id = 1),
+  meta_capi_access_token text,
+  meta_test_event_code text,
+  tiktok_events_access_token text,
+  tiktok_test_event_code text,
+  snapchat_capi_access_token text,
+  snapchat_test_event_code text,
+  updated_at timestamptz default now()
+);
+
+insert into tracking_secrets (id) values (1) on conflict (id) do nothing;
+
+alter table tracking_secrets enable row level security;
+
+drop policy if exists "Admin read tracking secrets" on tracking_secrets;
+create policy "Admin read tracking secrets" on tracking_secrets
+  for select using (is_admin());
+
+drop policy if exists "Admin insert tracking secrets" on tracking_secrets;
+create policy "Admin insert tracking secrets" on tracking_secrets
+  for insert with check (is_admin());
+
+drop policy if exists "Admin update tracking secrets" on tracking_secrets;
+create policy "Admin update tracking secrets" on tracking_secrets
+  for update using (is_admin()) with check (is_admin());
+
 -- Product page builder
 create table if not exists product_page_configs (
   id uuid primary key default gen_random_uuid(),
@@ -103,6 +147,10 @@ create policy "Admin manage home page configs" on home_page_configs
 -- Homepage transformation section auto-sync (run supabase/home-transformations-sync.sql)
 -- Review avatar migration (run supabase/review-avatars-migration.sql)
 -- Homepage orphan section cleanup (run supabase/home-cleanup-orphan-sections.sql)
+-- Tracking settings columns + CAPI secrets (run supabase/tracking-settings-columns.sql)
+-- See tracking-settings-columns.sql
 -- Product builder product_id column (also in ensure-migrations.sql above)
 -- See product-builder-product-id-migration.sql
 -- See home-transformations-sync.sql
+
+notify pgrst, 'reload schema';

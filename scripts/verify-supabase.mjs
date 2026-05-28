@@ -60,7 +60,7 @@ const coreTables = [
   "analytics_events",
 ];
 
-const builderTables = ["product_page_configs", "home_page_configs"];
+const builderTables = ["product_page_configs", "home_page_configs", "tracking_secrets"];
 const tables = [...coreTables, ...builderTables];
 
 console.log("Checking Supabase:", url);
@@ -85,6 +85,16 @@ console.log(
 if (!storageRes.ok) missing.push("storage/product-images");
 
 if (missing.length === 0) {
+  const settingsRes = await fetchWithRetry(
+    `${url}/rest/v1/settings?select=google_analytics_id,facebook_pixel_id&limit=1`,
+    { headers },
+  );
+  if (!settingsRes.ok) {
+    console.log(
+      `WARN  settings tracking columns (${settingsRes.status}) — run supabase/tracking-settings-columns.sql`,
+    );
+    process.exit(1);
+  }
   console.log("\nSupabase is fully connected.");
   process.exit(0);
 }
@@ -101,6 +111,8 @@ if (missingCore.length > 0) {
   console.log("\nRun supabase/schema.sql in your Supabase SQL Editor:");
 } else if (missingBuilder.length > 0) {
   console.log("\nCore tables exist. Run supabase/ensure-migrations.sql for page builders:");
+} else if (!missing.includes("settings")) {
+  console.log("\nRun supabase/tracking-settings-columns.sql for tracking settings columns:");
 } else {
   console.log("\nRun supabase/schema.sql if storage is missing:");
 }

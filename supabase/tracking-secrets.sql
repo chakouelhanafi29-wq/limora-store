@@ -16,11 +16,16 @@ insert into tracking_secrets (id) values (1) on conflict (id) do nothing;
 
 alter table tracking_secrets enable row level security;
 
+drop policy if exists "Admin read tracking secrets" on tracking_secrets;
 create policy "Admin read tracking secrets" on tracking_secrets
   for select using (is_admin());
 
+drop policy if exists "Admin insert tracking secrets" on tracking_secrets;
 create policy "Admin insert tracking secrets" on tracking_secrets
   for insert with check (is_admin());
 
+drop policy if exists "Admin update tracking secrets" on tracking_secrets;
 create policy "Admin update tracking secrets" on tracking_secrets
   for update using (is_admin()) with check (is_admin());
+
+notify pgrst, 'reload schema';

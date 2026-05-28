@@ -118,6 +118,7 @@ create table if not exists settings (
   tiktok_pixel_id text,
   snapchat_pixel_id text,
   google_analytics_id text,
+  google_tag_manager_id text,
   whatsapp_number text,
   free_shipping boolean default true,
   cod_enabled boolean default true,
