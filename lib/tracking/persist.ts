@@ -31,6 +31,8 @@ export async function persistTrackingEvent(payload: ServerTrackingPayload) {
       click_ids: payload.click_ids ?? {},
       event_source_url: payload.event_source_url ?? null,
       server_side: true,
+      os_family: attribution.os_family ?? null,
+      browser_name: attribution.browser_name ?? null,
     },
   });
 

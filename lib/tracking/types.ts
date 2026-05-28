@@ -32,6 +32,8 @@ export type TrackingAttribution = {
   utm_term?: string | null;
   referrer?: string | null;
   device_type?: string | null;
+  os_family?: string | null;
+  browser_name?: string | null;
   landing_page?: string | null;
   session_id?: string | null;
 };

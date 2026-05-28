@@ -25,6 +25,8 @@ export type Attribution = {
   utm_term: string | null;
   referrer: string | null;
   device_type: "mobile" | "tablet" | "desktop";
+  os_family: "ios" | "android" | "other";
+  browser_name: "safari" | "chrome" | "other";
   landing_page: string;
   session_id: string;
   first_touch_platform: TrafficPlatform;
@@ -54,6 +56,22 @@ function detectDeviceType(): Attribution["device_type"] {
   if (/ipad|tablet/.test(ua)) return "tablet";
   if (/mobile|iphone|android/.test(ua)) return "mobile";
   return "desktop";
+}
+
+function detectOsFamily(): Attribution["os_family"] {
+  if (typeof navigator === "undefined") return "other";
+  const ua = navigator.userAgent;
+  if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
+  if (/Android/i.test(ua)) return "android";
+  return "other";
+}
+
+function detectBrowserName(): Attribution["browser_name"] {
+  if (typeof navigator === "undefined") return "other";
+  const ua = navigator.userAgent;
+  if (/CriOS|Chrome/i.test(ua) && !/Edg/i.test(ua)) return "chrome";
+  if (/Safari/i.test(ua) && !/Chrome|CriOS/i.test(ua)) return "safari";
+  return "other";
 }
 
 function detectPlatform(
@@ -207,6 +225,8 @@ export function captureAttribution(
       utm_term: null,
       referrer: null,
       device_type: "desktop",
+      os_family: "other",
+      browser_name: "other",
       landing_page: pathname,
       session_id: "server",
       first_touch_platform: "direct",
@@ -259,6 +279,8 @@ export function captureAttribution(
     utm_term,
     referrer,
     device_type: detectDeviceType(),
+    os_family: detectOsFamily(),
+    browser_name: detectBrowserName(),
     landing_page: pathname + search,
     session_id: getSessionId(),
     first_touch_platform,
@@ -285,6 +307,8 @@ export function getStoredAttribution(): Attribution | null {
         fbc: null,
       };
     }
+    parsed.os_family = parsed.os_family ?? detectOsFamily();
+    parsed.browser_name = parsed.browser_name ?? detectBrowserName();
     return parsed;
   } catch {
     return null;
@@ -302,6 +326,8 @@ export function attributionToTrackingPayload(attribution: Attribution) {
     utm_term: attribution.utm_term,
     referrer: attribution.referrer,
     device_type: attribution.device_type,
+    os_family: attribution.os_family,
+    browser_name: attribution.browser_name,
     landing_page: attribution.landing_page,
     session_id: attribution.session_id,
   };
