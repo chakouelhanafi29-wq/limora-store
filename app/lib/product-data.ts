@@ -491,25 +491,8 @@ export const guarantee = {
   ],
 };
 
-export const relatedProducts = [
-  {
-    id: "hair-revive",
-    name: "LIMORA Hair Revive",
-    nameEn: "LIMORA Hair Revive",
-    benefit: "شعرٌ أكثف… وقوة من الجذور",
-    price: "249",
-    image: "/products/hair-revive/hero.webp",
-    href: "/product/hair-revive",
-  },
-  {
-    id: "feminine-balance",
-    name: "LIMORA Feminine Balance",
-    nameEn: "LIMORA Feminine Balance",
-    benefit: "انتعاش أنثوي… وثقة يومية",
-    price: "229",
-    image: "/products/feminine-balance/hero.webp",
-    href: "/product/feminine-balance",
-  },
-];
+import { getRelatedProductsForSlug } from "@/lib/products/related-products";
+
+export const relatedProducts = getRelatedProductsForSlug("collagen-glow");
 
 export type Offer = (typeof offers)[number];

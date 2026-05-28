@@ -146,7 +146,10 @@ export function applyDynamicProductPagePricing(
           items: enrichRelatedProductItems(
             items as { href?: string; price?: string }[],
             catalog,
-          ),
+          ).filter((item) => {
+            const slug = slugFromProductHref(String(item.href ?? ""));
+            return slug && slug !== pageConfig.slug;
+          }),
         },
       };
     }),

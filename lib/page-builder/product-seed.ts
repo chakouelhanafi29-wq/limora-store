@@ -42,6 +42,41 @@ function mapOffersFromProduct(product: ProductWithRelations): BuilderOffer[] {
   }));
 }
 
+export function overlayProductDataOnPageConfig(
+  config: ProductPageConfig,
+  product: ProductWithRelations,
+): ProductPageConfig {
+  const galleryImages = resolveProductGalleryImages(
+    product.product_images,
+    config.hero.images,
+  );
+
+  return {
+    ...config,
+    slug: product.slug,
+    hero: {
+      ...config.hero,
+      nameAr: product.name_ar || config.hero.nameAr,
+      nameEn: product.name_en || config.hero.nameEn,
+      subtitle: product.subtitle ?? config.hero.subtitle,
+      bullets: product.bullets?.length ? product.bullets : config.hero.bullets,
+      urgency: product.urgency_text ?? config.hero.urgency,
+      images: galleryImages.length ? galleryImages : config.hero.images,
+    },
+    offers: mapOffersFromProduct(product),
+    stickyBar: config.stickyBar
+      ? {
+          ...config.stickyBar,
+          messages: config.stickyBar.messages.map((message, index) =>
+            index === 0
+              ? `${product.name_en} — ${product.subtitle ?? "LIMORA"}`
+              : message,
+          ),
+        }
+      : config.stickyBar,
+  };
+}
+
 export function buildProductPageConfigFromProduct(
   product: ProductWithRelations | null,
   slug: string,

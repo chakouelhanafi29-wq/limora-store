@@ -1,4 +1,6 @@
 import { FEMININE_BALANCE_PRIMARY_IMAGE } from "@/lib/product-images";
+import { HOME_TRANSFORMATION_IMAGES } from "@/lib/home-images";
+import { getRelatedProductsForSlug } from "@/lib/products/related-products";
 import { REVIEW_AVATARS } from "@/lib/review-images";
 import {
   buildStaticTemplateConfig as buildCollagenTemplate,
@@ -77,12 +79,12 @@ function feminineBalanceSections(sections: PageSection[]): PageSection[] {
                         {
                           title: "قبل",
                           caption: "قلق… عدم راحة… ثقة أقل",
-                          image: "",
+                          image: FEMININE_BALANCE_PRIMARY_IMAGE,
                         },
                         {
                           title: "بعد",
                           caption: "انتعاش… توازن… ثقة طبيعية",
-                          image: "",
+                          image: HOME_TRANSFORMATION_IMAGES.feminineBalance,
                         },
                       ],
                     },
@@ -368,6 +370,20 @@ function feminineBalanceSections(sections: PageSection[]): PageSection[] {
   } else {
     next = patchSection(next, "results_timeline", timelineContent);
   }
+
+  next = next.map((section) =>
+    section.type === "related_products"
+      ? {
+          ...section,
+          enabled: true,
+          content: {
+            label: "YOU MAY ALSO LOVE",
+            title: "منتجات قد تعجبكِ",
+            items: getRelatedProductsForSlug("feminine-balance"),
+          },
+        }
+      : section,
+  );
 
   return next;
 }

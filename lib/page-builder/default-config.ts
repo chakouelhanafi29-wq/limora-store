@@ -5,8 +5,8 @@ import {
   isPageSystemBlock,
   reconcilePageLayoutOrder,
 } from "./page-layout";
-import { buildProductPageConfigFromProduct } from "./product-seed";
-import { getStaticProductPageConfig } from "@/lib/products/catalog";
+import { buildProductPageConfigFromProduct, overlayProductDataOnPageConfig } from "./product-seed";
+import { getStaticProductPageConfig, resolveProductSlug } from "@/lib/products/catalog";
 import type { ProductWithRelations } from "@/lib/types/database";
 import type { PageSection, ProductPageConfig } from "./types";
 
@@ -43,20 +43,22 @@ export function getDefaultProductPageConfig(
   slug = "collagen-glow",
   product?: ProductWithRelations | null,
 ): ProductPageConfig {
-  const resolvedSlug = slug === "glow" ? "collagen-glow" : slug;
+  const resolvedSlug = resolveProductSlug(slug);
+  const staticConfig = getStaticProductPageConfig(resolvedSlug);
+
   let config: ProductPageConfig;
-  if (product) {
+  if (staticConfig) {
+    config = staticConfig;
+    if (product) {
+      config = overlayProductDataOnPageConfig(config, product);
+    }
+  } else if (product) {
     config = buildProductPageConfigFromProduct(product, resolvedSlug);
   } else {
-    const staticConfig = getStaticProductPageConfig(resolvedSlug);
-    if (staticConfig) {
-      config = staticConfig;
-    } else {
-      config = buildProductPageConfigFromProduct(
-        createPlaceholderProduct(resolvedSlug),
-        resolvedSlug,
-      );
-    }
+    config = buildProductPageConfigFromProduct(
+      createPlaceholderProduct(resolvedSlug),
+      resolvedSlug,
+    );
   }
 
   if (typeof structuredClone === "function") {
@@ -84,7 +86,7 @@ export function mergeProductPageConfig(
   product?: ProductWithRelations | null,
   options?: MergeProductPageConfigOptions,
 ): ProductPageConfig {
-  const resolvedSlug = slug === "glow" ? "collagen-glow" : slug;
+  const resolvedSlug = resolveProductSlug(slug);
   const defaults = getDefaultProductPageConfig(resolvedSlug, product);
   if (!saved) return defaults;
 
