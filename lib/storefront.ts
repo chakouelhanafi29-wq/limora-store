@@ -2,6 +2,7 @@ import {
   resolvePrimaryProductImage,
   sortProductImages,
   getPrimaryImageBySlug,
+  isOfficialProductSlugValue,
 } from "@/lib/product-images";
 import {
   normalizeReviewImage,
@@ -81,7 +82,9 @@ export function mapFeaturedProducts(
     }));
   }
 
-  return products.map((product) => {
+  return products
+    .filter((product) => isOfficialProductSlugValue(product.slug))
+    .map((product) => {
     const images = (product as Product & { product_images?: ProductImageRecord[] })
       .product_images;
     const image = resolvePrimaryProductImage(

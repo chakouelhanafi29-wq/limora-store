@@ -1,4 +1,4 @@
-import { OFFICIAL_PRODUCT_SLUGS } from "@/lib/product-images";
+import { OFFICIAL_PRODUCT_SLUGS, isOfficialProductSlugValue } from "@/lib/product-images";
 import { resolveProductSlug } from "@/lib/products/catalog";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
 import type {
@@ -27,7 +27,11 @@ export async function getFeaturedProducts(): Promise<Product[]> {
     .eq("is_active", true)
     .eq("is_featured", true)
     .order("sort_order");
-  return (data as Product[]) ?? [];
+  return (
+    (data as Product[])?.filter((product) =>
+      isOfficialProductSlugValue(product.slug),
+    ) ?? []
+  );
 }
 
 function normalizeProductRelations(
@@ -77,7 +81,10 @@ export async function getActiveProductSlugs(): Promise<string[]> {
     .select("slug")
     .eq("is_active", true)
     .order("sort_order");
-  const slugs = data?.map((row) => row.slug as string).filter(Boolean) ?? [];
+  const slugs =
+    data
+      ?.map((row) => row.slug as string)
+      .filter((slug) => isOfficialProductSlugValue(slug)) ?? [];
   return slugs.length ? slugs : [...OFFICIAL_PRODUCT_SLUGS];
 }
 
@@ -147,7 +154,11 @@ export async function getAllProducts(): Promise<Product[]> {
     .from("products")
     .select("*, product_images(*), product_offers(*)")
     .order("sort_order");
-  return (data as Product[]) ?? [];
+  return (
+    (data as Product[])?.filter((product) =>
+      isOfficialProductSlugValue(product.slug),
+    ) ?? []
+  );
 }
 
 export async function getAllReviews(): Promise<Review[]> {

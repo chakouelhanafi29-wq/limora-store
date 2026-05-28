@@ -1,4 +1,5 @@
-﻿import {
+﻿import { resolveLegacyProductSlug } from "@/lib/products/legacy-slug-redirects";
+import {
   HAIR_REVIVE_PRIMARY_IMAGE,
   OFFICIAL_PRODUCT_SLUGS,
   type OfficialProductSlug,
@@ -233,7 +234,5 @@ export function getStaticProductPageConfig(slug: string): ProductPageConfig | nu
 }
 
 export function resolveProductSlug(slug: string): string {
-  if (slug === "glow") return "collagen-glow";
-  if (slug === "detox-cleanse") return "feminine-balance";
-  return slug;
+  return resolveLegacyProductSlug(slug);
 }

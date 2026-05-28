@@ -178,6 +178,6 @@ update reviews set product_label = 'LIMORA Hair Revive'
 where product_label ilike '%hair%' or product_label ilike '%هير%';
 
 update reviews set product_label = 'LIMORA Feminine Balance'
-where product_label ilike '%feminine%' or product_label ilike '%detox%' or product_label ilike '%radiance%' or product_label ilike '%رادي%';
+where product_label ilike '%feminine%' or product_label ilike '%radiance%' or product_label ilike '%رادي%';
 
 commit;

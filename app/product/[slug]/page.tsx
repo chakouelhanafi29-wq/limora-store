@@ -5,6 +5,7 @@ import {
   loadProductPage,
 } from "@/lib/page-builder/load-product-page";
 import { isOfficialProductSlug } from "@/lib/products/catalog";
+import { getLegacyProductRedirectPath } from "@/lib/products/legacy-slug-redirects";
 import { resolveBuilderPrimaryImage } from "@/lib/product-images";
 import { getSiteConfig } from "@/lib/site/config";
 import { buildProductJsonLd, jsonLdScript } from "@/lib/seo/structured-data";
@@ -25,11 +26,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProductSlugPage({ params }: Props) {
   const { slug: rawSlug } = await params;
-  if (rawSlug === "glow") {
-    redirect("/product/collagen-glow");
-  }
-  if (rawSlug === "detox-cleanse") {
-    redirect("/product/feminine-balance");
+  const legacyRedirect = getLegacyProductRedirectPath(rawSlug);
+  if (legacyRedirect) {
+    redirect(legacyRedirect);
   }
 
   const slug = rawSlug;

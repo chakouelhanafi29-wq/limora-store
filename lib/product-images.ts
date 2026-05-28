@@ -1,3 +1,5 @@
+import { resolveLegacyProductSlug } from "@/lib/products/legacy-slug-redirects";
+
 export const OFFICIAL_PRODUCT_SLUGS = [
   "collagen-glow",
   "hair-revive",
@@ -19,14 +21,10 @@ export const COLLAGEN_GLOW_PRIMARY_IMAGE = COLLAGEN_GLOW_GALLERY[0];
 export const HAIR_REVIVE_PRIMARY_IMAGE = HAIR_REVIVE_GALLERY[0];
 export const FEMININE_BALANCE_PRIMARY_IMAGE = FEMININE_BALANCE_GALLERY[0];
 
-/** @deprecated Use FEMININE_BALANCE_PRIMARY_IMAGE */
-export const DETOX_CLEANSE_PRIMARY_IMAGE = FEMININE_BALANCE_PRIMARY_IMAGE;
-
 const GALLERY_BY_SLUG: Record<string, readonly string[]> = {
   "collagen-glow": COLLAGEN_GLOW_GALLERY,
   "hair-revive": HAIR_REVIVE_GALLERY,
   "feminine-balance": FEMININE_BALANCE_GALLERY,
-  "detox-cleanse": FEMININE_BALANCE_GALLERY,
 };
 
 export type ProductImageRecord = {
@@ -36,7 +34,7 @@ export type ProductImageRecord = {
 };
 
 export function getProductGalleryBySlug(slug: string): string[] {
-  const resolved = slug === "detox-cleanse" ? "feminine-balance" : slug;
+  const resolved = resolveLegacyProductSlug(slug);
   return [...(GALLERY_BY_SLUG[resolved] ?? COLLAGEN_GLOW_GALLERY)];
 }
 
@@ -97,4 +95,8 @@ export function resolveBuilderPrimaryImage(
     dbImages,
     slug ? getPrimaryImageBySlug(slug) : COLLAGEN_GLOW_PRIMARY_IMAGE,
   );
+}
+
+export function isOfficialProductSlugValue(slug: string): slug is OfficialProductSlug {
+  return OFFICIAL_PRODUCT_SLUGS.includes(slug as OfficialProductSlug);
 }

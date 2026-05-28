@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { resolveLegacyProductSlug } from "@/lib/products/legacy-slug-redirects";
 
 export const dynamic = "force-dynamic";
 
@@ -8,11 +9,6 @@ type Props = {
 
 export default async function LegacyProductPage({ searchParams }: Props) {
   const { slug = "collagen-glow" } = await searchParams;
-  const resolved =
-    slug === "glow"
-      ? "collagen-glow"
-      : slug === "detox-cleanse"
-        ? "feminine-balance"
-        : slug;
+  const resolved = resolveLegacyProductSlug(slug);
   redirect(`/product/${encodeURIComponent(resolved)}`);
 }
