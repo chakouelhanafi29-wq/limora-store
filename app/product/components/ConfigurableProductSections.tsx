@@ -16,6 +16,7 @@ import {
   resolveTransformationTitle,
   type TransformationCardContent,
 } from "@/lib/page-builder/transformation-content";
+import { getEnabledQualityTrustItems } from "@/lib/page-builder/quality-trust-content";
 import type { PageSection, ProductPageConfig, ProductPageTheme } from "@/lib/page-builder/types";
 import { getOrderedSections } from "@/lib/page-builder/default-config";
 import ReviewAvatar from "./ReviewAvatar";
@@ -75,6 +76,31 @@ function ReviewStars({ rating }: { rating: number }) {
         </svg>
       ))}
     </div>
+  );
+}
+
+function QualityTrustCardBody({
+  item,
+  centered = false,
+}: {
+  item: { icon?: string; title: string; description: string };
+  centered?: boolean;
+}) {
+  return (
+    <>
+      <div className={`mb-3 flex items-start gap-3 ${centered ? "flex-col items-center text-center" : ""}`}>
+        <span className="relative inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-champagne/15 via-beige/40 to-white text-xl ring-1 ring-champagne/10">
+          {item.icon || "✦"}
+          <span className="absolute -bottom-1 -left-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-emerald-50 text-[9px] text-emerald-700 ring-2 ring-white">
+            ✓
+          </span>
+        </span>
+        <div className={centered ? "" : "min-w-0 flex-1"}>
+          <h3 className="mb-1 text-sm font-bold text-foreground sm:text-base">{item.title}</h3>
+          <p className="text-xs leading-relaxed text-muted sm:text-sm">{item.description}</p>
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -568,16 +594,13 @@ export function renderProductSection(
       return <FAQBlock key={section.id} pad={pad} label={String(content.label ?? "")} title={String(content.title ?? "")} items={items} />;
     }
     case "quality_trust": {
-      const badges =
-        (content.badges as { icon: string; label: string; description?: string }[]) ?? [];
-      const certifications = (content.certifications as string[]) ?? [];
+      const items = getEnabledQualityTrustItems(content);
       const reassurance = String(content.reassurance ?? "");
-      const labImage = String(content.labImage ?? "");
 
       return (
         <section
           key={section.id}
-          className={`${pad} bg-gradient-to-b from-ivory via-beige/25 to-ivory`}
+          className={`${pad} bg-gradient-to-b from-ivory via-beige/20 to-ivory`}
         >
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <SectionHeader
@@ -586,74 +609,63 @@ export function renderProductSection(
               subtitle={String(content.subtitle ?? "")}
             />
 
-            <div className={`grid items-center ${gridGap} lg:grid-cols-2 lg:gap-10`}>
-              {labImage ? (
-                <div className="relative overflow-hidden rounded-[2rem] border border-champagne/10 bg-white luxury-shadow-lg">
-                  <div className="relative aspect-[4/3] sm:aspect-[5/4]">
-                    <Image
-                      src={labImage}
-                      alt={String(content.title ?? "جودة موثوقة")}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 1024px) 100vw, 50vw"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-transparent" />
-                    {certifications.length ? (
-                      <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6">
-                        <div className="flex flex-wrap gap-2">
-                          {certifications.map((item) => (
-                            <span
-                              key={item}
-                              className="rounded-full border border-white/25 bg-white/15 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-sm"
-                            >
-                              {item}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    ) : null}
-                  </div>
-                </div>
-              ) : null}
-
-              <div className="space-y-6">
-                {reassurance ? (
-                  <p className="rounded-3xl border border-champagne/10 bg-white/80 p-5 text-center text-base leading-relaxed text-foreground/85 shadow-sm sm:p-6 lg:text-right">
-                    {reassurance}
-                  </p>
-                ) : null}
-
-                {!labImage && certifications.length ? (
-                  <div className="flex flex-wrap justify-center gap-2 lg:justify-start">
-                    {certifications.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-champagne/20 bg-white px-4 py-2 text-xs font-medium text-foreground/80 shadow-sm"
-                      >
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                ) : null}
-
-                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                  {badges.map((badge) => (
-                    <div
-                      key={`${badge.label}-${badge.icon}`}
-                      className="group rounded-3xl border border-champagne/10 bg-gradient-to-br from-white via-white to-beige/30 p-4 text-center transition hover:-translate-y-0.5 hover:shadow-md sm:p-5"
-                    >
-                      <span className="mb-3 inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-champagne/10 text-xl transition group-hover:bg-champagne/15">
-                        {badge.icon}
-                      </span>
-                      <h3 className="mb-1 text-sm font-bold text-foreground">{badge.label}</h3>
-                      {badge.description ? (
-                        <p className="text-[11px] leading-relaxed text-muted">{badge.description}</p>
-                      ) : null}
-                    </div>
-                  ))}
-                </div>
+            {items.length ? (
+              <div className="mb-8 flex flex-wrap items-center justify-center gap-2">
+                {items.slice(0, 5).map((item, index) => (
+                  <span
+                    key={`${item.title}-mini-${index}`}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-champagne/15 bg-white/80 px-3 py-1.5 text-[11px] font-medium text-foreground/75 shadow-sm backdrop-blur-sm"
+                  >
+                    <span className="text-sm">{item.icon || "✦"}</span>
+                    {item.title}
+                  </span>
+                ))}
               </div>
+            ) : null}
+
+            <div className={`grid ${gridGap} lg:grid-cols-2`}>
+              {items.map((item, index) => (
+                <article
+                  key={`${item.title}-${index}`}
+                  className="group relative overflow-hidden rounded-3xl border border-champagne/10 bg-white luxury-shadow transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_24px_50px_-28px_rgba(183,148,95,0.45)]"
+                >
+                  <span className="pointer-events-none absolute -left-8 top-6 h-24 w-24 rounded-full bg-champagne/10 blur-2xl transition duration-500 group-hover:bg-champagne/20" />
+                  <span className="pointer-events-none absolute -right-6 bottom-4 h-20 w-20 rounded-full bg-rose-100/40 blur-2xl" />
+
+                  {item.image ? (
+                    <div className="grid sm:grid-cols-[132px_1fr]">
+                      <div className="relative aspect-[4/3] overflow-hidden sm:aspect-auto sm:min-h-[148px]">
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          fill
+                          className="object-cover transition duration-700 group-hover:scale-105"
+                          sizes="(max-width: 640px) 100vw, 180px"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-foreground/15 to-transparent sm:bg-gradient-to-l sm:from-transparent sm:via-transparent sm:to-white/10" />
+                      </div>
+
+                      <div className="relative flex flex-col justify-center p-4 sm:p-5">
+                        <QualityTrustCardBody item={item} />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="relative p-5 sm:p-6">
+                      <QualityTrustCardBody item={item} centered />
+                    </div>
+                  )}
+                </article>
+              ))}
             </div>
+
+            {reassurance ? (
+              <>
+                <div className="mx-auto my-8 h-px max-w-md bg-gradient-to-r from-transparent via-champagne/25 to-transparent" />
+                <p className="mx-auto max-w-3xl text-center text-sm leading-relaxed text-foreground/80 sm:text-base">
+                  {reassurance}
+                </p>
+              </>
+            ) : null}
           </div>
         </section>
       );

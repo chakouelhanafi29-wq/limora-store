@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/client";
 import { uploadBuilderImage } from "@/lib/page-builder/upload-image";
 import type { PageSection, SectionType } from "@/lib/page-builder/types";
+import { normalizeQualityTrustItems, type QualityTrustItem } from "@/lib/page-builder/quality-trust-content";
 
 type Props = {
   section: PageSection;
@@ -435,20 +436,10 @@ export default function SectionEditor({ section, slug, onChange }: Props) {
             onChange={(v) => updateContent("reassurance", v)}
             multiline
           />
-          <QualityTrustEditor
+          <QualityTrustCardsEditor
             slug={slug}
-            labImage={String(content.labImage ?? "")}
-            certifications={(content.certifications as string[]) ?? []}
-            badges={
-              (content.badges as {
-                icon: string;
-                label: string;
-                description?: string;
-              }[]) ?? []
-            }
-            onLabImageChange={(v) => updateContent("labImage", v)}
-            onCertificationsChange={(items) => updateContent("certifications", items)}
-            onBadgesChange={(items) => updateContent("badges", items)}
+            items={normalizeQualityTrustItems(content)}
+            onChange={(items) => updateContent("items", items)}
           />
         </>
       )}
@@ -1212,108 +1203,121 @@ function RelatedProductsEditor({
   );
 }
 
-function QualityTrustEditor({
+function QualityTrustCardsEditor({
   slug,
-  labImage,
-  certifications,
-  badges,
-  onLabImageChange,
-  onCertificationsChange,
-  onBadgesChange,
+  items,
+  onChange,
 }: {
   slug: string;
-  labImage: string;
-  certifications: string[];
-  badges: { icon: string; label: string; description?: string }[];
-  onLabImageChange: (v: string) => void;
-  onCertificationsChange: (items: string[]) => void;
-  onBadgesChange: (items: { icon: string; label: string; description?: string }[]) => void;
+  items: QualityTrustItem[];
+  onChange: (items: QualityTrustItem[]) => void;
 }) {
+  const moveItem = (index: number, direction: -1 | 1) => {
+    const target = index + direction;
+    if (target < 0 || target >= items.length) return;
+    const next = [...items];
+    [next[index], next[target]] = [next[target], next[index]];
+    onChange(next);
+  };
+
   return (
-    <div className="space-y-4">
-      <ImageUploadField
-        label="صورة المختبر / التصنيع / الجودة"
-        value={labImage}
-        slug={slug}
-        onChange={onLabImageChange}
-      />
-      <div className="space-y-3">
-        <p className="text-xs font-semibold text-muted">شارات الاعتماد / التصديق</p>
-        {certifications.map((item, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <input
-              value={item}
-              onChange={(e) => {
-                const next = [...certifications];
-                next[i] = e.target.value;
-                onCertificationsChange(next);
-              }}
-              className="flex-1 rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-            />
-            <RemoveButton
-              onClick={() =>
-                onCertificationsChange(certifications.filter((_, idx) => idx !== i))
-              }
-            />
-          </div>
-        ))}
-        <ListControls
-          addLabel="شارة اعتماد"
-          onAdd={() => onCertificationsChange([...certifications, ""])}
-        />
-      </div>
-      <div className="space-y-3">
-        <p className="text-xs font-semibold text-muted">شارات الثقة</p>
-        {badges.map((badge, i) => (
-          <div key={i} className="space-y-2 rounded-xl bg-beige/40 p-3">
-            <div className="flex justify-end">
-              <RemoveButton
-                onClick={() => onBadgesChange(badges.filter((_, idx) => idx !== i))}
+    <div className="space-y-3">
+      <p className="text-xs font-semibold text-muted">بطاقات الجودة والثقة</p>
+      {items.map((item, i) => (
+        <div
+          key={i}
+          className={`space-y-2 rounded-xl p-3 ${item.enabled === false ? "bg-beige/20 opacity-70" : "bg-beige/40"}`}
+        >
+          <div className="flex items-center justify-between gap-2">
+            <label className="flex items-center gap-2 text-xs text-muted">
+              <input
+                type="checkbox"
+                checked={item.enabled !== false}
+                onChange={(e) => {
+                  const next = [...items];
+                  next[i] = { ...item, enabled: e.target.checked };
+                  onChange(next);
+                }}
               />
+              مفعّلة
+            </label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                disabled={i === 0}
+                onClick={() => moveItem(i, -1)}
+                className="text-xs text-champagne disabled:opacity-30"
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                disabled={i === items.length - 1}
+                onClick={() => moveItem(i, 1)}
+                className="text-xs text-champagne disabled:opacity-30"
+              >
+                ↓
+              </button>
+              <RemoveButton onClick={() => onChange(items.filter((_, idx) => idx !== i))} />
             </div>
-            <input
-              value={badge.icon}
-              onChange={(e) => {
-                const next = [...badges];
-                next[i] = { ...badge, icon: e.target.value };
-                onBadgesChange(next);
-              }}
-              placeholder="أيقونة (emoji)"
-              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-            />
-            <input
-              value={badge.label}
-              onChange={(e) => {
-                const next = [...badges];
-                next[i] = { ...badge, label: e.target.value };
-                onBadgesChange(next);
-              }}
-              placeholder="العنوان"
-              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-            />
-            <textarea
-              value={badge.description ?? ""}
-              onChange={(e) => {
-                const next = [...badges];
-                next[i] = { ...badge, description: e.target.value };
-                onBadgesChange(next);
-              }}
-              placeholder="وصف قصير (اختياري)"
-              rows={2}
-              className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
-            />
           </div>
-        ))}
-        <ListControls
-          addLabel="شارة ثقة"
-          onAdd={() =>
-            onBadgesChange([
-              ...badges,
-              { icon: "✦", label: "شارة جديدة", description: "" },
-            ])
-          }
-        />
-      </div>
+          <input
+            value={item.icon ?? ""}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, icon: e.target.value };
+              onChange(next);
+            }}
+            placeholder="أيقونة (emoji)"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <input
+            value={item.title}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, title: e.target.value };
+              onChange(next);
+            }}
+            placeholder="العنوان"
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <textarea
+            value={item.description}
+            onChange={(e) => {
+              const next = [...items];
+              next[i] = { ...item, description: e.target.value };
+              onChange(next);
+            }}
+            placeholder="الوصف"
+            rows={2}
+            className="w-full rounded-lg border border-champagne/20 px-3 py-2 text-sm"
+          />
+          <ImageUploadField
+            label="صورة اختيارية (داخل البطاقة)"
+            value={item.image ?? ""}
+            slug={slug}
+            onChange={(v) => {
+              const next = [...items];
+              next[i] = { ...item, image: v };
+              onChange(next);
+            }}
+          />
+        </div>
+      ))}
+      <ListControls
+        addLabel="بطاقة ثقة"
+        onAdd={() =>
+          onChange([
+            ...items,
+            {
+              icon: "✦",
+              title: "بطاقة جديدة",
+              description: "",
+              enabled: true,
+            },
+          ])
+        }
+      />
     </div>
   );
 }
@@ -1422,13 +1426,20 @@ const BLANK_SECTION_CONTENT: Record<SectionType, Record<string, unknown>> = {
     label: "TRUSTED QUALITY",
     title: "جودة موثوقة ومعتمدة",
     subtitle: "منتج حقيقي… بمعايير جودة تستحقين ثقتكِ",
-    reassurance:
-      "تركيبة مصنعة بعناية في بيئة احترافية… لراحة وثقة أكبر مع كل طلب.",
-    labImage: "",
-    certifications: ["مرخص من وزارة الصحة", "معتمد وفق معايير الجودة"],
-    badges: [
-      { icon: "🇸🇦", label: "منتج محلي", description: "منتج محلي بمعايير جودة عالية" },
-      { icon: "✦", label: "جودة عالية", description: "معايير فاخرة في كل مرحلة تصنيع" },
+    reassurance: "جودة موثوقة لراحة وثقة أكبر مع كل طلب.",
+    items: [
+      {
+        icon: "🧪",
+        title: "تصنيع بمعايير عالية",
+        description: "تركيبة مصنعة بعناية داخل بيئة احترافية",
+        enabled: true,
+      },
+      {
+        icon: "🇸🇦",
+        title: "منتج محلي موثوق",
+        description: "مصمم ليناسب احتياجات المرأة الخليجية",
+        enabled: true,
+      },
     ],
   },
   related_products: { label: "RELATED", title: "منتجات ذات صلة", items: [] },
