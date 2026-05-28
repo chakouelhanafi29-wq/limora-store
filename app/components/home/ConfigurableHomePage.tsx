@@ -89,6 +89,7 @@ function renderSection(
   products: FeaturedProductCard[],
   testimonials: TestimonialsData,
   isMobile: boolean,
+  preview: boolean,
 ) {
   const pad = spacingClass(theme);
   const btn = buttonRadius(theme);
@@ -106,10 +107,9 @@ function renderSection(
       const floatCard1 = content.floatCard1 as { title: string; subtitle: string };
       const floatCard2 = content.floatCard2 as { label: string; title: string };
       const mobileImage = String(content.imageMobile ?? "");
-      const heroImage =
-        isMobile && isValidImageSrc(mobileImage)
-          ? mobileImage
-          : String(content.image ?? "");
+      const desktopImage = String(content.image ?? "");
+      const hasMobileHero = isValidImageSrc(mobileImage);
+      const previewMobileHero = preview && isMobile && hasMobileHero;
       return (
         <section
           key={section.id}
@@ -160,14 +160,48 @@ function renderSection(
             </div>
             <div className="relative mx-auto aspect-[4/5] max-w-md overflow-visible lg:max-w-none">
               <div className="relative overflow-hidden rounded-[2rem] luxury-shadow-lg">
-                <Image
-                  src={heroImage}
-                  alt={String(content.headline ?? "LIMORA — جمالٌ يُولَد من الداخل")}
-                  width={900}
-                  height={1125}
-                  className="h-full w-full object-cover"
-                  priority
-                />
+                {previewMobileHero ? (
+                  <Image
+                    src={mobileImage}
+                    alt={String(content.headline ?? "LIMORA — جمالٌ يُولَد من الداخل")}
+                    width={720}
+                    height={900}
+                    className="h-full w-full object-cover"
+                    priority
+                    sizes="100vw"
+                  />
+                ) : hasMobileHero ? (
+                  <>
+                    <Image
+                      src={mobileImage}
+                      alt={String(content.headline ?? "LIMORA — جمالٌ يُولَد من الداخل")}
+                      width={720}
+                      height={900}
+                      className="h-full w-full object-cover lg:hidden"
+                      priority
+                      sizes="100vw"
+                    />
+                    <Image
+                      src={desktopImage}
+                      alt={String(content.headline ?? "LIMORA — جمالٌ يُولَد من الداخل")}
+                      width={900}
+                      height={1125}
+                      className="hidden h-full w-full object-cover lg:block"
+                      priority
+                      sizes="(min-width: 1024px) 50vw, 0px"
+                    />
+                  </>
+                ) : (
+                  <Image
+                    src={desktopImage}
+                    alt={String(content.headline ?? "LIMORA — جمالٌ يُولَد من الداخل")}
+                    width={900}
+                    height={1125}
+                    className="h-full w-full object-cover"
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
+                )}
               </div>
               {floatCard1 && (
                 <div className="absolute bottom-4 right-4 glass-card rounded-2xl p-4 luxury-shadow sm:p-5 lg:-bottom-6 lg:-right-8">
@@ -247,6 +281,7 @@ function renderSection(
                         fill
                         className="object-cover transition duration-700 group-hover:scale-[1.03]"
                         sizes="(max-width: 768px) 100vw, 33vw"
+                        loading="lazy"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-[#2a201e]/55 via-[#2a201e]/10 to-transparent" />
                       <div className="absolute top-4 right-4 rounded-full bg-white/90 px-3 py-1.5 backdrop-blur-sm">
@@ -358,7 +393,15 @@ function renderSection(
             <div className={`grid items-center gap-12 ${showImage ? "lg:grid-cols-2" : ""}`}>
               {showImage ? (
                 <div className="relative overflow-hidden rounded-[1.5rem] luxury-shadow-lg">
-                  <Image src={imageSrc} alt={String(content.title ?? "عن LIMORA")} width={800} height={900} className="aspect-[4/5] w-full object-cover" />
+                  <Image
+                    src={imageSrc}
+                    alt={String(content.title ?? "عن LIMORA")}
+                    width={800}
+                    height={900}
+                    className="aspect-[4/5] w-full object-cover"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                    loading="lazy"
+                  />
                 </div>
               ) : null}
               <div className="text-center lg:text-right">
@@ -552,7 +595,7 @@ export default function ConfigurableHomePage({
       <main>
         {sections
           .map((section) =>
-            renderSection(section, config.theme, featuredProducts, testimonials, isMobile),
+            renderSection(section, config.theme, featuredProducts, testimonials, isMobile, preview),
           )
           .filter(Boolean)}
       </main>

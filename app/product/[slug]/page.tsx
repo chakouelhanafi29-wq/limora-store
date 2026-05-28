@@ -12,8 +12,7 @@ import { buildProductJsonLd, jsonLdScript } from "@/lib/seo/structured-data";
 import { productPagePath } from "@/lib/seo/metadata";
 import ProductPageClient from "../ProductPageClient";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 60;
 
 type Props = {
   params: Promise<{ slug: string }>;

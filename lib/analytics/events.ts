@@ -5,6 +5,7 @@ import {
   getStoredAttribution,
   type Attribution,
 } from "./attribution";
+import { isTrackingReady, whenTrackingReady } from "./tracking-ready";
 import { createTrackingEventId } from "@/lib/tracking/event-id";
 
 export type AnalyticsEventName =
@@ -60,115 +61,124 @@ function firePixelEvents(
 ) {
   if (typeof window === "undefined") return;
 
-  const value = payload.value ?? 0;
-  const currency = payload.currency ?? "SAR";
-  const contentName = payload.product_name ?? payload.offer_label ?? "LIMORA";
+  const dispatch = () => {
+    const value = payload.value ?? 0;
+    const currency = payload.currency ?? "SAR";
+    const contentName = payload.product_name ?? payload.offer_label ?? "LIMORA";
 
-  if (window.fbq) {
-    const fbMap: Partial<Record<AnalyticsEventName, string>> = {
-      PageView: "PageView",
-      ViewContent: "ViewContent",
-      AddToCart: "AddToCart",
-      InitiateCheckout: "InitiateCheckout",
-      Purchase: "Purchase",
-      Lead: "Lead",
-    };
-    const fbEvent = fbMap[name];
-    if (fbEvent) {
-      if (name === "PageView") {
-        window.fbq("track", "PageView", {}, { eventID: eventId });
-      } else {
-        window.fbq(
-          "track",
-          fbEvent,
-          {
-            content_name: contentName,
-            content_ids: payload.product_slug ? [payload.product_slug] : undefined,
-            value,
-            currency,
-          },
-          { eventID: eventId },
-        );
-      }
-    }
-  }
-
-  if (window.ttq) {
-    const ttMap: Partial<Record<AnalyticsEventName, string>> = {
-      PageView: "Pageview",
-      ViewContent: "ViewContent",
-      AddToCart: "AddToCart",
-      InitiateCheckout: "InitiateCheckout",
-      Purchase: "CompletePayment",
-      Lead: "SubmitForm",
-    };
-    const ttEvent = ttMap[name];
-    if (ttEvent) {
-      if (name === "PageView") {
-        window.ttq.page();
-      } else {
-        window.ttq.track(
-          ttEvent,
-          {
-            content_name: contentName,
-            content_id: payload.product_slug,
-            value,
-            currency,
-          },
-          { event_id: eventId },
-        );
-      }
-    }
-  }
-
-  if (window.snaptr) {
-    const snapMap: Partial<Record<AnalyticsEventName, string>> = {
-      PageView: "PAGE_VIEW",
-      ViewContent: "VIEW_CONTENT",
-      AddToCart: "ADD_CART",
-      InitiateCheckout: "START_CHECKOUT",
-      Purchase: "PURCHASE",
-      Lead: "SIGN_UP",
-    };
-    const snapEvent = snapMap[name];
-    if (snapEvent) {
-      window.snaptr("track", snapEvent, {
-        uuid_c1: eventId,
-        client_dedup_id: eventId,
-        item_ids: payload.product_slug ? [payload.product_slug] : undefined,
-        price: value,
-        currency,
-        transaction_id: payload.order_id,
-      });
-    }
-  }
-
-  if (window.gtag) {
-    if (name === "PageView") {
-      window.gtag("event", "page_view", {
-        page_path: payload.page_path ?? window.location.pathname,
-      });
-    } else {
-      const gaMap: Partial<Record<AnalyticsEventName, string>> = {
-        ViewContent: "view_item",
-        AddToCart: "add_to_cart",
-        InitiateCheckout: "begin_checkout",
-        Purchase: "purchase",
-        Lead: "generate_lead",
+    if (window.fbq) {
+      const fbMap: Partial<Record<AnalyticsEventName, string>> = {
+        PageView: "PageView",
+        ViewContent: "ViewContent",
+        AddToCart: "AddToCart",
+        InitiateCheckout: "InitiateCheckout",
+        Purchase: "Purchase",
+        Lead: "Lead",
       };
-      const gaEvent = gaMap[name];
-      if (gaEvent) {
-        window.gtag("event", gaEvent, {
+      const fbEvent = fbMap[name];
+      if (fbEvent) {
+        if (name === "PageView") {
+          window.fbq("track", "PageView", {}, { eventID: eventId });
+        } else {
+          window.fbq(
+            "track",
+            fbEvent,
+            {
+              content_name: contentName,
+              content_ids: payload.product_slug ? [payload.product_slug] : undefined,
+              value,
+              currency,
+            },
+            { eventID: eventId },
+          );
+        }
+      }
+    }
+
+    if (window.ttq) {
+      const ttMap: Partial<Record<AnalyticsEventName, string>> = {
+        PageView: "Pageview",
+        ViewContent: "ViewContent",
+        AddToCart: "AddToCart",
+        InitiateCheckout: "InitiateCheckout",
+        Purchase: "CompletePayment",
+        Lead: "SubmitForm",
+      };
+      const ttEvent = ttMap[name];
+      if (ttEvent) {
+        if (name === "PageView") {
+          window.ttq.page();
+        } else {
+          window.ttq.track(
+            ttEvent,
+            {
+              content_name: contentName,
+              content_id: payload.product_slug,
+              value,
+              currency,
+            },
+            { event_id: eventId },
+          );
+        }
+      }
+    }
+
+    if (window.snaptr) {
+      const snapMap: Partial<Record<AnalyticsEventName, string>> = {
+        PageView: "PAGE_VIEW",
+        ViewContent: "VIEW_CONTENT",
+        AddToCart: "ADD_CART",
+        InitiateCheckout: "START_CHECKOUT",
+        Purchase: "PURCHASE",
+        Lead: "SIGN_UP",
+      };
+      const snapEvent = snapMap[name];
+      if (snapEvent) {
+        window.snaptr("track", snapEvent, {
+          uuid_c1: eventId,
+          client_dedup_id: eventId,
+          item_ids: payload.product_slug ? [payload.product_slug] : undefined,
+          price: value,
           currency,
-          value,
-          items: payload.product_name
-            ? [{ item_name: payload.product_name, price: value }]
-            : undefined,
-          transaction_id: payload.order_id ?? eventId,
+          transaction_id: payload.order_id,
         });
       }
     }
+
+    if (window.gtag) {
+      if (name === "PageView") {
+        window.gtag("event", "page_view", {
+          page_path: payload.page_path ?? window.location.pathname,
+        });
+      } else {
+        const gaMap: Partial<Record<AnalyticsEventName, string>> = {
+          ViewContent: "view_item",
+          AddToCart: "add_to_cart",
+          InitiateCheckout: "begin_checkout",
+          Purchase: "purchase",
+          Lead: "generate_lead",
+        };
+        const gaEvent = gaMap[name];
+        if (gaEvent) {
+          window.gtag("event", gaEvent, {
+            currency,
+            value,
+            items: payload.product_name
+              ? [{ item_name: payload.product_name, price: value }]
+              : undefined,
+            transaction_id: payload.order_id ?? eventId,
+          });
+        }
+      }
+    }
+  };
+
+  if (isTrackingReady()) {
+    dispatch();
+    return;
   }
+
+  whenTrackingReady(dispatch);
 }
 
 async function persistAndDispatchServerEvent(

@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { OFFICIAL_PRODUCT_SLUGS, isOfficialProductSlugValue } from "@/lib/product-images";
 import { resolveProductSlug } from "@/lib/products/catalog";
 import { isSupabaseConfigured, createClient } from "@/lib/supabase/server";
@@ -11,12 +12,12 @@ import type {
   Settings,
 } from "@/lib/types/database";
 
-export async function getSettings(): Promise<Settings | null> {
+export const getSettings = cache(async (): Promise<Settings | null> => {
   if (!isSupabaseConfigured()) return null;
   const supabase = await createClient();
   const { data } = await supabase.from("settings").select("*").eq("id", 1).single();
   return data as Settings | null;
-}
+});
 
 const PRODUCT_SELECT =
   "*, product_images(url, sort_order, is_primary), product_offers(*)";

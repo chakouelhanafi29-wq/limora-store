@@ -58,6 +58,7 @@ export default function FeaturedProductsSection({
                       alt={product.name}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      loading="lazy"
                     />
                     <div className="featured-product-card__media-overlay" aria-hidden="true" />
                   </div>

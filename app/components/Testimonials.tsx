@@ -70,6 +70,7 @@ export default function Testimonials({ testimonials, className = "py-20 sm:py-28
                     fill
                     className="object-cover"
                     sizes="48px"
+                    loading="lazy"
                   />
                 </div>
                 <div>

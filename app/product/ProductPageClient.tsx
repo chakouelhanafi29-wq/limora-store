@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import type { Offer } from "../lib/product-data";
 import type { ProductPageConfig } from "@/lib/page-builder/types";
 import { resolveHeroTrustBadges } from "@/lib/page-builder/hero-trust";
@@ -15,18 +16,27 @@ import { getSectionPaddingClass } from "@/lib/page-builder/section-spacing";
 import { getProductPageSurfaceClass } from "@/lib/page-builder/product-page-theme";
 import { getOfferDisplayLabel } from "@/lib/storefront";
 import { trackEvent } from "@/lib/analytics/events";
+import { whenIdle } from "@/lib/performance/idle";
 import {
   builderOffersToOffers,
   heroToStorefrontProduct,
   renderProductSection,
 } from "./components/ConfigurableProductSections";
 import FinalCTASection from "./components/FinalCTASection";
-import OrderModal from "./components/OrderModal";
 import ProductGallery from "./components/ProductGallery";
 import ProductInfo from "./components/ProductInfo";
 import ProductStickyBar from "./components/ProductStickyBar";
 import PurchaseZone from "./components/PurchaseZone";
-import StickyMobileCTA from "./components/StickyMobileCTA";
+
+const OrderModal = dynamic(() => import("./components/OrderModal"), {
+  ssr: false,
+  loading: () => null,
+});
+
+const StickyMobileCTA = dynamic(() => import("./components/StickyMobileCTA"), {
+  ssr: false,
+  loading: () => null,
+});
 
 type Props = {
   pageConfig: ProductPageConfig;
@@ -96,11 +106,13 @@ export default function ProductPageClient({
 
   useEffect(() => {
     if (preview) return;
-    trackEvent("ViewContent", {
-      product_name: product.orderName,
-      product_slug: pageConfig.slug,
-      value: defaultOffer.price,
-      page_path: `/product/${pageConfig.slug}`,
+    whenIdle(() => {
+      trackEvent("ViewContent", {
+        product_name: product.orderName,
+        product_slug: pageConfig.slug,
+        value: defaultOffer.price,
+        page_path: `/product/${pageConfig.slug}`,
+      });
     });
   }, [preview, product.orderName, pageConfig.slug, defaultOffer.price]);
 
