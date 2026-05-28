@@ -173,8 +173,18 @@ export async function getAllOrders(): Promise<Order[]> {
   return (data as Order[]) ?? [];
 }
 
-export async function getAllProducts(): Promise<Product[]> {
+export async function getAllProducts(options?: {
+  ensureOfficial?: boolean;
+}): Promise<Product[]> {
   if (!isSupabaseConfigured()) return [];
+
+  if (options?.ensureOfficial) {
+    const { ensureOfficialProductsSynced } = await import(
+      "@/lib/products/ensure-official-products"
+    );
+    await ensureOfficialProductsSynced();
+  }
+
   const supabase = await createClient();
   const { data } = await supabase
     .from("products")

@@ -1,6 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { notFound } from "next/navigation";
+import { ensureOfficialProductsSynced } from "@/lib/products/ensure-official-products";
 import { resolveProductSlug } from "@/lib/products/catalog";
 import { getProductById } from "@/lib/supabase/queries";
 import { getProductPageConfig } from "@/lib/page-builder/queries";
@@ -12,6 +13,7 @@ type Props = {
 
 export default async function ProductBuilderAdminPage({ params }: Props) {
   const { id } = await params;
+  await ensureOfficialProductsSynced();
   const product = await getProductById(id);
   if (!product) notFound();
 

@@ -4,7 +4,7 @@ import { getAllProducts } from "@/lib/supabase/queries";
 import ProductsManager, { NewProductForm } from "./ProductsManager";
 
 export default async function AdminProductsPage() {
-  const products = await getAllProducts();
+  const products = await getAllProducts({ ensureOfficial: true });
 
   return (
     <div>
