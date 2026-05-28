@@ -144,6 +144,17 @@ export async function POST(request: Request) {
       p_offer_quantity: offer_quantity || 1,
       p_total_price: total_price,
       p_notes: notes,
+      p_traffic_source: attributionColumns.traffic_source,
+      p_traffic_platform: attributionColumns.traffic_platform,
+      p_utm_source: attributionColumns.utm_source,
+      p_utm_medium: attributionColumns.utm_medium,
+      p_utm_campaign: attributionColumns.utm_campaign,
+      p_utm_content: attributionColumns.utm_content,
+      p_utm_term: attributionColumns.utm_term,
+      p_referrer: attributionColumns.referrer,
+      p_device_type: attributionColumns.device_type,
+      p_landing_page: attributionColumns.landing_page,
+      p_session_id: attributionColumns.session_id,
     };
 
     const { data: rpcId, error: rpcError } = await supabase.rpc(

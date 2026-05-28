@@ -141,8 +141,8 @@ drop policy if exists "Admin manage home page configs" on home_page_configs;
 create policy "Admin manage home page configs" on home_page_configs
   for all using (is_admin()) with check (is_admin());
 
--- Orders RLS + storefront checkout RPC (run supabase/orders-rls-migration.sql for full fix)
--- See orders-rls-migration.sql
+-- Orders RLS + storefront checkout RPC (run supabase/create-storefront-order.sql)
+-- See create-storefront-order.sql
 
 -- Homepage transformation section auto-sync (run supabase/home-transformations-sync.sql)
 -- Review avatar migration (run supabase/review-avatars-migration.sql)

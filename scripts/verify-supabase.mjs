@@ -95,6 +95,18 @@ if (missing.length === 0) {
     );
     process.exit(1);
   }
+
+  const rpcRes = await fetchWithRetry(`${url}/rest/v1/rpc/create_storefront_order`, {
+    method: "POST",
+    headers: { ...headers, "Content-Type": "application/json", Prefer: "return=minimal" },
+    body: JSON.stringify({}),
+  });
+  if (rpcRes.status === 404) {
+    console.log(
+      "WARN  create_storefront_order RPC missing — run supabase/create-storefront-order.sql",
+    );
+    process.exit(1);
+  }
   console.log("\nSupabase is fully connected.");
   process.exit(0);
 }
