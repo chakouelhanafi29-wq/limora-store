@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { FeaturedProductCard } from "@/lib/storefront";
-import "./featured-products.css";
 
 type Props = {
   products: FeaturedProductCard[];
