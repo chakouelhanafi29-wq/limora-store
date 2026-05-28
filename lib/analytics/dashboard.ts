@@ -110,6 +110,7 @@ function emptyDashboard(
       ordersPerDay: [],
       visitorsPerDay: [],
     },
+    recentOrders: [],
   };
 }
 
@@ -673,6 +674,7 @@ async function loadAnalyticsDashboardUncached(
       ordersPerDay,
       visitorsPerDay,
     },
+    recentOrders: orderList.slice(0, 6),
   };
 }
 

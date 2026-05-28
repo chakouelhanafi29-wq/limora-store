@@ -1,10 +1,10 @@
 export const dynamic = "force-dynamic";
 
-import { getAnalyticsDashboard } from "@/lib/analytics/dashboard";
+import { getAdminAnalyticsInitialData } from "@/lib/analytics/admin-date-filter-server";
 import AnalyticsDashboard from "./AnalyticsDashboard";
 
 export default async function AdminAnalyticsPage() {
-  const data = await getAnalyticsDashboard("30d");
+  const data = await getAdminAnalyticsInitialData();
 
   return (
     <div>

@@ -1,4 +1,5 @@
 import type { DatePreset } from "@/lib/analytics/date-range";
+import type { Order } from "@/lib/types/database";
 
 export type AnalyticsCountRow = {
   key: string;
@@ -112,4 +113,5 @@ export type AnalyticsDashboardData = {
     ordersPerDay: { date: string; count: number; revenue: number }[];
     visitorsPerDay: { date: string; visitors: number; pageViews: number }[];
   };
+  recentOrders: Order[];
 };

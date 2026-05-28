@@ -2,12 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { DatePreset } from "@/lib/analytics/date-range";
+import type { DateFilterDraft } from "@/lib/analytics/admin-date-filter";
 
-export type DateFilterDraft = {
-  preset: DatePreset;
-  customStart: string;
-  customEnd: string;
-};
+export type { DateFilterDraft };
 
 type Props = {
   applied: DateFilterDraft;
@@ -18,10 +15,10 @@ type Props = {
 const PRESETS: { id: DatePreset; label: string }[] = [
   { id: "today", label: "اليوم" },
   { id: "yesterday", label: "أمس" },
-  { id: "7d", label: "7 أيام" },
-  { id: "30d", label: "30 يوم" },
+  { id: "7d", label: "آخر 7 أيام" },
+  { id: "30d", label: "آخر 30 يوم" },
   { id: "month", label: "هذا الشهر" },
-  { id: "custom", label: "مخصص" },
+  { id: "custom", label: "نطاق مخصص" },
 ];
 
 export default function AnalyticsDateFilter({

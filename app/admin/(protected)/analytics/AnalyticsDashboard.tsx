@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useMemo, useState, useTransition } from "react";
-import type { DatePreset } from "@/lib/analytics/date-range";
+import { useMemo } from "react";
 import type { AnalyticsDashboardData } from "@/lib/types/analytics-dashboard";
-import AnalyticsDateFilter, { type DateFilterDraft } from "./AnalyticsDateFilter";
+import { useAdminAnalytics } from "@/lib/analytics/use-admin-analytics";
+import AnalyticsDateFilter from "./AnalyticsDateFilter";
 
 const platformColors: Record<string, string> = {
   facebook: "bg-blue-500",
@@ -130,43 +130,12 @@ function DeviceCard({
   );
 }
 
-function toAppliedFilter(data: AnalyticsDashboardData): DateFilterDraft {
-  return {
-    preset: data.range.preset,
-    customStart: data.range.start.slice(0, 10),
-    customEnd: data.range.end.slice(0, 10),
-  };
-}
-
 export default function AnalyticsDashboard({
   initialData,
 }: {
   initialData: AnalyticsDashboardData;
 }) {
-  const [data, setData] = useState(initialData);
-  const [appliedFilter, setAppliedFilter] = useState<DateFilterDraft>(() =>
-    toAppliedFilter(initialData),
-  );
-  const [isPending, startTransition] = useTransition();
-
-  const applyFilter = useCallback((draft: DateFilterDraft) => {
-    startTransition(async () => {
-      const params = new URLSearchParams({ preset: draft.preset });
-      if (draft.preset === "custom") {
-        params.set("start", draft.customStart);
-        params.set("end", draft.customEnd);
-      }
-
-      const response = await fetch(`/api/admin/analytics?${params.toString()}`, {
-        cache: "no-store",
-      });
-      if (!response.ok) return;
-
-      const json = (await response.json()) as AnalyticsDashboardData;
-      setData(json);
-      setAppliedFilter(toAppliedFilter(json));
-    });
-  }, []);
+  const { data, appliedFilter, applyFilter, isPending } = useAdminAnalytics(initialData);
 
   const fmt = (n: number) => n.toLocaleString("ar-SA");
   const money = (n: number) => `${fmt(Math.round(n))} ر.س`;
