@@ -139,6 +139,22 @@ create table if not exists settings (
 
 insert into settings (id) values (1) on conflict (id) do nothing;
 
+-- Server-side tracking credentials (admin-only; never exposed to storefront)
+create table if not exists tracking_secrets (
+  id int primary key default 1 check (id = 1),
+  meta_capi_access_token text,
+  meta_test_event_code text,
+  tiktok_events_access_token text,
+  tiktok_test_event_code text,
+  snapchat_capi_access_token text,
+  snapchat_test_event_code text,
+  updated_at timestamptz default now()
+);
+
+insert into tracking_secrets (id) values (1) on conflict (id) do nothing;
+
+alter table tracking_secrets enable row level security;
+
 -- Analytics events
 create table if not exists analytics_events (
   id uuid primary key default gen_random_uuid(),
@@ -264,6 +280,13 @@ create policy "Admin all reviews" on reviews
 -- Settings: public read (for storefront), admin write
 create policy "Public read settings" on settings for select using (true);
 create policy "Admin update settings" on settings
+  for update using (is_admin()) with check (is_admin());
+
+create policy "Admin read tracking secrets" on tracking_secrets
+  for select using (is_admin());
+create policy "Admin insert tracking secrets" on tracking_secrets
+  for insert with check (is_admin());
+create policy "Admin update tracking secrets" on tracking_secrets
   for update using (is_admin()) with check (is_admin());
 
 -- Analytics events: public insert, admin read

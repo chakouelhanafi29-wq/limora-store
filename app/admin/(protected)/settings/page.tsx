@@ -11,7 +11,7 @@ export default async function AdminSettingsPage() {
       <div className="mb-8">
         <h1 className="font-serif text-3xl font-semibold">الإعدادات</h1>
         <p className="mt-1 text-sm text-muted">
-          النطاق · SEO · Meta · TikTok · Snapchat · Google Analytics
+          النطاق · SEO · Meta · TikTok · Snapchat CAPI · Google Analytics
         </p>
       </div>
       <SettingsForm initialSettings={settings} />

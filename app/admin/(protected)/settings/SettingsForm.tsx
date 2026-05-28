@@ -1,9 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Settings } from "@/lib/types/database";
+import TrackingSettingsPanel, {
+  type TrackingSettingsHandle,
+} from "./TrackingSettingsPanel";
 
 async function uploadBrandAsset(file: File, folder: string) {
   const supabase = createClient();
@@ -26,6 +29,7 @@ export default function SettingsForm({
   initialSettings: Settings | null;
 }) {
   const router = useRouter();
+  const trackingRef = useRef<TrackingSettingsHandle>(null);
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({
     site_url: initialSettings?.site_url ?? "",
@@ -38,9 +42,6 @@ export default function SettingsForm({
     seo_keywords: initialSettings?.seo_keywords ?? "",
     og_image_url: initialSettings?.og_image_url ?? "",
     twitter_handle: initialSettings?.twitter_handle ?? "",
-    facebook_pixel_id: initialSettings?.facebook_pixel_id ?? "",
-    tiktok_pixel_id: initialSettings?.tiktok_pixel_id ?? "",
-    snapchat_pixel_id: initialSettings?.snapchat_pixel_id ?? "",
     google_analytics_id: initialSettings?.google_analytics_id ?? "",
     whatsapp_number: initialSettings?.whatsapp_number ?? "",
     free_shipping: initialSettings?.free_shipping ?? true,
@@ -71,9 +72,6 @@ export default function SettingsForm({
         seo_keywords: form.seo_keywords || null,
         og_image_url: form.og_image_url || null,
         twitter_handle: form.twitter_handle || null,
-        facebook_pixel_id: form.facebook_pixel_id || null,
-        tiktok_pixel_id: form.tiktok_pixel_id || null,
-        snapchat_pixel_id: form.snapchat_pixel_id || null,
         google_analytics_id: form.google_analytics_id || null,
         whatsapp_number: form.whatsapp_number || null,
         free_shipping: form.free_shipping,
@@ -88,30 +86,14 @@ export default function SettingsForm({
       alert(error.message);
       return;
     }
+
+    await trackingRef.current?.save();
     setSaved(true);
     router.refresh();
     setTimeout(() => setSaved(false), 3000);
   };
 
-  const trackingFields = [
-    {
-      key: "facebook_pixel_id" as const,
-      label: "Meta Pixel ID",
-      hint: "Facebook / Instagram Ads",
-      placeholder: "1234567890123456",
-    },
-    {
-      key: "tiktok_pixel_id" as const,
-      label: "TikTok Pixel ID",
-      hint: "TikTok Ads Manager",
-      placeholder: "CXXXXXXXXXXXXXXX",
-    },
-    {
-      key: "snapchat_pixel_id" as const,
-      label: "Snapchat Pixel ID",
-      hint: "Snap Ads Manager",
-      placeholder: "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-    },
+  const analyticsFields = [
     {
       key: "google_analytics_id" as const,
       label: "Google Analytics ID",
@@ -271,13 +253,15 @@ export default function SettingsForm({
             تتبع الإعلانات والتحليلات
           </h2>
           <p className="mt-2 text-sm text-muted">
-            اربطي منصات الإعلانات و Google Analytics — يتم حقن الأكواد تلقائياً
-            في المتجر وتتبع التحويلات.
+            Pixel IDs للمتصفح + Conversion API / Events API من لوحة واحدة — بدون
+            تعديل Vercel في كل مرة.
           </p>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          {trackingFields.map((field) => (
+        <TrackingSettingsPanel ref={trackingRef} />
+
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {analyticsFields.map((field) => (
             <label key={field.key} className="block">
               <span className="mb-1 block text-sm font-medium">{field.label}</span>
               <span className="mb-2 block text-xs text-muted">{field.hint}</span>
