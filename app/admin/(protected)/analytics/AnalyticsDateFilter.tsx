@@ -1,16 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import type { DatePreset } from "@/lib/analytics/date-range";
 
-type Props = {
+export type DateFilterDraft = {
   preset: DatePreset;
   customStart: string;
   customEnd: string;
-  onChange: (next: {
-    preset: DatePreset;
-    customStart?: string;
-    customEnd?: string;
-  }) => void;
+};
+
+type Props = {
+  applied: DateFilterDraft;
+  onApply: (draft: DateFilterDraft) => void;
   loading?: boolean;
 };
 
@@ -24,29 +25,53 @@ const PRESETS: { id: DatePreset; label: string }[] = [
 ];
 
 export default function AnalyticsDateFilter({
-  preset,
-  customStart,
-  customEnd,
-  onChange,
+  applied,
+  onApply,
   loading,
 }: Props) {
+  const [draft, setDraft] = useState<DateFilterDraft>(applied);
+
+  useEffect(() => {
+    setDraft(applied);
+  }, [applied.preset, applied.customStart, applied.customEnd]);
+
+  const canApply =
+    draft.preset !== "custom" ||
+    (Boolean(draft.customStart) &&
+      Boolean(draft.customEnd) &&
+      draft.customStart <= draft.customEnd);
+
+  const isDirty =
+    draft.preset !== applied.preset ||
+    (draft.preset === "custom" &&
+      (draft.customStart !== applied.customStart ||
+        draft.customEnd !== applied.customEnd));
+
   return (
-    <div className="rounded-2xl border border-champagne/10 bg-white p-4 luxury-shadow sm:p-5">
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+    <div className="rounded-2xl border border-champagne/10 bg-white p-5 luxury-shadow sm:p-6">
+      <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
         <div>
-          <p className="text-xs tracking-[0.2em] text-champagne uppercase">DATE RANGE</p>
-          <p className="mt-1 text-sm text-muted">جميع المؤشرات تتحدّث حسب الفترة المختارة</p>
+          <p className="text-xs tracking-[0.2em] text-champagne uppercase">الفترة الزمنية</p>
+          <p className="mt-1 text-sm text-muted">
+            اختاري الفترة ثم اضغطي «تطبيق» لتحديث كل المؤشرات
+          </p>
         </div>
+
         <div className="flex flex-wrap gap-2">
           {PRESETS.map((item) => (
             <button
               key={item.id}
               type="button"
               disabled={loading}
-              onClick={() => onChange({ preset: item.id })}
-              className={`rounded-full px-4 py-2 text-xs font-medium transition ${
-                preset === item.id
-                  ? "bg-foreground text-ivory"
+              onClick={() =>
+                setDraft((prev) => ({
+                  ...prev,
+                  preset: item.id,
+                }))
+              }
+              className={`rounded-full px-4 py-2.5 text-xs font-medium transition ${
+                draft.preset === item.id
+                  ? "bg-foreground text-ivory ring-2 ring-champagne/30"
                   : "border border-champagne/20 bg-beige/30 text-foreground hover:bg-beige"
               }`}
             >
@@ -56,42 +81,51 @@ export default function AnalyticsDateFilter({
         </div>
       </div>
 
-      {preset === "custom" ? (
-        <div className="mt-4 grid gap-3 sm:grid-cols-[1fr_1fr_auto]">
+      {draft.preset === "custom" ? (
+        <div className="mt-5 grid gap-3 border-t border-champagne/10 pt-5 sm:grid-cols-2">
           <label className="block text-sm">
-            <span className="mb-1 block text-muted">من</span>
+            <span className="mb-1.5 block font-medium text-foreground">من</span>
             <input
               type="date"
               dir="ltr"
-              value={customStart}
+              value={draft.customStart}
               onChange={(e) =>
-                onChange({ preset: "custom", customStart: e.target.value, customEnd })
+                setDraft((prev) => ({ ...prev, customStart: e.target.value }))
               }
-              className="w-full rounded-xl border border-champagne/20 px-3 py-2"
+              className="w-full rounded-xl border border-champagne/20 px-3 py-2.5"
             />
           </label>
           <label className="block text-sm">
-            <span className="mb-1 block text-muted">إلى</span>
+            <span className="mb-1.5 block font-medium text-foreground">إلى</span>
             <input
               type="date"
               dir="ltr"
-              value={customEnd}
+              value={draft.customEnd}
               onChange={(e) =>
-                onChange({ preset: "custom", customStart, customEnd: e.target.value })
+                setDraft((prev) => ({ ...prev, customEnd: e.target.value }))
               }
-              className="w-full rounded-xl border border-champagne/20 px-3 py-2"
+              className="w-full rounded-xl border border-champagne/20 px-3 py-2.5"
             />
           </label>
-          <button
-            type="button"
-            disabled={loading || !customStart || !customEnd}
-            onClick={() => onChange({ preset: "custom", customStart, customEnd })}
-            className="self-end rounded-full bg-champagne px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
-          >
-            تطبيق
-          </button>
         </div>
       ) : null}
+
+      <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-champagne/10 pt-5">
+        <button
+          type="button"
+          disabled={loading || !canApply}
+          onClick={() => onApply(draft)}
+          className="rounded-full bg-foreground px-8 py-3 text-sm font-medium text-ivory transition hover:bg-champagne disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? "جاري التحديث..." : "تطبيق"}
+        </button>
+        {isDirty && !loading ? (
+          <span className="text-xs text-champagne">تغييرات غير مُطبّقة — اضغطي تطبيق</span>
+        ) : null}
+        {!canApply && draft.preset === "custom" ? (
+          <span className="text-xs text-red-600">تحققي من صحة تاريخ البداية والنهاية</span>
+        ) : null}
+      </div>
     </div>
   );
 }

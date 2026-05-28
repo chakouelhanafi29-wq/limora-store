@@ -11,7 +11,7 @@ export default async function AdminAnalyticsPage() {
       <div className="mb-8">
         <h1 className="font-serif text-3xl font-semibold">التحليلات</h1>
         <p className="mt-1 text-sm text-muted">
-          لوحة تحليلات LIMORA — زيارات، تحويل، COD، منتجات، أجهزة، وتتبع CAPI
+          نظرة سريعة على الزيارات، الطلبات، COD، والمنتجات — بسيطة وواضحة
         </p>
       </div>
       <AnalyticsDashboard initialData={data} />
