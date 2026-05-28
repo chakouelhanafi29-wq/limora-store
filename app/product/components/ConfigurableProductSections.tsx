@@ -24,8 +24,6 @@ import {
   PRODUCT_CARD_TITLE_XL_CLASS,
   PRODUCT_CARD_TITLE_2XL_CLASS,
   PRODUCT_PRICE_CLASS,
-  PRODUCT_SECTION_SUBTITLE_CLASS,
-  PRODUCT_SECTION_TITLE_CLASS,
 } from "@/lib/page-builder/product-page-theme";
 import type { PageSection, ProductPageConfig, ProductPageTheme } from "@/lib/page-builder/types";
 import { getOrderedSections } from "@/lib/page-builder/default-config";
@@ -59,12 +57,12 @@ function SectionHeader({
         {label}
       </span>
       <h2
-        className={`mb-3 ${PRODUCT_SECTION_TITLE_CLASS} ${dark ? "!text-ivory" : ""}`}
+        className={`mb-3 font-serif text-3xl font-semibold sm:text-4xl ${dark ? "text-ivory" : "text-foreground"}`}
       >
         {title}
       </h2>
       {subtitle && (
-        <p className={`mx-auto max-w-2xl ${PRODUCT_SECTION_SUBTITLE_CLASS} ${dark ? "text-ivory/70" : ""}`}>
+        <p className={`mx-auto max-w-2xl ${dark ? "text-ivory/60" : "text-muted"}`}>
           {subtitle}
         </p>
       )}

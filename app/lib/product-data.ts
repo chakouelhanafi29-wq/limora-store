@@ -502,13 +502,13 @@ export const relatedProducts = [
     href: "/product/hair-revive",
   },
   {
-    id: "detox-cleanse",
-    name: "LIMORA Detox Cleanse",
-    nameEn: "LIMORA Detox Cleanse",
-    benefit: "توازن داخلي… وبطن أخف",
+    id: "feminine-balance",
+    name: "LIMORA Feminine Balance",
+    nameEn: "LIMORA Feminine Balance",
+    benefit: "انتعاش أنثوي… وثقة يومية",
     price: "229",
-    image: "/products/detox-cleanse/hero.webp",
-    href: "/product/detox-cleanse",
+    image: "/products/feminine-balance/hero.webp",
+    href: "/product/feminine-balance",
   },
 ];
 

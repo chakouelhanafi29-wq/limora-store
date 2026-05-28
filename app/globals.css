@@ -242,6 +242,34 @@ body {
   -webkit-backdrop-filter: blur(20px);
 }
 
+@keyframes purchase-cta-attention {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow:
+      0 4px 20px rgba(74, 56, 47, 0.12),
+      0 1px 3px rgba(74, 56, 47, 0.08);
+  }
+  50% {
+    transform: scale(1.015);
+    box-shadow:
+      0 8px 28px rgba(74, 56, 47, 0.16),
+      0 2px 6px rgba(201, 169, 98, 0.12);
+  }
+}
+
+.purchase-zone-cta-attention {
+  animation: purchase-cta-attention 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .purchase-zone-cta-attention {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 .section-label {
   letter-spacing: 0.2em;
 }

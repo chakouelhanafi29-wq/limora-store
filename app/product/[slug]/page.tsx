@@ -28,6 +28,9 @@ export default async function ProductSlugPage({ params }: Props) {
   if (rawSlug === "glow") {
     redirect("/product/collagen-glow");
   }
+  if (rawSlug === "detox-cleanse") {
+    redirect("/product/feminine-balance");
+  }
 
   const slug = rawSlug;
   const [site, { pageConfig, dbProduct }] = await Promise.all([

@@ -63,7 +63,7 @@ export function getDefaultHomePageConfig(slug = "home"): HomePageConfig {
         label: "FEATURED COLLECTION",
         title: "مختارات LIMORA الفاخرة",
         subtitle:
-          "Collagen Glow · Hair Revive · Detox Cleanse — ثلاث تركيبات… ثلاثة تحولات.",
+          "Collagen Glow · Hair Revive · Feminine Balance — ثلاث تركيبات… ثلاثة تحولات.",
         useDynamicProducts: true,
       },
     },

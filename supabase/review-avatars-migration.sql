@@ -16,6 +16,7 @@ where customer_name = 'فاطمة الدوسري'
 update reviews
 set image_url = '/reviews/maryam-alqahtani.webp'
 where customer_name in ('مريم القحطاني', 'دانة القحطاني')
+   or product_label ilike '%feminine%'
    or product_label ilike '%detox%'
    or product_label ilike '%radiance%';
 

@@ -53,19 +53,19 @@ on conflict (slug) do update set
   bullets = excluded.bullets,
   urgency_text = excluded.urgency_text;
 
--- 3) Insert Detox Cleanse
+-- 3) Insert Feminine Balance
 insert into products (
   slug, name_ar, name_en, subtitle, description, price, original_price,
   badge, is_featured, is_active, sort_order, bullets, urgency_text
 )
 values (
-  'detox-cleanse',
-  'LIMORA Detox Cleanse',
-  'LIMORA Detox Cleanse',
-  'دعم يومي للتخلص من السموم والانتفاخ — لبطن مسطح وتوازن داخلي',
-  'خليط أخضر + بريبيوتيك + ألياف + إنزيمات + فيتامينات — للتخلص من السموم وتقليل الانتفاخ.',
+  'feminine-balance',
+  'LIMORA Feminine Balance',
+  'LIMORA Feminine Balance',
+  'دعم يومي للتوازن الأنثوي والانتعاش — لثقة وراحة كل يوم',
+  'بريبيوتيك + بروبيوتيك + Cranberry + فيتامين C + مستخلصات طبيعية — عناية أنثوية يومية فاخرة.',
   229, 299, 'حصري', true, true, 3,
-  '["تنظيف الجسم بلطف","تقليل الانتفاخ","تحسين الهضم","خليط أخضر + بريبيوتيك"]'::jsonb,
+  '["دعم يومي للتوازن الأنثوي","انتعاش وثقة طوال اليوم","عناية أنثوية لطيفة وفاخرة","بريبيوتيك + بروبيوتيك + Cranberry"]'::jsonb,
   '✨ عرض قطعتين بـ 329 ر.س + شحن مجاني'
 )
 on conflict (slug) do update set
@@ -84,22 +84,22 @@ on conflict (slug) do update set
 
 -- 4) Remove demo / placeholder products
 delete from product_page_configs
-where slug not in ('collagen-glow', 'hair-revive', 'detox-cleanse');
+where slug not in ('collagen-glow', 'hair-revive', 'feminine-balance');
 
 delete from product_offers
 where product_id in (
   select id from products
-  where slug not in ('collagen-glow', 'hair-revive', 'detox-cleanse')
+  where slug not in ('collagen-glow', 'hair-revive', 'feminine-balance')
 );
 
 delete from product_images
 where product_id in (
   select id from products
-  where slug not in ('collagen-glow', 'hair-revive', 'detox-cleanse')
+  where slug not in ('collagen-glow', 'hair-revive', 'feminine-balance')
 );
 
 delete from products
-where slug not in ('collagen-glow', 'hair-revive', 'detox-cleanse');
+where slug not in ('collagen-glow', 'hair-revive', 'feminine-balance');
 
 -- 5) Refresh Collagen Glow images
 delete from product_images
@@ -124,14 +124,14 @@ select p.id, '/products/hair-revive/hero.webp', 'products/hair-revive/hero.webp'
 from products p
 where p.slug = 'hair-revive';
 
--- 7) Detox Cleanse images
+-- 7) Feminine Balance images
 delete from product_images
-where product_id in (select id from products where slug = 'detox-cleanse');
+where product_id in (select id from products where slug = 'feminine-balance');
 
 insert into product_images (product_id, url, storage_path, sort_order, is_primary)
-select p.id, '/products/detox-cleanse/hero.webp', 'products/detox-cleanse/hero.webp', 1, true
+select p.id, '/products/feminine-balance/hero.webp', 'products/feminine-balance/hero.webp', 1, true
 from products p
-where p.slug = 'detox-cleanse';
+where p.slug = 'feminine-balance';
 
 -- 8) Offers — Collagen Glow
 delete from product_offers
@@ -155,20 +155,20 @@ select id, 'قطعتان', 'عرض قطعتين', 2, 349, 'الأكثر طلبا
 union all
 select id, '3 قطع', 'عرض 3 قطع', 3, 449, 'أفضل قيمة', false, 3 from products where slug = 'hair-revive';
 
--- 10) Offers — Detox Cleanse
+-- 10) Offers — Feminine Balance
 delete from product_offers
-where product_id in (select id from products where slug = 'detox-cleanse');
+where product_id in (select id from products where slug = 'feminine-balance');
 
 insert into product_offers (product_id, label, display_label, quantity, price, badge, is_recommended, sort_order)
-select id, 'قطعة واحدة', 'عرض قطعة واحدة', 1, 229, null, false, 1 from products where slug = 'detox-cleanse'
+select id, 'قطعة واحدة', 'عرض قطعة واحدة', 1, 229, null, false, 1 from products where slug = 'feminine-balance'
 union all
-select id, 'قطعتان', 'عرض قطعتين', 2, 329, 'الأكثر طلباً', true, 2 from products where slug = 'detox-cleanse'
+select id, 'قطعتان', 'عرض قطعتين', 2, 329, 'الأكثر طلباً', true, 2 from products where slug = 'feminine-balance'
 union all
-select id, '3 قطع', 'عرض 3 قطع', 3, 429, 'أفضل قيمة', false, 3 from products where slug = 'detox-cleanse';
+select id, '3 قطع', 'عرض 3 قطع', 3, 429, 'أفضل قيمة', false, 3 from products where slug = 'feminine-balance';
 
 -- 11) Reset product page configs so builders pick up new defaults
 delete from product_page_configs
-where slug in ('collagen-glow', 'hair-revive', 'detox-cleanse');
+where slug in ('collagen-glow', 'hair-revive', 'feminine-balance');
 
 -- 12) Update homepage reviews to official products
 update reviews set product_label = 'LIMORA Collagen Glow'
@@ -177,7 +177,7 @@ where product_label ilike '%collagen%' or product_label ilike '%glow%' or produc
 update reviews set product_label = 'LIMORA Hair Revive'
 where product_label ilike '%hair%' or product_label ilike '%هير%';
 
-update reviews set product_label = 'LIMORA Detox Cleanse'
-where product_label ilike '%detox%' or product_label ilike '%radiance%' or product_label ilike '%رادي%';
+update reviews set product_label = 'LIMORA Feminine Balance'
+where product_label ilike '%feminine%' or product_label ilike '%detox%' or product_label ilike '%radiance%' or product_label ilike '%رادي%';
 
 commit;

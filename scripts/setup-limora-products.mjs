@@ -24,9 +24,9 @@ const products = [
     outputs: [{ file: "hero.webp", width: 1200 }],
   },
   {
-    slug: "detox-cleanse",
+    slug: "feminine-balance",
     input:
-      "c__Users_J.P.M_AppData_Roaming_Cursor_User_workspaceStorage_3aeffe180bed59528f8aa7c711a24367_images_ChatGPT_Image_26______2026__03_32_32__-6db68857-f302-47ce-a831-b62b20fe10fa.png",
+      "c__Users_J.P.M_AppData_Roaming_Cursor_User_workspaceStorage_3aeffe180bed59528f8aa7c711a24367_images_limora_product-177aa94c-b91c-4696-b878-d61d17f53adf.png",
     outputs: [{ file: "hero.webp", width: 1200 }],
   },
 ];

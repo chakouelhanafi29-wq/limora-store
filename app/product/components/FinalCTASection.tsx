@@ -2,7 +2,6 @@ import type { FinalCtaConfig } from "@/lib/page-builder/types";
 import { resolveHeroTrustBadges } from "@/lib/page-builder/hero-trust";
 import {
   PRODUCT_CTA_BUTTON_BASE,
-  PRODUCT_SECTION_TITLE_CLASS,
 } from "@/lib/page-builder/product-page-theme";
 import { HeroTrustBadge } from "./TrustBadgeItem";
 
@@ -40,7 +39,7 @@ export default function FinalCTASection({
         {config.label ? (
           <p className="section-label mb-3 text-xs text-champagne">{config.label}</p>
         ) : null}
-        <h2 className={`mb-4 ${PRODUCT_SECTION_TITLE_CLASS}`}>
+        <h2 className="mb-4 font-serif text-3xl font-semibold text-foreground sm:text-4xl">
           {title}
         </h2>
         <p className="mx-auto mb-6 max-w-lg text-muted">{subtitle}</p>

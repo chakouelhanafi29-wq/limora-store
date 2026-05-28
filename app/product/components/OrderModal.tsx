@@ -15,7 +15,6 @@ import {
 } from "@/lib/validation/saudi-phone";
 import {
   PRODUCT_CTA_BUTTON_BASE,
-  PRODUCT_SECTION_TITLE_CLASS,
 } from "@/lib/page-builder/product-page-theme";
 import type { Offer } from "../../lib/product-data";
 
@@ -178,7 +177,7 @@ export default function OrderModal({
           <p className="mb-1 text-xs tracking-widest text-champagne">LIMORA</p>
           <h2
             id="order-modal-title"
-            className={`${PRODUCT_SECTION_TITLE_CLASS} text-xl sm:text-2xl`}
+            className="font-serif text-xl font-semibold text-foreground sm:text-2xl"
           >
             {orderModal?.title ?? "أكّدي طلبكِ"}
           </h2>

@@ -1,6 +1,6 @@
 import {
   COLLAGEN_GLOW_PRIMARY_IMAGE,
-  DETOX_CLEANSE_PRIMARY_IMAGE,
+  FEMININE_BALANCE_PRIMARY_IMAGE,
   HAIR_REVIVE_PRIMARY_IMAGE,
 } from "@/lib/product-images";
 import { HOME_TRANSFORMATION_IMAGES } from "@/lib/home-images";
@@ -31,7 +31,7 @@ export const hero = {
   headline: "أنتِ تستحقين",
   headlineAccent: "أن تتوهجي كل يوم",
   subheadline:
-    "ثلاث تركيبات فاخرة — Collagen Glow، Hair Revive، Detox Cleanse — لبشرة متوهجة، شعرٍ أكثر كثافة، وتوازن داخلي. لأن الجمال الحقيقي يُشعّ من داخلكِ.",
+    "ثلاث تركيبات فاخرة — Collagen Glow، Hair Revive، Feminine Balance — لبشرة متوهجة، شعرٍ أكثر كثافة، وعناية أنثوية يومية. لأن الجمال الحقيقي يُشعّ من داخلكِ.",
   trustLine: "✦ معتمد SFDA · ضمان على جميع المنتجات · دفع عند الاستلام",
   ctaPrimary: "اختاري LIMORA الآن",
   ctaSecondary: "اكتشفي تحولكِ",
@@ -51,7 +51,7 @@ export const emotionalMessage = {
     "LIMORA ليست مجرد مكملات — بل نظام جمال أنثوي متكامل. بشرة، شعر، وتوازن… في روتين واحد فاخر صُمم للمرأة السعودية التي تستحق الأفضل.",
   paragraphs: [
     "نؤمن أن الجمال الحقيقي لا يُغطّى — بل يُغذّى. كل تركيبة من LIMORA وُلدت لامرأة تعرف أن العناية الحقيقية تبدأ من الداخل.",
-    "Collagen Glow للبشرة المتوهجة، Hair Revive للشعر الأقوى، Detox Cleanse للتوازن الداخلي — ثلاثة منتجات، تحول واحد.",
+    "Collagen Glow للبشرة المتوهجة، Hair Revive للشعر الأقوى، Feminine Balance للعناية الأنثوية اليومية — ثلاثة منتجات، تحول واحد.",
     "مع LIMORA… أنتِ لا تشتري منتجاً — بل تختارين نفسكِ.",
   ],
   values: [
@@ -90,24 +90,24 @@ export const featuredProducts = [
     cta: "اختاري Hair Revive",
   },
   {
-    id: "detox-cleanse",
-    name: "LIMORA Detox Cleanse",
-    nameEn: "LIMORA Detox Cleanse",
-    benefit: "توازن داخلي… وبطن أخف",
+    id: "feminine-balance",
+    name: "LIMORA Feminine Balance",
+    nameEn: "LIMORA Feminine Balance",
+    benefit: "انتعاش أنثوي… وثقة يومية",
     description:
-      "خليط أخضر + بريبيوتيك + ألياف + إنزيمات — للتخلص من السموم وتقليل الانتفاخ.",
+      "بريبيوتيك + بروبيوتيك + Cranberry + فيتامين C — لدعم التوازن الأنثوي والانتعاش.",
     price: "229",
     originalPrice: "299",
     badge: "حصري",
-    image: DETOX_CLEANSE_PRIMARY_IMAGE,
-    cta: "اختاري Detox Cleanse",
+    image: FEMININE_BALANCE_PRIMARY_IMAGE,
+    cta: "اختاري Feminine Balance",
   },
 ];
 
 export const limoraBundle = {
   title: "مجموعة LIMORA للجمال الطبيعي من الداخل",
   subtitle:
-    "Collagen Glow + Hair Revive + Detox Cleanse — نظام جمال متكامل: بشرة، شعر، وتوازن… في مجموعة واحدة فاخرة.",
+    "Collagen Glow + Hair Revive + Feminine Balance — نظام جمال متكامل: بشرة، شعر، وعناية أنثوية… في مجموعة واحدة فاخرة.",
   priceNote: "599 ر.س بدلاً من 677 ر.س — شحن مجاني + الدفع عند الاستلام",
   ctaLabel: "اطلبي المجموعة الآن",
   ctaHref: "/product/collagen-glow",
@@ -123,9 +123,9 @@ export const limoraBundle = {
       href: "/product/hair-revive",
     },
     {
-      name: "Detox Cleanse",
-      image: DETOX_CLEANSE_PRIMARY_IMAGE,
-      href: "/product/detox-cleanse",
+      name: "Feminine Balance",
+      image: FEMININE_BALANCE_PRIMARY_IMAGE,
+      href: "/product/feminine-balance",
     },
   ],
 };
@@ -142,7 +142,7 @@ export const whyLimora = {
   label: "THE LIMORA DIFFERENCE",
   title: "لماذا LIMORA مختلفة؟",
   subtitle:
-    "ثلاث تركيبات فاخرة — Collagen Glow، Hair Revive، Detox Cleanse — مصممة لامرأة سعودية تعرف أن العناية الحقيقية تبدأ من الداخل.",
+    "ثلاث تركيبات فاخرة — Collagen Glow، Hair Revive، Feminine Balance — مصممة لامرأة سعودية تعرف أن العناية الحقيقية تبدأ من الداخل.",
   pillars: [
     {
       icon: "✦",
@@ -176,7 +176,7 @@ export const realResults = {
   title: "تحولٌ حقيقي… تستحقينه",
   subtitle:
     "وراء كل إشراقة امرأة اختارت نفسها. LIMORA لا تغيّر مظهركِ فقط — بل تُعيد إليكِ ثقتكِ.",
-  contentRevision: 2,
+  contentRevision: 3,
   transformations: [
     {
       productName: "LIMORA Collagen Glow",
@@ -203,16 +203,16 @@ export const realResults = {
       accent: "gold",
     },
     {
-      productName: "LIMORA Detox Cleanse",
-      title: "توازن داخلي",
-      emotionalLine: "توازن داخلي ينعكس على جمالك",
+      productName: "LIMORA Feminine Balance",
+      title: "ثقة أنثوية",
+      emotionalLine: "انتعاش يومي… وثقة من الداخل",
       description:
-        "بطن أخف وتوازن يومي — تنظيف الجسم بلطف وتقليل الانتفاخ.",
-      image: HOME_TRANSFORMATION_IMAGES.detoxCleanse,
+        "راحة أكثر وانتعاش يومي — عناية أنثوية لطيفة تدعم توازنكِ وثقتكِ.",
+      image: HOME_TRANSFORMATION_IMAGES.feminineBalance,
       stat: "21",
       statLabel: "يوماً لتحول ملموس",
-      href: "/product/detox-cleanse",
-      accent: "sage",
+      href: "/product/feminine-balance",
+      accent: "rose",
     },
   ],
 };
@@ -221,7 +221,7 @@ export const testimonials = {
   label: "CUSTOMER LOVE",
   title: "آراء العملاء",
   subtitle:
-    "نساء من الرياض وجدة والدمام… يشاركن تجربتهن مع LIMORA Collagen Glow، Hair Revive، وDetox Cleanse.",
+    "نساء من الرياض وجدة والدمام… يشاركن تجربتهن مع LIMORA Collagen Glow، Hair Revive، وFeminine Balance.",
   items: [
     {
       name: "نورة العتيبي",
@@ -242,9 +242,9 @@ export const testimonials = {
     {
       name: "مريم القحطاني",
       location: "الدمام",
-      product: "LIMORA Detox Cleanse",
+      product: "LIMORA Feminine Balance",
       rating: 5,
-      text: "Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. المجموعة الثلاثية مع Collagen Glow وHair Revive صارت روتيني الكامل.",
+      text: "Feminine Balance هو اللي كنت أدور عليه — راحة يومية وثقة أكبر. المجموعة الثلاثية مع Collagen Glow وHair Revive صارت روتيني الكامل.",
       image: REVIEW_AVATARS.maryam,
     },
   ],
@@ -253,7 +253,7 @@ export const testimonials = {
 export const faqs = {
   label: "FAQ",
   title: "الأسئلة الشائعة",
-  subtitle: "كل ما تحتاجين معرفته عن LIMORA Collagen Glow، Hair Revive، وDetox Cleanse.",
+  subtitle: "كل ما تحتاجين معرفته عن LIMORA Collagen Glow، Hair Revive، وFeminine Balance.",
   items: [
     {
       question: "هل الدفع عند الاستلام متاح؟",
@@ -273,7 +273,7 @@ export const faqs = {
     {
       question: "متى ألاحظ النتائج؟",
       answer:
-        "معظم عميلاتنا يلاحظن فرقاً خلال 7–21 يوماً حسب المنتج. Collagen Glow للإشراقة، Hair Revive للكثافة، Detox Cleanse للتوازن الداخلي.",
+        "معظم عميلاتنا يلاحظن فرقاً خلال 7–21 يوماً حسب المنتج. Collagen Glow للإشراقة، Hair Revive للكثافة، Feminine Balance للعناية الأنثوية اليومية.",
     },
     {
       question: "كيف أستخدم المكملات؟",
@@ -283,7 +283,7 @@ export const faqs = {
     {
       question: "هل يمكن طلب المجموعة الثلاثية؟",
       answer:
-        "نعم — مجموعة LIMORA للجمال الطبيعي من الداخل تضم Collagen Glow + Hair Revive + Detox Cleanse بعرض حصري وشحن مجاني.",
+        "نعم — مجموعة LIMORA للجمال الطبيعي من الداخل تضم Collagen Glow + Hair Revive + Feminine Balance بعرض حصري وشحن مجاني.",
     },
   ],
 };
@@ -294,7 +294,7 @@ export const about = {
   subtitle: "LIMORA — حيث يلتقي الجمال بالثقة",
   paragraphs: [
     "وُلدت LIMORA في قلب المملكة — من رؤية بسيطة: المرأة السعودية تستحق مكملات تجميلية بمستوى فندقي، لا منتجات عادية.",
-    "Collagen Glow، Hair Revive، Detox Cleanse — ثلاث تركيبات فاخرة تشكّل نظام جمال متكامل من الداخل.",
+    "Collagen Glow، Hair Revive، Feminine Balance — ثلاث تركيبات فاخرة تشكّل نظام جمال متكامل من الداخل.",
     "LIMORA ليست مجرد علامة — بل وعد. وعد بأن كل امرأة تستحق أن تتوهج… من الداخل.",
   ],
   values: [
@@ -308,7 +308,7 @@ export const about = {
 
 export const footer = {
   tagline:
-    "العلامة الأولى لمكملات التجميل الفاخرة في المملكة — Collagen Glow، Hair Revive، Detox Cleanse.",
+    "العلامة الأولى لمكملات التجميل الفاخرة في المملكة — Collagen Glow، Hair Revive، Feminine Balance.",
   location: "الرياض - المملكة العربية السعودية",
   quickLinks: [
     { href: "/about", label: "من نحن" },

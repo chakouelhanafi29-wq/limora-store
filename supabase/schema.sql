@@ -426,13 +426,13 @@ values
     '✨ عرض قطعتين بـ 349 ر.س + شحن مجاني'
   ),
   (
-    'detox-cleanse',
-    'LIMORA Detox Cleanse',
-    'LIMORA Detox Cleanse',
-    'دعم يومي للتخلص من السموم والانتفاخ — لبطن مسطح وتوازن داخلي',
-    'خليط أخضر + بريبيوتيك + ألياف + إنزيمات + فيتامينات — للتخلص من السموم وتقليل الانتفاخ.',
+    'feminine-balance',
+    'LIMORA Feminine Balance',
+    'LIMORA Feminine Balance',
+    'دعم يومي للتوازن الأنثوي والانتعاش — لثقة وراحة كل يوم',
+    'بريبيوتيك + بروبيوتيك + Cranberry + فيتامين C + مستخلصات طبيعية — عناية أنثوية يومية فاخرة.',
     229, 299, 'حصري', true, 3,
-    '["تنظيف الجسم بلطف","تقليل الانتفاخ","تحسين الهضم","خليط أخضر + بريبيوتيك"]'::jsonb,
+    '["دعم يومي للتوازن الأنثوي","انتعاش وثقة طوال اليوم","عناية أنثوية لطيفة وفاخرة","بريبيوتيك + بروبيوتيك + Cranberry"]'::jsonb,
     '✨ عرض قطعتين بـ 329 ر.س + شحن مجاني'
   )
 on conflict (slug) do nothing;
@@ -445,7 +445,7 @@ cross join (
     ('collagen-glow', '/products/collagen-glow/hero.webp', 'products/collagen-glow/hero.webp', 1, true),
     ('collagen-glow', '/products/collagen-glow/01-before-after-hero.webp', 'products/collagen-glow/01-before-after-hero.webp', 2, false),
     ('hair-revive', '/products/hair-revive/hero.webp', 'products/hair-revive/hero.webp', 1, true),
-    ('detox-cleanse', '/products/detox-cleanse/hero.webp', 'products/detox-cleanse/hero.webp', 1, true)
+    ('feminine-balance', '/products/feminine-balance/hero.webp', 'products/feminine-balance/hero.webp', 1, true)
 ) as v(slug, url, storage_path, sort_order, is_primary)
 where p.slug = v.slug
 and not exists (
@@ -463,9 +463,9 @@ cross join (
     ('hair-revive', 'قطعة واحدة', 'عرض قطعة واحدة', 1, 249, null::text, false, 1),
     ('hair-revive', 'قطعتان', 'عرض قطعتين', 2, 349, 'الأكثر طلباً', true, 2),
     ('hair-revive', '3 قطع', 'عرض 3 قطع', 3, 449, 'أفضل قيمة', false, 3),
-    ('detox-cleanse', 'قطعة واحدة', 'عرض قطعة واحدة', 1, 229, null::text, false, 1),
-    ('detox-cleanse', 'قطعتان', 'عرض قطعتين', 2, 329, 'الأكثر طلباً', true, 2),
-    ('detox-cleanse', '3 قطع', 'عرض 3 قطع', 3, 429, 'أفضل قيمة', false, 3)
+    ('feminine-balance', 'قطعة واحدة', 'عرض قطعة واحدة', 1, 229, null::text, false, 1),
+    ('feminine-balance', 'قطعتان', 'عرض قطعتين', 2, 329, 'الأكثر طلباً', true, 2),
+    ('feminine-balance', '3 قطع', 'عرض 3 قطع', 3, 429, 'أفضل قيمة', false, 3)
 ) as v(slug, label, display_label, quantity, price, badge, is_recommended, sort_order)
 where p.slug = v.slug
 and not exists (
@@ -478,6 +478,6 @@ insert into reviews (customer_name, location, product_label, rating, content, im
 select * from (values
   ('نورة العتيبي', 'الرياض', 'LIMORA Collagen Glow', 5, 'Collagen Glow غيّر بشرتي فعلاً. الإشراقة ظهرت خلال أسبوعين — اليوم أخرج بدون تغطية كثيرة.', '/reviews/noura-alotaibi.webp', 1),
   ('فاطمة الدوسري', 'جدة', 'LIMORA Hair Revive', 5, 'تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.', '/reviews/fatima-aldosari.webp', 2),
-  ('مريم القحطاني', 'الدمام', 'LIMORA Detox Cleanse', 5, 'Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. المجموعة الثلاثية صارت روتيني الكامل.', '/reviews/maryam-alqahtani.webp', 3)
+  ('مريم القحطاني', 'الدمام', 'LIMORA Feminine Balance', 5, 'Feminine Balance هو اللي كنت أدور عليه — انتعاش يومي وثقة في كل لحظة. المجموعة الثلاثية صارت روتيني الكامل.', '/reviews/maryam-alqahtani.webp', 3)
 ) as seed(customer_name, location, product_label, rating, content, image_url, sort_order)
 where not exists (select 1 from reviews limit 1);

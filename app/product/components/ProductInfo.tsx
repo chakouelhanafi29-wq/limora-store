@@ -1,6 +1,3 @@
-import {
-  PRODUCT_PAGE_TITLE_CLASS,
-} from "@/lib/page-builder/product-page-theme";
 import type { StorefrontProduct } from "@/lib/storefront";
 
 type Props = {
@@ -44,7 +41,7 @@ export default function ProductInfo({ product }: Props) {
       >
         {product.nameEn}
       </p>
-      <h1 className={`mb-2 ${PRODUCT_PAGE_TITLE_CLASS}`}>
+      <h1 className="mb-2 font-serif text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl">
         {product.name}
       </h1>
       <p className="mb-4 text-lg font-medium text-rose-gold">{product.subtitle}</p>

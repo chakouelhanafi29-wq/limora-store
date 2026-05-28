@@ -6,6 +6,15 @@ const supabaseHost = getSupabaseStorageHost();
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
+  async redirects() {
+    return [
+      {
+        source: "/product/detox-cleanse",
+        destination: "/product/feminine-balance",
+        permanent: true,
+      },
+    ];
+  },
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 60 * 60 * 24 * 30,

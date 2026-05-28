@@ -36,7 +36,7 @@ set product_id = p.id
 from products p
 where ppc.product_id is null
   and ppc.slug = p.slug
-  and p.slug in ('collagen-glow', 'hair-revive', 'detox-cleanse');
+  and p.slug in ('collagen-glow', 'hair-revive', 'feminine-balance');
 
 -- Refresh PostgREST schema cache (Supabase)
 notify pgrst, 'reload schema';

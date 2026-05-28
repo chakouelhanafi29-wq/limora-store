@@ -1,11 +1,11 @@
-import {
-  DETOX_CLEANSE_PRIMARY_IMAGE,
+﻿import {
   HAIR_REVIVE_PRIMARY_IMAGE,
   OFFICIAL_PRODUCT_SLUGS,
   type OfficialProductSlug,
 } from "@/lib/product-images";
 import { REVIEW_AVATARS } from "@/lib/review-images";
 import { buildStaticTemplateConfig as buildCollagenTemplate } from "@/lib/page-builder/section-templates";
+import { feminineBalanceConfig } from "@/lib/products/feminine-balance-config";
 import type { PageSection, ProductPageConfig } from "@/lib/page-builder/types";
 
 export { OFFICIAL_PRODUCT_SLUGS, type OfficialProductSlug };
@@ -30,71 +30,71 @@ const hairSections = (sections: PageSection[]) =>
       patchSection(
         patchSection(sections, "problem_solution", {
           label: "HAIR CONCERNS",
-          title: "هل تعانين من هذه المشاكل؟",
+          title: "Ù‡Ù„ ØªØ¹Ø§Ù†ÙŠÙ† Ù…Ù† Ù‡Ø°Ù‡ Ø§Ù„Ù…Ø´Ø§ÙƒÙ„ØŸ",
           problems: [
             {
-              icon: "💇‍♀️",
-              title: "تساقط الشعر",
-              description: "خصلات تتساقط يومياً… وتقلق يزداد.",
+              icon: "ðŸ’‡â€â™€ï¸",
+              title: "ØªØ³Ø§Ù‚Ø· Ø§Ù„Ø´Ø¹Ø±",
+              description: "Ø®ØµÙ„Ø§Øª ØªØªØ³Ø§Ù‚Ø· ÙŠÙˆÙ…ÙŠØ§Ù‹â€¦ ÙˆØªÙ‚Ù„Ù‚ ÙŠØ²Ø¯Ø§Ø¯.",
               image: "",
             },
             {
-              icon: "😔",
-              title: "شعر خفيف",
-              description: "كثافة تقل… والمظهر يفقد حيويته.",
+              icon: "ðŸ˜”",
+              title: "Ø´Ø¹Ø± Ø®ÙÙŠÙ",
+              description: "ÙƒØ«Ø§ÙØ© ØªÙ‚Ù„â€¦ ÙˆØ§Ù„Ù…Ø¸Ù‡Ø± ÙŠÙÙ‚Ø¯ Ø­ÙŠÙˆÙŠØªÙ‡.",
               image: "",
             },
             {
-              icon: "💔",
-              title: "شعر ضعيف",
-              description: "يتكسر بسهولة… ولا يتحمل التصفيف.",
+              icon: "ðŸ’”",
+              title: "Ø´Ø¹Ø± Ø¶Ø¹ÙŠÙ",
+              description: "ÙŠØªÙƒØ³Ø± Ø¨Ø³Ù‡ÙˆÙ„Ø©â€¦ ÙˆÙ„Ø§ ÙŠØªØ­Ù…Ù„ Ø§Ù„ØªØµÙÙŠÙ.",
               image: "",
             },
             {
-              icon: "⏳",
-              title: "بطء النمو",
-              description: "شعركِ لا ينمو بالسرعة التي تستحقينها.",
+              icon: "â³",
+              title: "Ø¨Ø·Ø¡ Ø§Ù„Ù†Ù…Ùˆ",
+              description: "Ø´Ø¹Ø±ÙƒÙ Ù„Ø§ ÙŠÙ†Ù…Ùˆ Ø¨Ø§Ù„Ø³Ø±Ø¹Ø© Ø§Ù„ØªÙŠ ØªØ³ØªØ­Ù‚ÙŠÙ†Ù‡Ø§.",
               image: "",
             },
           ],
           solution: {
-            title: "LIMORA Hair Revive — نمو وتقوية من الداخل",
+            title: "LIMORA Hair Revive â€” Ù†Ù…Ùˆ ÙˆØªÙ‚ÙˆÙŠØ© Ù…Ù† Ø§Ù„Ø¯Ø§Ø®Ù„",
             description:
-              "كولاجين + بيوتين + كيراتين + زنك + سيليكا + فيتامين E — تركيبة لنمو الشعر وتقويته.",
+              "ÙƒÙˆÙ„Ø§Ø¬ÙŠÙ† + Ø¨ÙŠÙˆØªÙŠÙ† + ÙƒÙŠØ±Ø§ØªÙŠÙ† + Ø²Ù†Ùƒ + Ø³ÙŠÙ„ÙŠÙƒØ§ + ÙÙŠØªØ§Ù…ÙŠÙ† E â€” ØªØ±ÙƒÙŠØ¨Ø© Ù„Ù†Ù…Ùˆ Ø§Ù„Ø´Ø¹Ø± ÙˆØªÙ‚ÙˆÙŠØªÙ‡.",
             highlights: [
-              "تحفيز نمو الشعر من الجذور",
-              "شعر أقوى وأقل تساقطاً",
-              "كثافة ولمعان طبيعي",
+              "ØªØ­ÙÙŠØ² Ù†Ù…Ùˆ Ø§Ù„Ø´Ø¹Ø± Ù…Ù† Ø§Ù„Ø¬Ø°ÙˆØ±",
+              "Ø´Ø¹Ø± Ø£Ù‚ÙˆÙ‰ ÙˆØ£Ù‚Ù„ ØªØ³Ø§Ù‚Ø·Ø§Ù‹",
+              "ÙƒØ«Ø§ÙØ© ÙˆÙ„Ù…Ø¹Ø§Ù† Ø·Ø¨ÙŠØ¹ÙŠ",
             ],
             image: "/products/hair-revive/hero.webp",
-            caption: "شعر أقوى… وثقة تعود مع كل يوم 💫",
+            caption: "Ø´Ø¹Ø± Ø£Ù‚ÙˆÙ‰â€¦ ÙˆØ«Ù‚Ø© ØªØ¹ÙˆØ¯ Ù…Ø¹ ÙƒÙ„ ÙŠÙˆÙ… ðŸ’«",
           },
         }),
         "benefits",
         {
           label: "YOUR HAIR",
-          title: "ما الذي ستحصلين عليه؟",
-          subtitle: "LIMORA Hair Revive — لشعر أكثر كثافة، قوة وصحة.",
+          title: "Ù…Ø§ Ø§Ù„Ø°ÙŠ Ø³ØªØ­ØµÙ„ÙŠÙ† Ø¹Ù„ÙŠÙ‡ØŸ",
+          subtitle: "LIMORA Hair Revive â€” Ù„Ø´Ø¹Ø± Ø£ÙƒØ«Ø± ÙƒØ«Ø§ÙØ©ØŒ Ù‚ÙˆØ© ÙˆØµØ­Ø©.",
           items: [
             {
-              icon: "🌿",
-              title: "تحفيز نمو الشعر",
-              description: "من الجذور… نتائج تُلاحظ مع الاستمرار",
+              icon: "ðŸŒ¿",
+              title: "ØªØ­ÙÙŠØ² Ù†Ù…Ùˆ Ø§Ù„Ø´Ø¹Ø±",
+              description: "Ù…Ù† Ø§Ù„Ø¬Ø°ÙˆØ±â€¦ Ù†ØªØ§Ø¦Ø¬ ØªÙÙ„Ø§Ø­Ø¸ Ù…Ø¹ Ø§Ù„Ø§Ø³ØªÙ…Ø±Ø§Ø±",
             },
             {
-              icon: "💪",
-              title: "شعر أقوى",
-              description: "كيراتين وكولاجين لتقوية الخصلات",
+              icon: "ðŸ’ª",
+              title: "Ø´Ø¹Ø± Ø£Ù‚ÙˆÙ‰",
+              description: "ÙƒÙŠØ±Ø§ØªÙŠÙ† ÙˆÙƒÙˆÙ„Ø§Ø¬ÙŠÙ† Ù„ØªÙ‚ÙˆÙŠØ© Ø§Ù„Ø®ØµÙ„Ø§Øª",
             },
             {
-              icon: "✨",
-              title: "تقليل التساقط",
-              description: "بيوتين وزنك لدعم صحة الشعر",
+              icon: "âœ¨",
+              title: "ØªÙ‚Ù„ÙŠÙ„ Ø§Ù„ØªØ³Ø§Ù‚Ø·",
+              description: "Ø¨ÙŠÙˆØªÙŠÙ† ÙˆØ²Ù†Ùƒ Ù„Ø¯Ø¹Ù… ØµØ­Ø© Ø§Ù„Ø´Ø¹Ø±",
             },
             {
-              icon: "👑",
-              title: "كثافة ولمعان",
-              description: "مظهر حيوي… بثقة أنثوية",
+              icon: "ðŸ‘‘",
+              title: "ÙƒØ«Ø§ÙØ© ÙˆÙ„Ù…Ø¹Ø§Ù†",
+              description: "Ù…Ø¸Ù‡Ø± Ø­ÙŠÙˆÙŠâ€¦ Ø¨Ø«Ù‚Ø© Ø£Ù†Ø«ÙˆÙŠØ©",
             },
           ],
         },
@@ -102,173 +102,48 @@ const hairSections = (sections: PageSection[]) =>
       "comparison",
       {
         label: "WHY LIMORA",
-        title: "LIMORA vs المنتجات العادية الأخرى",
-        subtitle: "تركيبة نمو وتقوية… بمعايير أعلى وبثقة هادئة.",
+        title: "LIMORA vs Ø§Ù„Ù…Ù†ØªØ¬Ø§Øª Ø§Ù„Ø¹Ø§Ø¯ÙŠØ© Ø§Ù„Ø£Ø®Ø±Ù‰",
+        subtitle: "ØªØ±ÙƒÙŠØ¨Ø© Ù†Ù…Ùˆ ÙˆØªÙ‚ÙˆÙŠØ©â€¦ Ø¨Ù…Ø¹Ø§ÙŠÙŠØ± Ø£Ø¹Ù„Ù‰ ÙˆØ¨Ø«Ù‚Ø© Ù‡Ø§Ø¯Ø¦Ø©.",
         rows: [
-          { feature: "كولاجين + بيوتين + كيراتين", limora: true, others: false },
-          { feature: "زنك + سيليكا + فيتامين E", limora: true, others: false },
-          { feature: "سهل الاستخدام يومياً", limora: true, others: false },
-          { feature: "نتائج تُلاحظ خلال أسابيع", limora: true, others: false },
+          { feature: "ÙƒÙˆÙ„Ø§Ø¬ÙŠÙ† + Ø¨ÙŠÙˆØªÙŠÙ† + ÙƒÙŠØ±Ø§ØªÙŠÙ†", limora: true, others: false },
+          { feature: "Ø²Ù†Ùƒ + Ø³ÙŠÙ„ÙŠÙƒØ§ + ÙÙŠØªØ§Ù…ÙŠÙ† E", limora: true, others: false },
+          { feature: "Ø³Ù‡Ù„ Ø§Ù„Ø§Ø³ØªØ®Ø¯Ø§Ù… ÙŠÙˆÙ…ÙŠØ§Ù‹", limora: true, others: false },
+          { feature: "Ù†ØªØ§Ø¦Ø¬ ØªÙÙ„Ø§Ø­Ø¸ Ø®Ù„Ø§Ù„ Ø£Ø³Ø§Ø¨ÙŠØ¹", limora: true, others: false },
         ],
       },
     ),
     "reviews",
     {
       label: "CUSTOMER LOVE",
-      title: "آراء عميلات Hair Revive",
+      title: "Ø¢Ø±Ø§Ø¡ Ø¹Ù…ÙŠÙ„Ø§Øª Hair Revive",
       items: [
         {
-          name: "ريم الشمري",
-          location: "جدة",
+          name: "Ø±ÙŠÙ… Ø§Ù„Ø´Ù…Ø±ÙŠ",
+          location: "Ø¬Ø¯Ø©",
           rating: 5,
-          text: "تساقط شعري كان يقلقني. Hair Revive خلّاني أشوف كثافة حقيقية خلال شهر — والدفع عند الاستلام خلّاني أجرب بدون تردد.",
+          text: "ØªØ³Ø§Ù‚Ø· Ø´Ø¹Ø±ÙŠ ÙƒØ§Ù† ÙŠÙ‚Ù„Ù‚Ù†ÙŠ. Hair Revive Ø®Ù„Ù‘Ø§Ù†ÙŠ Ø£Ø´ÙˆÙ ÙƒØ«Ø§ÙØ© Ø­Ù‚ÙŠÙ‚ÙŠØ© Ø®Ù„Ø§Ù„ Ø´Ù‡Ø± â€” ÙˆØ§Ù„Ø¯ÙØ¹ Ø¹Ù†Ø¯ Ø§Ù„Ø§Ø³ØªÙ„Ø§Ù… Ø®Ù„Ù‘Ø§Ù†ÙŠ Ø£Ø¬Ø±Ø¨ Ø¨Ø¯ÙˆÙ† ØªØ±Ø¯Ø¯.",
           image: REVIEW_AVATARS.reem,
         },
         {
-          name: "هند الزهراني",
-          location: "مكة",
+          name: "Ù‡Ù†Ø¯ Ø§Ù„Ø²Ù‡Ø±Ø§Ù†ÙŠ",
+          location: "Ù…ÙƒØ©",
           rating: 5,
-          text: "شعري صار أقوى وأقل تساقطاً. الذوبان سهل — أضيفه لسموثي كل صباح.",
+          text: "Ø´Ø¹Ø±ÙŠ ØµØ§Ø± Ø£Ù‚ÙˆÙ‰ ÙˆØ£Ù‚Ù„ ØªØ³Ø§Ù‚Ø·Ø§Ù‹. Ø§Ù„Ø°ÙˆØ¨Ø§Ù† Ø³Ù‡Ù„ â€” Ø£Ø¶ÙŠÙÙ‡ Ù„Ø³Ù…ÙˆØ«ÙŠ ÙƒÙ„ ØµØ¨Ø§Ø­.",
           image: REVIEW_AVATARS.hind,
         },
         {
-          name: "سارة الحربي",
-          location: "جدة",
+          name: "Ø³Ø§Ø±Ø© Ø§Ù„Ø­Ø±Ø¨ÙŠ",
+          location: "Ø¬Ø¯Ø©",
           rating: 5,
-          text: "Hair Revive أعطاني كثافة ولمعان — فرق واضح خلال 3 أسابيع.",
+          text: "Hair Revive Ø£Ø¹Ø·Ø§Ù†ÙŠ ÙƒØ«Ø§ÙØ© ÙˆÙ„Ù…Ø¹Ø§Ù† â€” ÙØ±Ù‚ ÙˆØ§Ø¶Ø­ Ø®Ù„Ø§Ù„ 3 Ø£Ø³Ø§Ø¨ÙŠØ¹.",
           image: REVIEW_AVATARS.sara,
         },
         {
-          name: "لمى الشمري",
-          location: "الدمام",
+          name: "Ù„Ù…Ù‰ Ø§Ù„Ø´Ù…Ø±ÙŠ",
+          location: "Ø§Ù„Ø¯Ù…Ø§Ù…",
           rating: 5,
-          text: "كنت أبحث عن حل للتساقط — هذا المنتج فعلاً ساعدني. COD خلّاني أجرب بثقة.",
+          text: "ÙƒÙ†Øª Ø£Ø¨Ø­Ø« Ø¹Ù† Ø­Ù„ Ù„Ù„ØªØ³Ø§Ù‚Ø· â€” Ù‡Ø°Ø§ Ø§Ù„Ù…Ù†ØªØ¬ ÙØ¹Ù„Ø§Ù‹ Ø³Ø§Ø¹Ø¯Ù†ÙŠ. COD Ø®Ù„Ù‘Ø§Ù†ÙŠ Ø£Ø¬Ø±Ø¨ Ø¨Ø«Ù‚Ø©.",
           image: REVIEW_AVATARS.lama,
-        },
-      ],
-    },
-  );
-
-const detoxSections = (sections: PageSection[]) =>
-  patchSection(
-    patchSection(
-      patchSection(
-        patchSection(sections, "problem_solution", {
-          label: "WELLNESS CONCERNS",
-          title: "هل تعانين من هذه المشاكل؟",
-          problems: [
-            {
-              icon: "🫧",
-              title: "الانتفاخ",
-              description: "ثقل بعد الوجبات… وبطن غير مريح.",
-              image: "",
-            },
-            {
-              icon: "😣",
-              title: "بطء الهضم",
-              description: "شعور بالثقل… وعدم راحة يومية.",
-              image: "",
-            },
-            {
-              icon: "⚖️",
-              title: "عدم التوازن",
-              description: "جسمكِ يحتاج تنظيفاً لطيفاً من الداخل.",
-              image: "",
-            },
-            {
-              icon: "😴",
-              title: "تعب داخلي",
-              description: "طاقة أقل… وشعور بعدم الخفة.",
-              image: "",
-            },
-          ],
-          solution: {
-            title: "LIMORA Detox Cleanse — توازن من الداخل",
-            description:
-              "خليط أخضر + بريبيوتيك + ألياف + إنزيمات + فيتامينات — دعم يومي للتخلص من السموم والانتفاخ.",
-            highlights: [
-              "تنظيف الجسم بلطف",
-              "تقليل الانتفاخ",
-              "تحسين الهضم والتوازن",
-            ],
-            image: "/products/detox-cleanse/hero.webp",
-            caption: "خفة داخلية… وتوازن يعود من جديد 🌿",
-          },
-        }),
-        "benefits",
-        {
-          label: "YOUR BALANCE",
-          title: "ما الذي ستحصلين عليه؟",
-          subtitle: "LIMORA Detox Cleanse — لبطن مسطح وتوازن داخلي.",
-          items: [
-            {
-              icon: "🍃",
-              title: "تنظيف الجسم",
-              description: "خليط أخضر فاخر… بلطف يومي",
-            },
-            {
-              icon: "💫",
-              title: "تقليل الانتفاخ",
-              description: "ألياف وبريبيوتيك لراحة أفضل",
-            },
-            {
-              icon: "🌸",
-              title: "تحسين الهضم",
-              description: "إنزيمات لفوائد يومية ملموسة",
-            },
-            {
-              icon: "✨",
-              title: "توازن داخلي",
-              description: "خفّفي… توازني… أشرقي",
-            },
-          ],
-        },
-      ),
-      "comparison",
-      {
-        label: "WHY LIMORA",
-        title: "LIMORA vs المنتجات العادية الأخرى",
-        subtitle: "تركيبة تنظيف وتوازن… بمعايير أعلى وبثقة أنثوية.",
-        rows: [
-          { feature: "خليط أخضر + بريبيوتيك", limora: true, others: false },
-          { feature: "ألياف + إنزيمات + فيتامينات", limora: true, others: false },
-          { feature: "دعم يومي لطيف", limora: true, others: false },
-          { feature: "نتائج تُحسّينها تدريجياً", limora: true, others: false },
-        ],
-      },
-    ),
-    "reviews",
-    {
-      label: "CUSTOMER LOVE",
-      title: "آراء عميلات Detox Cleanse",
-      items: [
-        {
-          name: "مريم القحطاني",
-          location: "الدمام",
-          rating: 5,
-          text: "Detox Cleanse هو اللي كنت أدور عليه — بطن أخف وتوازن يومي. أحس بخفة من الأسبوع الأول.",
-          image: REVIEW_AVATARS.maryam,
-        },
-        {
-          name: "دانة المطيري",
-          location: "الطائف",
-          rating: 5,
-          text: "الانتفاخ بعد الوجبات قل كثير. المذاق لطيف والاستخدام سهل — صار جزء من روتيني.",
-          image: REVIEW_AVATARS.dana,
-        },
-        {
-          name: "نورة العتيبي",
-          location: "الرياض",
-          rating: 5,
-          text: "Detox Cleanse ساعدني أحس بخفّة يومية — بطن أهدأ وتوازن أفضل.",
-          image: REVIEW_AVATARS.noura,
-        },
-        {
-          name: "فاطمة الدوسري",
-          location: "الرياض",
-          rating: 5,
-          text: "منتج أنيق وسهل — أحس بفرق في الهضم والانتفاخ من الأسبوع الثاني.",
-          image: REVIEW_AVATARS.fatima,
         },
       ],
     },
@@ -283,26 +158,26 @@ const hairReviveConfig = (): ProductPageConfig => {
     hero: {
       nameAr: "LIMORA Hair Revive",
       nameEn: "LIMORA Hair Revive",
-      subtitle: "تركيبة لنمو الشعر وتقويته — لشعر أكثر كثافة، قوة وصحة",
-      emotionalHook: "شعركِ يستحق أن يُروى… من الداخل",
+      subtitle: "ØªØ±ÙƒÙŠØ¨Ø© Ù„Ù†Ù…Ùˆ Ø§Ù„Ø´Ø¹Ø± ÙˆØªÙ‚ÙˆÙŠØªÙ‡ â€” Ù„Ø´Ø¹Ø± Ø£ÙƒØ«Ø± ÙƒØ«Ø§ÙØ©ØŒ Ù‚ÙˆØ© ÙˆØµØ­Ø©",
+      emotionalHook: "Ø´Ø¹Ø±ÙƒÙ ÙŠØ³ØªØ­Ù‚ Ø£Ù† ÙŠÙØ±ÙˆÙ‰â€¦ Ù…Ù† Ø§Ù„Ø¯Ø§Ø®Ù„",
       rating: 4.9,
       reviewCount: 2180,
       bullets: [
-        "تحفيز نمو الشعر من الجذور",
-        "شعر أقوى وأقل تساقطاً",
-        "كثافة ولمعان طبيعي",
-        "كولاجين + بيوتين + كيراتين + زنك",
+        "ØªØ­ÙÙŠØ² Ù†Ù…Ùˆ Ø§Ù„Ø´Ø¹Ø± Ù…Ù† Ø§Ù„Ø¬Ø°ÙˆØ±",
+        "Ø´Ø¹Ø± Ø£Ù‚ÙˆÙ‰ ÙˆØ£Ù‚Ù„ ØªØ³Ø§Ù‚Ø·Ø§Ù‹",
+        "ÙƒØ«Ø§ÙØ© ÙˆÙ„Ù…Ø¹Ø§Ù† Ø·Ø¨ÙŠØ¹ÙŠ",
+        "ÙƒÙˆÙ„Ø§Ø¬ÙŠÙ† + Ø¨ÙŠÙˆØªÙŠÙ† + ÙƒÙŠØ±Ø§ØªÙŠÙ† + Ø²Ù†Ùƒ",
       ],
-      urgency: "✨ الأكثر طلباً — عرض قطعتين بـ 349 ر.س + شحن مجاني",
+      urgency: "âœ¨ Ø§Ù„Ø£ÙƒØ«Ø± Ø·Ù„Ø¨Ø§Ù‹ â€” Ø¹Ø±Ø¶ Ù‚Ø·Ø¹ØªÙŠÙ† Ø¨Ù€ 349 Ø±.Ø³ + Ø´Ø­Ù† Ù…Ø¬Ø§Ù†ÙŠ",
       images: [HAIR_REVIVE_PRIMARY_IMAGE],
-      codTrust: ["شحن سريع", "دفع عند الاستلام", "ضمان الجودة", "حلال"],
-      ctaLabel: "أطلب الآن الدفع عند الاستلام",
+      codTrust: ["Ø´Ø­Ù† Ø³Ø±ÙŠØ¹", "Ø¯ÙØ¹ Ø¹Ù†Ø¯ Ø§Ù„Ø§Ø³ØªÙ„Ø§Ù…", "Ø¶Ù…Ø§Ù† Ø§Ù„Ø¬ÙˆØ¯Ø©", "Ø­Ù„Ø§Ù„"],
+      ctaLabel: "Ø£Ø·Ù„Ø¨ Ø§Ù„Ø¢Ù† Ø§Ù„Ø¯ÙØ¹ Ø¹Ù†Ø¯ Ø§Ù„Ø§Ø³ØªÙ„Ø§Ù…",
     },
     offers: [
       {
         id: "1",
-        label: "قطعة واحدة",
-        displayLabel: "عرض قطعة واحدة",
+        label: "Ù‚Ø·Ø¹Ø© ÙˆØ§Ø­Ø¯Ø©",
+        displayLabel: "Ø¹Ø±Ø¶ Ù‚Ø·Ø¹Ø© ÙˆØ§Ø­Ø¯Ø©",
         quantity: 1,
         price: 249,
         badge: null,
@@ -311,21 +186,21 @@ const hairReviveConfig = (): ProductPageConfig => {
       },
       {
         id: "2",
-        label: "قطعتان",
-        displayLabel: "عرض قطعتين",
+        label: "Ù‚Ø·Ø¹ØªØ§Ù†",
+        displayLabel: "Ø¹Ø±Ø¶ Ù‚Ø·Ø¹ØªÙŠÙ†",
         quantity: 2,
         price: 349,
-        badge: "الأكثر طلباً",
+        badge: "Ø§Ù„Ø£ÙƒØ«Ø± Ø·Ù„Ø¨Ø§Ù‹",
         recommended: true,
         savingsText: null,
       },
       {
         id: "3",
-        label: "3 قطع",
-        displayLabel: "عرض 3 قطع",
+        label: "3 Ù‚Ø·Ø¹",
+        displayLabel: "Ø¹Ø±Ø¶ 3 Ù‚Ø·Ø¹",
         quantity: 3,
         price: 449,
-        badge: "أفضل قيمة",
+        badge: "Ø£ÙØ¶Ù„ Ù‚ÙŠÙ…Ø©",
         recommended: false,
         savingsText: null,
       },
@@ -333,9 +208,9 @@ const hairReviveConfig = (): ProductPageConfig => {
     stickyBar: {
       enabled: true,
       messages: [
-        "LIMORA Hair Revive — نمو وتقوية من الداخل",
-        "شحن مجاني + الدفع عند الاستلام",
-        "نتائج تُلاحظ خلال أسابيع",
+        "LIMORA Hair Revive â€” Ù†Ù…Ùˆ ÙˆØªÙ‚ÙˆÙŠØ© Ù…Ù† Ø§Ù„Ø¯Ø§Ø®Ù„",
+        "Ø´Ø­Ù† Ù…Ø¬Ø§Ù†ÙŠ + Ø§Ù„Ø¯ÙØ¹ Ø¹Ù†Ø¯ Ø§Ù„Ø§Ø³ØªÙ„Ø§Ù…",
+        "Ù†ØªØ§Ø¦Ø¬ ØªÙÙ„Ø§Ø­Ø¸ Ø®Ù„Ø§Ù„ Ø£Ø³Ø§Ø¨ÙŠØ¹",
       ],
     },
     theme: {
@@ -348,89 +223,17 @@ const hairReviveConfig = (): ProductPageConfig => {
   };
 };
 
-const detoxCleanseConfig = (): ProductPageConfig => {
-  const base = buildCollagenTemplate("detox-cleanse");
-  return {
-    ...base,
-    slug: "detox-cleanse",
-    sections: detoxSections(base.sections),
-    hero: {
-      nameAr: "LIMORA Detox Cleanse",
-      nameEn: "LIMORA Detox Cleanse",
-      subtitle: "دعم يومي للتخلص من السموم والانتفاخ — لبطن مسطح وتوازن داخلي",
-      emotionalHook: "خفّفي… توازني… أشرقي من الداخل",
-      rating: 4.8,
-      reviewCount: 1840,
-      bullets: [
-        "تنظيف الجسم بلطف يومياً",
-        "تقليل الانتفاخ والثقل",
-        "تحسين الهضم والتوازن الداخلي",
-        "خليط أخضر + بريبيوتيك + ألياف",
-      ],
-      urgency: "✨ عرض قطعتين بـ 329 ر.س — شحن مجاني + COD",
-      images: [DETOX_CLEANSE_PRIMARY_IMAGE],
-      codTrust: ["شحن سريع", "دفع عند الاستلام", "ضمان الجودة", "حلال"],
-      ctaLabel: "أطلب الآن الدفع عند الاستلام",
-    },
-    offers: [
-      {
-        id: "1",
-        label: "قطعة واحدة",
-        displayLabel: "عرض قطعة واحدة",
-        quantity: 1,
-        price: 229,
-        badge: null,
-        recommended: false,
-        savingsText: null,
-      },
-      {
-        id: "2",
-        label: "قطعتان",
-        displayLabel: "عرض قطعتين",
-        quantity: 2,
-        price: 329,
-        badge: "الأكثر طلباً",
-        recommended: true,
-        savingsText: null,
-      },
-      {
-        id: "3",
-        label: "3 قطع",
-        displayLabel: "عرض 3 قطع",
-        quantity: 3,
-        price: 429,
-        badge: "أفضل قيمة",
-        recommended: false,
-        savingsText: null,
-      },
-    ],
-    stickyBar: {
-      enabled: true,
-      messages: [
-        "LIMORA Detox Cleanse — توازن من الداخل",
-        "شحن مجاني + الدفع عند الاستلام",
-        "خفّفي واشعري بالفرق",
-      ],
-    },
-    theme: {
-      accentColor: "#7A9B76",
-      buttonStyle: "rounded-full",
-      heroGradient: "soft",
-      sectionSpacing: "normal",
-      sectionBackground: "ivory",
-    },
-  };
-};
-
 export function getStaticProductPageConfig(slug: string): ProductPageConfig | null {
   if (slug === "collagen-glow" || slug === "glow") {
     return buildCollagenTemplate("collagen-glow");
   }
   if (slug === "hair-revive") return hairReviveConfig();
-  if (slug === "detox-cleanse") return detoxCleanseConfig();
+  if (slug === "feminine-balance") return feminineBalanceConfig();
   return null;
 }
 
 export function resolveProductSlug(slug: string): string {
-  return slug === "glow" ? "collagen-glow" : slug;
+  if (slug === "glow") return "collagen-glow";
+  if (slug === "detox-cleanse") return "feminine-balance";
+  return slug;
 }

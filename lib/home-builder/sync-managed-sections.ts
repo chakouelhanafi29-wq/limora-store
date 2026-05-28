@@ -12,14 +12,14 @@ import { isValidImageSrc } from "./image-utils";
 import type { HomePageConfig, HomeSection } from "./types";
 
 /** Bump when managed homepage section content changes in code. */
-export const HOME_MANAGED_CONTENT_REVISION = 4;
+export const HOME_MANAGED_CONTENT_REVISION = 5;
 
-export const HOME_BEFORE_AFTER_CONTENT_REVISION = 2;
+export const HOME_BEFORE_AFTER_CONTENT_REVISION = 3;
 
 const EXPECTED_TRANSFORMATION_IMAGES = [
   HOME_TRANSFORMATION_IMAGES.collagenGlow,
   HOME_TRANSFORMATION_IMAGES.hairRevive,
-  HOME_TRANSFORMATION_IMAGES.detoxCleanse,
+  HOME_TRANSFORMATION_IMAGES.feminineBalance,
 ] as const;
 
 function clone<T>(value: T): T {

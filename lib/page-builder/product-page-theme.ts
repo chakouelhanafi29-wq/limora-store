@@ -8,12 +8,12 @@ export function getProductPageSurfaceClass(theme: ProductPageTheme): string {
 }
 
 export const PRODUCT_SECTION_TITLE_CLASS =
-  "font-arabic-kufi text-heading font-bold text-3xl leading-tight sm:text-4xl";
+  "font-serif text-3xl font-semibold text-foreground sm:text-4xl";
 
 export const PRODUCT_SECTION_SUBTITLE_CLASS = "text-muted";
 
 export const PRODUCT_PAGE_TITLE_CLASS =
-  "font-arabic-kufi text-heading font-bold text-3xl leading-tight sm:text-4xl lg:text-5xl";
+  "font-serif text-3xl font-semibold text-foreground sm:text-4xl lg:text-5xl";
 
 export const PRODUCT_CARD_TITLE_CLASS =
   "font-arabic-kufi text-heading font-bold text-sm sm:text-base";
@@ -28,7 +28,7 @@ export const PRODUCT_CARD_TITLE_2XL_CLASS =
   "font-arabic-kufi text-heading font-bold text-2xl sm:text-3xl";
 
 export const PRODUCT_OFFER_TITLE_CLASS =
-  "font-arabic-kufi text-heading font-bold text-2xl";
+  "font-serif text-2xl font-semibold text-foreground";
 
 export const PRODUCT_PRICE_CLASS = "font-arabic-kufi text-heading font-bold";
 

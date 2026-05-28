@@ -19,7 +19,7 @@ declare
   "label": "REAL TRANSFORMATIONS",
   "title": "تحولٌ حقيقي… تستحقينه",
   "subtitle": "وراء كل إشراقة امرأة اختارت نفسها. LIMORA لا تغيّر مظهركِ فقط — بل تُعيد إليكِ ثقتكِ.",
-  "contentRevision": 2,
+  "contentRevision": 3,
   "transformations": [
     {
       "productName": "LIMORA Collagen Glow",
@@ -44,15 +44,15 @@ declare
       "accent": "gold"
     },
     {
-      "productName": "LIMORA Detox Cleanse",
-      "title": "توازن داخلي",
-      "emotionalLine": "توازن داخلي ينعكس على جمالك",
-      "description": "بطن أخف وتوازن يومي — تنظيف الجسم بلطف وتقليل الانتفاخ.",
-      "image": "/home/transformations/detox-cleanse.webp",
-      "stat": "21",
-      "statLabel": "يوماً لتحول ملموس",
-      "href": "/product/detox-cleanse",
-      "accent": "sage"
+      "productName": "LIMORA Feminine Balance",
+      "title": "عناية أنثوية يومية",
+      "emotionalLine": "انتعاش وثقة… كل يوم",
+      "description": "توازن أنثوي يومي — راحة، انتعاش، وثقة في كل لحظة.",
+      "image": "/home/transformations/feminine-balance.webp",
+      "stat": "90%",
+      "statLabel": "لاحظن راحة يومية أكبر",
+      "href": "/product/feminine-balance",
+      "accent": "rose"
     }
   ]
 }
@@ -72,9 +72,9 @@ begin
   for i in 0 .. jsonb_array_length(sections) - 1 loop
     elem := sections->i;
     if elem->>'type' = 'before_after' then
-      if coalesce((elem->'content'->>'contentRevision')::int, 1) < 2
-         or elem->'content'->'transformations'->0->>'image'
-            is distinct from '/home/transformations/collagen-glow.webp' then
+      if coalesce((elem->'content'->>'contentRevision')::int, 1) < 3
+         or elem->'content'->'transformations'->2->>'image'
+            is distinct from '/home/transformations/feminine-balance.webp' then
         elem := jsonb_set(elem, '{content}', managed_content, true);
         updated := true;
       end if;

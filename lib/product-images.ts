@@ -1,7 +1,7 @@
 export const OFFICIAL_PRODUCT_SLUGS = [
   "collagen-glow",
   "hair-revive",
-  "detox-cleanse",
+  "feminine-balance",
 ] as const;
 
 export type OfficialProductSlug = (typeof OFFICIAL_PRODUCT_SLUGS)[number];
@@ -13,16 +13,20 @@ export const COLLAGEN_GLOW_GALLERY = [
 
 export const HAIR_REVIVE_GALLERY = ["/products/hair-revive/hero.webp"] as const;
 
-export const DETOX_CLEANSE_GALLERY = ["/products/detox-cleanse/hero.webp"] as const;
+export const FEMININE_BALANCE_GALLERY = ["/products/feminine-balance/hero.webp"] as const;
 
 export const COLLAGEN_GLOW_PRIMARY_IMAGE = COLLAGEN_GLOW_GALLERY[0];
 export const HAIR_REVIVE_PRIMARY_IMAGE = HAIR_REVIVE_GALLERY[0];
-export const DETOX_CLEANSE_PRIMARY_IMAGE = DETOX_CLEANSE_GALLERY[0];
+export const FEMININE_BALANCE_PRIMARY_IMAGE = FEMININE_BALANCE_GALLERY[0];
+
+/** @deprecated Use FEMININE_BALANCE_PRIMARY_IMAGE */
+export const DETOX_CLEANSE_PRIMARY_IMAGE = FEMININE_BALANCE_PRIMARY_IMAGE;
 
 const GALLERY_BY_SLUG: Record<string, readonly string[]> = {
   "collagen-glow": COLLAGEN_GLOW_GALLERY,
   "hair-revive": HAIR_REVIVE_GALLERY,
-  "detox-cleanse": DETOX_CLEANSE_GALLERY,
+  "feminine-balance": FEMININE_BALANCE_GALLERY,
+  "detox-cleanse": FEMININE_BALANCE_GALLERY,
 };
 
 export type ProductImageRecord = {
@@ -32,7 +36,8 @@ export type ProductImageRecord = {
 };
 
 export function getProductGalleryBySlug(slug: string): string[] {
-  return [...(GALLERY_BY_SLUG[slug] ?? COLLAGEN_GLOW_GALLERY)];
+  const resolved = slug === "detox-cleanse" ? "feminine-balance" : slug;
+  return [...(GALLERY_BY_SLUG[resolved] ?? COLLAGEN_GLOW_GALLERY)];
 }
 
 export function getPrimaryImageBySlug(slug: string): string {

@@ -22,8 +22,8 @@ const images = [
   },
   {
     input:
-      "c__Users_J.P.M_AppData_Roaming_Cursor_User_workspaceStorage_3aeffe180bed59528f8aa7c711a24367_images_ChatGPT_Image_26______2026__04_03_15__-02eb4f09-c9c1-4b3b-bcd4-3c05f276a0f8.png",
-    output: "detox-cleanse.webp",
+      "c__Users_J.P.M_AppData_Roaming_Cursor_User_workspaceStorage_3aeffe180bed59528f8aa7c711a24367_images_limora_product-177aa94c-b91c-4696-b878-d61d17f53adf.png",
+    output: "feminine-balance.webp",
     width: 1200,
   },
 ];

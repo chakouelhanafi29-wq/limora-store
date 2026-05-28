@@ -37,7 +37,7 @@ function OrderButton({
     <button
       type="button"
       onClick={onOrder}
-      className={`${PRODUCT_CTA_BUTTON_BASE} w-full ${btnRadius} ${sizeClass}`}
+      className={`${PRODUCT_CTA_BUTTON_BASE} purchase-zone-cta-attention w-full ${btnRadius} ${sizeClass}`}
     >
       <span className="relative z-10">{ctaLabel}</span>
       <span className="relative z-10 mr-2 text-champagne-light">
