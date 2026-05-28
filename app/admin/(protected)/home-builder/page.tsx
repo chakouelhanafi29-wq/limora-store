@@ -1,23 +1,21 @@
 export const dynamic = "force-dynamic";
 
 import { ensureHomePageConfigSynced } from "@/lib/home-builder/queries";
-import { getActiveReviews, getFeaturedProducts, getOfficialProductsWithOffers } from "@/lib/supabase/queries";
-import { mapFeaturedProducts, mapHomeReviews } from "@/lib/storefront";
+import { getActiveReviews, getOfficialProductsWithOffers } from "@/lib/supabase/queries";
+import { mapHomeReviews } from "@/lib/storefront";
+import { buildHomepageFeaturedProductCards } from "@/lib/storefront/homepage-featured-products";
 import { applyDynamicHomePricing } from "@/lib/storefront/product-pricing";
 import { testimonials as staticTestimonials } from "@/app/lib/data";
 import HomeBuilder from "./HomeBuilder";
 
 export default async function HomeBuilderPage() {
-  const [config, featuredProducts, reviews, catalog] = await Promise.all([
+  const [config, reviews, catalog] = await Promise.all([
     ensureHomePageConfigSynced("home"),
-    getFeaturedProducts(),
     getActiveReviews(),
     getOfficialProductsWithOffers(),
   ]);
 
-  const products = mapFeaturedProducts(
-    featuredProducts.length ? featuredProducts : catalog,
-  );
+  const products = buildHomepageFeaturedProductCards(catalog);
   const syncedConfig = applyDynamicHomePricing(config, catalog);
   const dynamicReviews = mapHomeReviews(reviews);
   const testimonials = dynamicReviews.items.length

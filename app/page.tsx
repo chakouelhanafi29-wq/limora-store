@@ -8,13 +8,12 @@ import { getSiteConfig } from "@/lib/site/config";
 import { buildPageMetadata } from "@/lib/seo/metadata";
 import {
   getActiveReviews,
-  getFeaturedProducts,
   getOfficialProductsWithOffers,
 } from "@/lib/supabase/queries";
 import {
-  mapFeaturedProducts,
   mapHomeReviews,
 } from "@/lib/storefront";
+import { buildHomepageFeaturedProductCards } from "@/lib/storefront/homepage-featured-products";
 import { applyDynamicHomePricing } from "@/lib/storefront/product-pricing";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,16 +26,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [pageConfig, featuredProducts, reviews, catalog] = await Promise.all([
+  const [pageConfig, reviews, catalog] = await Promise.all([
     getHomePageConfig("home"),
-    getFeaturedProducts(),
     getActiveReviews(),
     getOfficialProductsWithOffers(),
   ]);
 
-  const products = mapFeaturedProducts(
-    featuredProducts.length ? featuredProducts : catalog,
-  );
+  const products = buildHomepageFeaturedProductCards(catalog);
   const config = applyDynamicHomePricing(pageConfig, catalog);
   const dynamicReviews = mapHomeReviews(reviews);
   const testimonials = dynamicReviews.items.length
