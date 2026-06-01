@@ -1,6 +1,6 @@
-import { getGa4Config, isGa4DataApiReady, normalizeGa4PropertyId } from "./config";
+import { getGa4Config, isGa4DataApiReady } from "./config";
 import { getSettings } from "@/lib/supabase/queries";
-import { getTrackingSecretsForAdmin } from "@/lib/tracking/secrets";
+import { getTrackingSecretsForServer } from "@/lib/tracking/secrets";
 
 export type Ga4AdminSettingsSnapshot = {
   measurementId: string;
@@ -27,13 +27,14 @@ function previewServiceAccount(json: string | null | undefined): string | null {
 export async function getGa4AdminSettingsSnapshot(): Promise<Ga4AdminSettingsSnapshot> {
   const [settings, secrets, config] = await Promise.all([
     getSettings(),
-    getTrackingSecretsForAdmin(),
+    getTrackingSecretsForServer(),
     getGa4Config(),
   ]);
 
-  const measurementId = settings?.google_analytics_id?.trim() ?? "";
-  const propertyId = settings?.ga4_property_id?.trim() ?? "";
-  const sa = secrets?.ga4_service_account_json;
+  const measurementId =
+    settings?.google_analytics_id?.trim() || config.measurementId || "";
+  const propertyId = settings?.ga4_property_id?.trim() || config.propertyId || "";
+  const sa = secrets?.ga4_service_account_json?.trim() || config.serviceAccountJson;
 
   const serviceRoleConfigured = Boolean(
     process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
@@ -48,12 +49,8 @@ export async function getGa4AdminSettingsSnapshot(): Promise<Ga4AdminSettingsSna
     measurementId,
     propertyId,
     measurementConfigured: Boolean(measurementId),
-    dataApiConfigured: isGa4DataApiReady({
-      measurementId: measurementId || null,
-      propertyId: normalizeGa4PropertyId(propertyId),
-      serviceAccountJson: sa ?? config.serviceAccountJson,
-    }),
-    serviceAccountConfigured: Boolean(sa?.trim()),
+    dataApiConfigured: isGa4DataApiReady(config),
+    serviceAccountConfigured: Boolean(sa),
     serviceAccountPreview: previewServiceAccount(sa),
     serviceRoleConfigured,
     migrationHint,

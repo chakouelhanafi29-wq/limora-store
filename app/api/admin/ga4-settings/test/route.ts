@@ -25,10 +25,18 @@ export async function POST(request: Request) {
       body.serviceAccountJson?.trim() || saved.serviceAccountJson,
   };
 
-  if (!config.propertyId || !config.serviceAccountJson) {
+  if (!config.propertyId) {
     return NextResponse.json({
       ok: false,
-      error: "أدخلي Property ID و Service Account JSON ثم احفظي، أو أرسليهما في الاختبار",
+      error: "أدخلي GA4 Property ID واحفظي الإعدادات",
+    });
+  }
+
+  if (!config.serviceAccountJson) {
+    return NextResponse.json({
+      ok: false,
+      error:
+        "Service Account JSON مطلوب: Google Cloud → Service Account → JSON key → أضيفيه في الإعدادات واحفظي (مع دور Viewer على GA4 Property)",
     });
   }
 

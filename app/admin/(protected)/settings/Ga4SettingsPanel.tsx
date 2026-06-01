@@ -51,12 +51,11 @@ const Ga4SettingsPanel = forwardRef<Ga4SettingsHandle, Props>(
       setPropertyId(initial.propertyId);
     }, [initial]);
 
-    const canTest =
-      Boolean(normalizePropertyId(propertyId)) &&
-      Boolean(
-        serviceAccountJson.trim() ||
-          (status.serviceAccountConfigured && !clearServiceAccount),
-      );
+    const hasPropertyId = Boolean(normalizePropertyId(propertyId));
+    const hasCredentials =
+      Boolean(serviceAccountJson.trim()) ||
+      (status.dataApiConfigured && !clearServiceAccount);
+    const canTest = hasPropertyId;
 
     const save = useCallback(async () => {
       setSaving(true);
@@ -280,6 +279,13 @@ const Ga4SettingsPanel = forwardRef<Ga4SettingsHandle, Props>(
             type="button"
             disabled={testing || !canTest}
             onClick={() => void runTest()}
+            title={
+              !hasPropertyId
+                ? "أدخلي GA4 Property ID أولاً"
+                : !hasCredentials
+                  ? "ألصقي Service Account JSON واحفظي، أو اختبري بعد الحفظ"
+                  : undefined
+            }
             className="rounded-full border border-emerald-300 bg-white px-6 py-2.5 text-sm font-medium text-emerald-900 hover:bg-emerald-50 disabled:opacity-50"
           >
             {testing ? "جاري الاختبار..." : "اختبار Data API"}
@@ -305,9 +311,18 @@ const Ga4SettingsPanel = forwardRef<Ga4SettingsHandle, Props>(
           </p>
         ) : null}
 
+        {hasPropertyId && !hasCredentials ? (
+          <p className="mt-3 text-sm text-amber-800">
+            Measurement ID وحده يُفعّل التتبع على المتجر فقط. لاختبار Data API وللوحة
+            التحليلات: ارفعي Service Account JSON (Viewer على Property) ثم احفظي GA4.
+          </p>
+        ) : null}
+
         <p className="mt-4 text-xs text-muted">
-          بعد الحفظ: تحققي من GA4 Realtime على المتجر، ثم افتحي{" "}
-          <strong>/admin/analytics</strong> للرسوم البيانية.
+          Measurement ID = gtag على المتجر. Property ID + Service Account = لوحة
+          التحليلات عبر Google Analytics Data API. بعد الحفظ افتحي{" "}
+          <strong>/admin/analytics</strong> — البيانات من GA4 قد تتأخر 24–48 ساعة
+          عن Realtime.
         </p>
       </section>
     );

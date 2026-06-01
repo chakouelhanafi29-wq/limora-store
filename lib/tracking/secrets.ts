@@ -69,8 +69,15 @@ export async function upsertTrackingSecretsForAdmin(
     return { error: "Supabase غير مُفعّل" };
   }
 
-  const supabase = await createClient();
-  const existing = await getTrackingSecretsForAdmin();
+  const service = createServiceRoleClient();
+  const supabase = service ?? (await createClient());
+  const existing = service
+    ? ((await service
+        .from("tracking_secrets")
+        .select("*")
+        .eq("id", 1)
+        .maybeSingle()).data as TrackingSecretsRow | null)
+    : await getTrackingSecretsForAdmin();
 
   const payload: TrackingSecretsUpdate & { updated_at: string } = {
     updated_at: new Date().toISOString(),
@@ -136,7 +143,8 @@ export async function clearTrackingSecretForAdmin(
     return { error: "Supabase غير مُفعّل" };
   }
 
-  const supabase = await createClient();
+  const service = createServiceRoleClient();
+  const supabase = service ?? (await createClient());
   const { error } = await supabase
     .from("tracking_secrets")
     .update({ [field]: null, updated_at: new Date().toISOString() })

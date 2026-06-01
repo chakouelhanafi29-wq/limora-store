@@ -1,5 +1,6 @@
 import { cache } from "react";
 import { resolveDateRange, type DatePreset } from "@/lib/analytics/date-range";
+import { enrichDashboardWithGa4 } from "@/lib/analytics/ga4/enrich-dashboard";
 import { getTrackingProviderConfig } from "@/lib/tracking/config";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import type { AnalyticsEvent, Order } from "@/lib/types/database";
@@ -235,7 +236,8 @@ async function loadAnalyticsDashboardUncached(
   const range = resolveDateRange(preset, customStart, customEnd);
 
   if (!isSupabaseConfigured()) {
-    return emptyDashboard(preset, range.label, range.start, range.end);
+    const empty = emptyDashboard(preset, range.label, range.start, range.end);
+    return enrichDashboardWithGa4(empty, [], range);
   }
 
   const supabase = await createClient();
@@ -267,7 +269,7 @@ async function loadAnalyticsDashboardUncached(
         trackingConfig.snapchatPixelId && trackingConfig.snapchatAccessToken,
       ),
     };
-    return empty;
+    return enrichDashboardWithGa4(empty, orderList, range);
   }
 
   const sessionIds = new Set<string>();
@@ -614,7 +616,7 @@ async function loadAnalyticsDashboardUncached(
     pageViews: row.pageViews,
   }));
 
-  return {
+  const baseDashboard: AnalyticsDashboardData = {
     range: {
       preset,
       start: range.start.toISOString(),
@@ -692,6 +694,8 @@ async function loadAnalyticsDashboardUncached(
     },
     recentOrders: orderList.slice(0, 6),
   };
+
+  return enrichDashboardWithGa4(baseDashboard, orderList, range);
 }
 
 export const getAnalyticsDashboard = cache(
