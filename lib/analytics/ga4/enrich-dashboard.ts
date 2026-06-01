@@ -75,6 +75,9 @@ export async function enrichDashboardWithGa4(
     return dashboard;
   }
 
+  dashboard.tracking.ga4.connected = true;
+  dashboard.tracking.ga4.lastError = null;
+
   const gaData = gaResult.data;
   const { sessions, activeUsers, totalUsers, screenPageViews } = gaData.overview;
   const hasTraffic =
@@ -92,18 +95,12 @@ export async function enrichDashboardWithGa4(
   });
 
   if (!hasTraffic) {
-    dashboard.tracking.ga4.connected = false;
-    dashboard.tracking.ga4.lastError = pipelineError(
-      "fetchGa4DashboardSlice",
-      `0 rows for properties/${ga4Config.propertyId} (${formatGa4ReportDate(range.start)}..${formatGa4ReportDate(range.end)}). overview={sessions:${sessions},activeUsers:${activeUsers},totalUsers:${totalUsers},screenPageViews:${screenPageViews}}`,
-    );
     logAnalyticsRuntime("enrichDashboardWithGa4.earlyExit", {
       reason: "hasTraffic_false",
       file: "lib/analytics/ga4/enrich-dashboard.ts",
-      line: 94,
       overview: { totalUsers, activeUsers, sessions, screenPageViews },
       traffic_totalVisitors: dashboard.traffic.totalVisitors,
-      note: "GA4 overview all zero — dashboard keeps base totalVisitors from analytics_events",
+      note: "GA4 Data API connected but overview metrics are zero for this date range",
     });
     return dashboard;
   }

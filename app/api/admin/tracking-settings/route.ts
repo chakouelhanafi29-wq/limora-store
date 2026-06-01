@@ -6,6 +6,7 @@ import {
   maskTrackingToken,
   upsertTrackingSecretsForAdmin,
 } from "@/lib/tracking/secrets";
+import { isServiceRoleKeyValid } from "@/lib/supabase/env";
 import { validatePixelId } from "@/lib/tracking/test-connection";
 
 function providerStatus(
@@ -57,7 +58,7 @@ export async function GET() {
         secrets?.snapchat_capi_access_token,
       ),
     },
-    serviceRoleConfigured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()),
+    serviceRoleConfigured: isServiceRoleKeyValid(),
   });
 }
 

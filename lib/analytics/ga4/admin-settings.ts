@@ -1,4 +1,5 @@
 import { getGa4Config, isGa4DataApiReady } from "./config";
+import { isServiceRoleKeyValid } from "@/lib/supabase/env";
 import { getSettings } from "@/lib/supabase/queries";
 import { getTrackingSecretsForServer } from "@/lib/tracking/secrets";
 
@@ -36,9 +37,7 @@ export async function getGa4AdminSettingsSnapshot(): Promise<Ga4AdminSettingsSna
   const propertyId = settings?.ga4_property_id?.trim() || config.propertyId || "";
   const sa = secrets?.ga4_service_account_json?.trim() || config.serviceAccountJson;
 
-  const serviceRoleConfigured = Boolean(
-    process.env.SUPABASE_SERVICE_ROLE_KEY?.trim(),
-  );
+  const serviceRoleConfigured = isServiceRoleKeyValid();
 
   let migrationHint: string | null = null;
   if (settings && !("ga4_property_id" in settings)) {

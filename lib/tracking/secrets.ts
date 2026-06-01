@@ -1,5 +1,10 @@
 import { createServiceRoleClient } from "@/lib/supabase/service";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
+import {
+  describeInvalidServiceRoleKey,
+  isServiceRoleKeyConfigured,
+  isServiceRoleKeyValid,
+} from "@/lib/supabase/env";
 
 export type TrackingSecretsRow = {
   id: number;
@@ -33,16 +38,21 @@ const TRACKING_SECRETS_COLUMNS =
   "id, meta_capi_access_token, meta_test_event_code, tiktok_events_access_token, tiktok_test_event_code, snapchat_capi_access_token, snapchat_test_event_code, ga4_service_account_json, updated_at";
 
 let lastGa4LoadSource: Ga4ServiceAccountLoadSource = "none";
+let lastServiceRoleReadError: string | null = null;
 
 export function getLastGa4ServiceAccountLoadSource(): Ga4ServiceAccountLoadSource {
   return lastGa4LoadSource;
 }
 
+export function getLastServiceRoleReadError(): string | null {
+  return lastServiceRoleReadError;
+}
+
 export function maskTrackingToken(token: string | null | undefined): string | null {
   if (!token?.trim()) return null;
   const trimmed = token.trim();
-  if (trimmed.length <= 4) return "••••";
-  return `••••${trimmed.slice(-4)}`;
+  if (trimmed.length <= 4) return "****";
+  return `****${trimmed.slice(-4)}`;
 }
 
 function pickSecret(
@@ -89,8 +99,17 @@ function mergeTrackingSecrets(
 }
 
 async function readTrackingSecretsViaServiceRole(): Promise<TrackingSecretsRow | null> {
+  const invalidKeyMessage = describeInvalidServiceRoleKey();
+  if (invalidKeyMessage) {
+    lastServiceRoleReadError = invalidKeyMessage;
+    return null;
+  }
+
   const service = createServiceRoleClient();
-  if (!service) return null;
+  if (!service) {
+    lastServiceRoleReadError = "service role client unavailable";
+    return null;
+  }
 
   const { data, error } = await service
     .from("tracking_secrets")
@@ -98,7 +117,12 @@ async function readTrackingSecretsViaServiceRole(): Promise<TrackingSecretsRow |
     .eq("id", 1)
     .maybeSingle();
 
-  if (error || !data) return null;
+  if (error || !data) {
+    lastServiceRoleReadError = error?.message ?? "tracking_secrets row not found via service role";
+    return null;
+  }
+
+  lastServiceRoleReadError = null;
   return data as TrackingSecretsRow;
 }
 
@@ -140,9 +164,8 @@ export async function upsertTrackingSecretsForAdmin(
     return { error: "Supabase غير مُفعّل" };
   }
 
-  const service = createServiceRoleClient();
-  const supabase = service ?? (await createClient());
-  const existing = await getTrackingSecretsForServer();
+  const supabase = await createClient();
+  const existing = await getTrackingSecretsForAdmin();
 
   const payload: TrackingSecretsUpdate & { updated_at: string } = {
     updated_at: new Date().toISOString(),
@@ -208,8 +231,7 @@ export async function clearTrackingSecretForAdmin(
     return { error: "Supabase غير مُفعّل" };
   }
 
-  const service = createServiceRoleClient();
-  const supabase = service ?? (await createClient());
+  const supabase = await createClient();
   const { error } = await supabase
     .from("tracking_secrets")
     .update({ [field]: null, updated_at: new Date().toISOString() })
@@ -219,6 +241,10 @@ export async function clearTrackingSecretForAdmin(
 
 export async function probeGa4ServiceAccountStorage(): Promise<{
   serviceRoleConfigured: boolean;
+  serviceRoleKeyPresent: boolean;
+  serviceRoleKeyValid: boolean;
+  serviceRoleKeyInvalidReason: string | null;
+  serviceRoleReadError: string | null;
   serviceRoleRowFound: boolean;
   serviceRoleHasGa4: boolean;
   adminSessionRowFound: boolean;
@@ -231,7 +257,11 @@ export async function probeGa4ServiceAccountStorage(): Promise<{
   ]);
 
   return {
-    serviceRoleConfigured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()),
+    serviceRoleConfigured: isServiceRoleKeyValid(),
+    serviceRoleKeyPresent: isServiceRoleKeyConfigured(),
+    serviceRoleKeyValid: isServiceRoleKeyValid(),
+    serviceRoleKeyInvalidReason: describeInvalidServiceRoleKey(),
+    serviceRoleReadError: getLastServiceRoleReadError(),
     serviceRoleRowFound: Boolean(serviceRow),
     serviceRoleHasGa4: Boolean(serviceRow?.ga4_service_account_json?.trim()),
     adminSessionRowFound: Boolean(adminRow),
