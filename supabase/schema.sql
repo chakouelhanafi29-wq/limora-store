@@ -118,6 +118,7 @@ create table if not exists settings (
   tiktok_pixel_id text,
   snapchat_pixel_id text,
   google_analytics_id text,
+  ga4_property_id text,
   google_tag_manager_id text,
   whatsapp_number text,
   free_shipping boolean default true,
@@ -127,6 +128,7 @@ create table if not exists settings (
   announcement_3 text default 'تخفيضات حصرية لفترة محدودة',
   site_url text,
   site_domain text,
+  meta_domain_verification text,
   site_name text default 'LIMORA',
   logo_url text,
   favicon_url text,
@@ -149,6 +151,7 @@ create table if not exists tracking_secrets (
   tiktok_test_event_code text,
   snapchat_capi_access_token text,
   snapchat_test_event_code text,
+  ga4_service_account_json text,
   updated_at timestamptz default now()
 );
 

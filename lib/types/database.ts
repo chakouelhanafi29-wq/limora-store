@@ -110,6 +110,7 @@ export type Settings = {
   tiktok_pixel_id: string | null;
   snapchat_pixel_id: string | null;
   google_analytics_id: string | null;
+  ga4_property_id: string | null;
   whatsapp_number: string | null;
   free_shipping: boolean;
   cod_enabled: boolean;
@@ -126,6 +127,7 @@ export type Settings = {
   seo_keywords: string | null;
   og_image_url: string | null;
   twitter_handle: string | null;
+  meta_domain_verification: string | null;
   updated_at: string;
 };
 

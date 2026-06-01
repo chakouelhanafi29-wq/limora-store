@@ -4,9 +4,12 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Settings } from "@/lib/types/database";
+import Ga4SettingsPanel, { type Ga4SettingsHandle } from "./Ga4SettingsPanel";
+import MetaDomainSetupPanel from "./MetaDomainSetupPanel";
 import TrackingSettingsPanel, {
   type TrackingSettingsHandle,
 } from "./TrackingSettingsPanel";
+import type { Ga4AdminSettingsSnapshot } from "@/lib/analytics/ga4/admin-settings";
 
 async function uploadBrandAsset(file: File, folder: string) {
   const supabase = createClient();
@@ -25,15 +28,21 @@ async function uploadBrandAsset(file: File, folder: string) {
 
 export default function SettingsForm({
   initialSettings,
+  ga4Initial,
 }: {
   initialSettings: Settings | null;
+  ga4Initial: Ga4AdminSettingsSnapshot;
 }) {
   const router = useRouter();
   const trackingRef = useRef<TrackingSettingsHandle>(null);
+  const ga4Ref = useRef<Ga4SettingsHandle>(null);
   const [saved, setSaved] = useState(false);
   const [form, setForm] = useState({
-    site_url: initialSettings?.site_url ?? "",
-    site_domain: initialSettings?.site_domain ?? "",
+    site_url:
+      initialSettings?.site_url ?? "https://www.limorashop.co",
+    site_domain: initialSettings?.site_domain ?? "limorashop.co",
+    meta_domain_verification:
+      initialSettings?.meta_domain_verification ?? "",
     site_name: initialSettings?.site_name ?? "LIMORA",
     logo_url: initialSettings?.logo_url ?? "",
     favicon_url: initialSettings?.favicon_url ?? "",
@@ -42,7 +51,6 @@ export default function SettingsForm({
     seo_keywords: initialSettings?.seo_keywords ?? "",
     og_image_url: initialSettings?.og_image_url ?? "",
     twitter_handle: initialSettings?.twitter_handle ?? "",
-    google_analytics_id: initialSettings?.google_analytics_id ?? "",
     whatsapp_number: initialSettings?.whatsapp_number ?? "",
     free_shipping: initialSettings?.free_shipping ?? true,
     cod_enabled: initialSettings?.cod_enabled ?? true,
@@ -64,6 +72,7 @@ export default function SettingsForm({
       .update({
         site_url: form.site_url || null,
         site_domain: form.site_domain || null,
+        meta_domain_verification: form.meta_domain_verification?.trim() || null,
         site_name: form.site_name || "LIMORA",
         logo_url: form.logo_url || null,
         favicon_url: form.favicon_url || null,
@@ -72,7 +81,6 @@ export default function SettingsForm({
         seo_keywords: form.seo_keywords || null,
         og_image_url: form.og_image_url || null,
         twitter_handle: form.twitter_handle || null,
-        google_analytics_id: form.google_analytics_id || null,
         whatsapp_number: form.whatsapp_number || null,
         free_shipping: form.free_shipping,
         cod_enabled: form.cod_enabled,
@@ -87,20 +95,14 @@ export default function SettingsForm({
       return;
     }
 
-    await trackingRef.current?.save();
+    await Promise.all([
+      trackingRef.current?.save(),
+      ga4Ref.current?.save(),
+    ]);
     setSaved(true);
     router.refresh();
     setTimeout(() => setSaved(false), 3000);
   };
-
-  const analyticsFields = [
-    {
-      key: "google_analytics_id" as const,
-      label: "Google Analytics ID",
-      hint: "GA4 Measurement ID",
-      placeholder: "G-XXXXXXXXXX",
-    },
-  ];
 
   return (
     <form onSubmit={handleSubmit} className="max-w-3xl space-y-6">
@@ -113,8 +115,8 @@ export default function SettingsForm({
             النطاق والهوية
           </h2>
           <p className="mt-2 text-sm text-muted">
-            اربطي نطاقكِ المخصص (مثل limora.sa) — يُستخدم في SEO والروابط
-            الأساسية و sitemap.
+            اربطي نطاق الإعلانات (www.limorashop.co) — يُستخدم في SEO و CAPI
+            و event_source_url.
           </p>
         </div>
 
@@ -122,11 +124,11 @@ export default function SettingsForm({
           <label className="block sm:col-span-2">
             <span className="mb-1 block text-sm font-medium">Site URL</span>
             <span className="mb-2 block text-xs text-muted">
-              مثال: https://limora.sa (بدون / في النهاية)
+              مثال: https://www.limorashop.co (بدون / في النهاية)
             </span>
             <input
               dir="ltr"
-              placeholder="https://limora.sa"
+              placeholder="https://www.limorashop.co"
               value={form.site_url}
               onChange={(e) => setForm({ ...form, site_url: e.target.value })}
               className="w-full rounded-xl border border-champagne/20 px-4 py-2.5 text-sm"
@@ -136,7 +138,7 @@ export default function SettingsForm({
             <span className="mb-1 block text-sm font-medium">Domain</span>
             <input
               dir="ltr"
-              placeholder="limora.sa"
+              placeholder="limorashop.co"
               value={form.site_domain}
               onChange={(e) =>
                 setForm({ ...form, site_domain: e.target.value })
@@ -244,43 +246,37 @@ export default function SettingsForm({
         </div>
       </section>
 
+      <Ga4SettingsPanel ref={ga4Ref} initial={ga4Initial} />
+
       <section className="rounded-2xl border border-champagne/10 bg-white p-6 luxury-shadow">
         <div className="mb-6">
           <p className="text-xs tracking-[0.2em] text-champagne uppercase">
-            TRACKING & ANALYTICS
+            META ADS TRACKING
           </p>
           <h2 className="mt-1 font-serif text-2xl font-semibold">
-            تتبع الإعلانات والتحليلات
+            Meta · TikTok · Snapchat
           </h2>
           <p className="mt-2 text-sm text-muted">
-            Pixel IDs للمتصفح + Conversion API / Events API من لوحة واحدة — بدون
-            تعديل Vercel في كل مرة.
+            Pixel IDs للمتصفح + Conversion API — بدون تعديل Vercel في كل مرة.
           </p>
         </div>
+
+        <MetaDomainSetupPanel
+          siteUrl={form.site_url}
+          siteDomain={form.site_domain}
+          metaDomainVerification={form.meta_domain_verification}
+          onMetaDomainVerificationChange={(value) =>
+            setForm({ ...form, meta_domain_verification: value })
+          }
+        />
+
+        <div className="my-6" />
 
         <TrackingSettingsPanel ref={trackingRef} />
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {analyticsFields.map((field) => (
-            <label key={field.key} className="block">
-              <span className="mb-1 block text-sm font-medium">{field.label}</span>
-              <span className="mb-2 block text-xs text-muted">{field.hint}</span>
-              <input
-                dir="ltr"
-                placeholder={field.placeholder}
-                value={form[field.key]}
-                onChange={(e) =>
-                  setForm({ ...form, [field.key]: e.target.value })
-                }
-                className="w-full rounded-xl border border-champagne/20 px-4 py-2.5 text-sm"
-              />
-            </label>
-          ))}
-        </div>
-
         <div className="mt-6 rounded-xl bg-beige/40 p-4 text-xs leading-relaxed text-muted">
-          الأحداث المتتبعة: PageView · ViewContent · AddToCart · InitiateCheckout
-          · Lead · Purchase
+          أحداث المتجر (جميع المنصات + GA4): PageView · ViewContent · AddToCart
+          · InitiateCheckout · Lead · Purchase
         </div>
       </section>
 

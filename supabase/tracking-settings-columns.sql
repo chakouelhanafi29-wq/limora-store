@@ -7,6 +7,7 @@ alter table settings add column if not exists facebook_pixel_id text;
 alter table settings add column if not exists tiktok_pixel_id text;
 alter table settings add column if not exists snapchat_pixel_id text;
 alter table settings add column if not exists google_analytics_id text;
+alter table settings add column if not exists ga4_property_id text;
 alter table settings add column if not exists google_tag_manager_id text;
 
 -- Other settings columns referenced by admin / storefront (older DBs may lack these)
@@ -18,6 +19,7 @@ alter table settings add column if not exists announcement_2 text;
 alter table settings add column if not exists announcement_3 text;
 alter table settings add column if not exists site_url text;
 alter table settings add column if not exists site_domain text;
+alter table settings add column if not exists meta_domain_verification text;
 alter table settings add column if not exists site_name text default 'LIMORA';
 alter table settings add column if not exists logo_url text;
 alter table settings add column if not exists favicon_url text;
@@ -42,6 +44,8 @@ create table if not exists tracking_secrets (
   snapchat_test_event_code text,
   updated_at timestamptz default now()
 );
+
+alter table tracking_secrets add column if not exists ga4_service_account_json text;
 
 insert into tracking_secrets (id) values (1) on conflict (id) do nothing;
 

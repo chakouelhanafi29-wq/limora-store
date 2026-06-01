@@ -9,6 +9,7 @@ export type TrackingSecretsRow = {
   tiktok_test_event_code: string | null;
   snapchat_capi_access_token: string | null;
   snapchat_test_event_code: string | null;
+  ga4_service_account_json: string | null;
   updated_at: string;
 };
 
@@ -19,6 +20,7 @@ export type TrackingSecretsUpdate = {
   tiktok_test_event_code?: string | null;
   snapchat_capi_access_token?: string | null;
   snapchat_test_event_code?: string | null;
+  ga4_service_account_json?: string | null;
 };
 
 export function maskTrackingToken(token: string | null | undefined): string | null {
@@ -102,6 +104,12 @@ export async function upsertTrackingSecretsForAdmin(
     payload.snapchat_capi_access_token = existing.snapchat_capi_access_token;
   }
 
+  if (update.ga4_service_account_json?.trim()) {
+    payload.ga4_service_account_json = update.ga4_service_account_json.trim();
+  } else if (existing?.ga4_service_account_json) {
+    payload.ga4_service_account_json = existing.ga4_service_account_json;
+  }
+
   if (existing) {
     const { error } = await supabase
       .from("tracking_secrets")
@@ -121,7 +129,8 @@ export async function clearTrackingSecretForAdmin(
   field:
     | "meta_capi_access_token"
     | "tiktok_events_access_token"
-    | "snapchat_capi_access_token",
+    | "snapchat_capi_access_token"
+    | "ga4_service_account_json",
 ): Promise<{ error: string | null }> {
   if (!isSupabaseConfigured()) {
     return { error: "Supabase غير مُفعّل" };
