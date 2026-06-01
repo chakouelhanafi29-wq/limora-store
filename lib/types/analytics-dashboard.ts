@@ -63,6 +63,7 @@ export type AnalyticsDashboardData = {
     sessions: number;
     pageViews: number;
     topLandingPages: AnalyticsCountRow[];
+    topCountries: AnalyticsCountRow[];
     trafficByPlatform: AnalyticsCountRow[];
     utmPerformance: AnalyticsUtmRow[];
   };
@@ -106,6 +107,13 @@ export type AnalyticsDashboardData = {
       meta: boolean;
       tiktok: boolean;
       snapchat: boolean;
+    };
+    ga4: {
+      configured: boolean;
+      connected: boolean;
+      measurementId: string | null;
+      propertyId: string | null;
+      lastError: string | null;
     };
     platformSignal: AnalyticsCountRow[];
   };

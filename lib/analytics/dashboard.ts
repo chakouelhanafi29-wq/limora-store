@@ -64,6 +64,7 @@ function emptyDashboard(
       sessions: 0,
       pageViews: 0,
       topLandingPages: [],
+      topCountries: [],
       trafficByPlatform: [],
       utmPerformance: [],
     },
@@ -104,6 +105,13 @@ function emptyDashboard(
       storedEvents: 0,
       deduplicatedEventIds: 0,
       capiStatus: { meta: false, tiktok: false, snapchat: false },
+      ga4: {
+        configured: false,
+        connected: false,
+        measurementId: null,
+        propertyId: null,
+        lastError: null,
+      },
       platformSignal: [],
     },
     charts: {
@@ -619,6 +627,7 @@ async function loadAnalyticsDashboardUncached(
       sessions,
       pageViews,
       topLandingPages,
+      topCountries: [],
       trafficByPlatform,
       utmPerformance,
     },
@@ -667,6 +676,13 @@ async function loadAnalyticsDashboardUncached(
         snapchat: Boolean(
           trackingConfig.snapchatPixelId && trackingConfig.snapchatAccessToken,
         ),
+      },
+      ga4: {
+        configured: false,
+        connected: false,
+        measurementId: null,
+        propertyId: null,
+        lastError: null,
       },
       platformSignal,
     },
