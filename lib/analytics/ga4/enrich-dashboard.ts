@@ -59,16 +59,14 @@ export async function enrichDashboardWithGa4(
   const hasTraffic =
     sessions > 0 || activeUsers > 0 || totalUsers > 0 || screenPageViews > 0;
 
-  const merged = applyGa4ToDashboard(dashboard, gaResult.data, orderList);
-
   if (!hasTraffic) {
-    merged.tracking.ga4.connected = false;
-    merged.tracking.ga4.lastError = pipelineError(
+    dashboard.tracking.ga4.connected = false;
+    dashboard.tracking.ga4.lastError = pipelineError(
       "fetchGa4DashboardSlice",
-      `0 rows for properties/${ga4Config.propertyId} (${formatGa4ReportDate(range.start)}..${formatGa4ReportDate(range.end)}). Storefront collect uses tid=${ga4Config.measurementId ?? "?"}. Data API reads a different pipeline than collect — both must target the same GA4 property.`,
+      `0 rows for properties/${ga4Config.propertyId} (${formatGa4ReportDate(range.start)}..${formatGa4ReportDate(range.end)}). overview={sessions:${sessions},activeUsers:${activeUsers},totalUsers:${totalUsers},screenPageViews:${screenPageViews}}`,
     );
-    return merged;
+    return dashboard;
   }
 
-  return merged;
+  return applyGa4ToDashboard(dashboard, gaResult.data, orderList);
 }
