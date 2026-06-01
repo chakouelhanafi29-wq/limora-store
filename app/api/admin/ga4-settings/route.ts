@@ -5,10 +5,16 @@ import {
   normalizeGa4PropertyId,
 } from "@/lib/analytics/ga4/config";
 import { getGa4AdminSettingsSnapshot } from "@/lib/analytics/ga4/admin-settings";
-import { createClient, isAdminUser, isSupabaseConfigured } from "@/lib/supabase/server";
+import {
+  createClient,
+  isAdminUser,
+  isAdminWithClient,
+  isSupabaseConfigured,
+} from "@/lib/supabase/server";
 import type { ByteStringViolation } from "@/lib/http/byte-string";
 import {
-  scanEnvKeysForByteString,
+  formatByteStringEnvError,
+  scanAdminSaveEnvKeysForByteString,
   violationFromErrorMessage,
 } from "@/lib/http/byte-string";
 import { getSupabaseAnonKey } from "@/lib/supabase/env";
@@ -77,20 +83,25 @@ function logPostFailure(payload: Record<string, unknown>) {
   console.error("[ga4-settings POST]", JSON.stringify(payload));
 }
 
-async function saveGa4Settings(body: Ga4SettingsBody): Promise<SaveGa4Result> {
+async function saveGa4Settings(
+  body: Ga4SettingsBody,
+  supabase: SupabaseClient,
+  byteStringDiagnosticRef?: { current?: ByteStringViolation },
+): Promise<SaveGa4Result> {
   if (!isSupabaseConfigured()) {
     return { error: "Supabase غير مُفعّل", status: 503 };
   }
 
-  const envViolations = scanEnvKeysForByteString();
+  const envViolations = scanAdminSaveEnvKeysForByteString();
   if (envViolations.length > 0) {
     const runtimeKeys = runtimeKeyProbe();
-    logPostFailure({ step: "env_scan", byteStringDiagnostic: envViolations[0], runtimeKeys });
+    const violation = envViolations[0];
+    logPostFailure({ step: "env_scan", byteStringDiagnostic: violation, runtimeKeys });
     return {
-      error: envViolations[0].valuePreview,
+      error: formatByteStringEnvError(violation),
       status: 500,
       step: "env_scan",
-      byteStringDiagnostic: envViolations[0],
+      byteStringDiagnostic: violation,
       runtimeKeys,
     };
   }
@@ -129,12 +140,7 @@ async function saveGa4Settings(body: Ga4SettingsBody): Promise<SaveGa4Result> {
     }
   }
 
-  let byteStringDiagnostic: ByteStringViolation | undefined;
-  const supabase = await createClient({
-    onByteStringViolation: (violation) => {
-      byteStringDiagnostic = violation;
-    },
-  });
+  const byteStringDiagnostic = byteStringDiagnosticRef?.current;
 
   const settingsResult = await updateSettings(
     supabase,
@@ -218,10 +224,6 @@ async function updateSettings(
 }
 
 export async function POST(request: Request) {
-  if (!(await isAdminUser())) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   let body: Ga4SettingsBody;
   try {
     body = (await request.json()) as Ga4SettingsBody;
@@ -229,9 +231,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
+  const diagnosticRef: { current?: ByteStringViolation } = {};
+  const supabase = await createClient({
+    onByteStringViolation: (violation) => {
+      diagnosticRef.current = violation;
+    },
+  });
+
+  if (!(await isAdminWithClient(supabase))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   let result: SaveGa4Result;
   try {
-    result = await saveGa4Settings(body);
+    result = await saveGa4Settings(body, supabase, diagnosticRef);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const diagnostic =

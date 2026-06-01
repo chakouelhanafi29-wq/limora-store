@@ -44,6 +44,49 @@ export function findLatin1Violation(
   return null;
 }
 
+function scanValueForByteString(
+  env: string,
+  value: string,
+  variable: string,
+): ByteStringViolation | null {
+  if (!value) return null;
+  return findLatin1Violation(value, {
+    kind: "env",
+    headerOrCookie: env,
+    variable,
+    sourceFile: FETCH_APIKEY_FILE,
+    sourceLine: FETCH_APIKEY_LINE,
+  });
+}
+
+/** POST /api/admin/ga4-settings only uses the admin Supabase client (publishable/anon key). */
+export function scanAdminSaveEnvKeysForByteString(): ByteStringViolation[] {
+  const publishable = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ?? "";
+  const anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim() ?? "";
+
+  if (publishable) {
+    const hit = scanValueForByteString(
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      publishable,
+      "supabaseKey (publishable)",
+    );
+    if (hit) return [hit];
+    return [];
+  }
+
+  if (anon) {
+    const hit = scanValueForByteString(
+      "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+      anon,
+      "supabaseKey (anon)",
+    );
+    if (hit) return [hit];
+  }
+
+  return [];
+}
+
+/** Full env scan for maintenance probes (includes service role). */
 export function scanEnvKeysForByteString(): ByteStringViolation[] {
   const checks: { env: string; value: string; variable: string }[] = [
     {
@@ -65,17 +108,14 @@ export function scanEnvKeysForByteString(): ByteStringViolation[] {
 
   const violations: ByteStringViolation[] = [];
   for (const check of checks) {
-    if (!check.value) continue;
-    const hit = findLatin1Violation(check.value, {
-      kind: "env",
-      headerOrCookie: check.env,
-      variable: check.variable,
-      sourceFile: FETCH_APIKEY_FILE,
-      sourceLine: FETCH_APIKEY_LINE,
-    });
+    const hit = scanValueForByteString(check.env, check.value, check.variable);
     if (hit) violations.push(hit);
   }
   return violations;
+}
+
+export function formatByteStringEnvError(violation: ByteStringViolation): string {
+  return `${violation.headerOrCookie} contains a non-ASCII character at index ${violation.index} (U+${violation.charCode.toString(16).toUpperCase()} "${violation.char}"). Remove Arabic or Unicode text from this Vercel env value.`;
 }
 
 export function violationFromErrorMessage(
@@ -129,7 +169,7 @@ export function createLatin1GuardFetch(
         const hit = findLatin1Violation(value, {
           kind: "header",
           headerOrCookie: name,
-          variable: name,
+          variable: name === "apikey" ? "supabaseKey" : name,
           sourceFile: FETCH_APIKEY_FILE,
           sourceLine: FETCH_APIKEY_LINE,
         });
@@ -143,7 +183,25 @@ export function createLatin1GuardFetch(
       }
     }
 
-    return innerFetch(input, init);
+    try {
+      return await innerFetch(input, init);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      if (message.includes("ByteString")) {
+        const fallback = findLatin1Violation(supabaseKey, {
+          kind: "header",
+          headerOrCookie: "apikey",
+          variable: "supabaseKey",
+          sourceFile: FETCH_APIKEY_FILE,
+          sourceLine: FETCH_APIKEY_LINE,
+        });
+        if (fallback) {
+          (error as Error & { byteStringDiagnostic?: ByteStringViolation }).byteStringDiagnostic =
+            fallback;
+        }
+      }
+      throw error;
+    }
   };
 }
 
