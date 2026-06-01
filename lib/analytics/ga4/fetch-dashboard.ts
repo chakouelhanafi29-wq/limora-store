@@ -1,4 +1,5 @@
-import type { protos } from "@google-analytics/data";
+import { protos } from "@google-analytics/data";
+import type { protos as Protos } from "@google-analytics/data";
 import { createGa4DataClient, ga4PropertyPath } from "./client";
 import { labelChannel, labelCountry, labelDevice } from "./labels";
 import type { Ga4Config } from "./config";
@@ -7,7 +8,14 @@ import { formatGa4ReportDate } from "./dates";
 import type { AnalyticsCountRow } from "@/lib/types/analytics-dashboard";
 import type { Ga4DashboardSlice, Ga4FetchResult } from "./types";
 
-type IRow = protos.google.analytics.data.v1beta.IRow;
+type IRow = Protos.google.analytics.data.v1beta.IRow;
+type IRunReportResponse = Protos.google.analytics.data.v1beta.IRunReportResponse;
+
+/** Dimensionless metric reports return values in `totals`, not `rows`. */
+function firstMetricRow(report: IRunReportResponse | null | undefined): IRow | undefined {
+  if (!report) return undefined;
+  return report.rows?.[0] ?? report.totals?.[0];
+}
 
 function metricValue(row: IRow, index: number): number {
   const raw = row.metricValues?.[index]?.value;
@@ -69,6 +77,9 @@ export async function fetchGa4DashboardSlice(
           { name: "totalUsers" },
           { name: "screenPageViews" },
         ],
+        metricAggregations: [
+          protos.google.analytics.data.v1beta.MetricAggregation.TOTAL,
+        ],
       }),
       client.runReport({
         property,
@@ -126,8 +137,8 @@ export async function fetchGa4DashboardSlice(
       }),
     ]);
 
-    const overviewRows = overviewReport[0].rows ?? [];
-    const overviewRow = overviewRows[0];
+    const overviewResponse = overviewReport[0];
+    const overviewRow = firstMetricRow(overviewResponse);
     const purchases =
       purchaseReport[0].rows?.reduce(
         (sum, row) => sum + metricValue(row, 0),
@@ -148,12 +159,26 @@ export async function fetchGa4DashboardSlice(
       };
     });
 
+    let sessions = overviewRow ? metricValue(overviewRow, 0) : 0;
+    let activeUsers = overviewRow ? metricValue(overviewRow, 1) : 0;
+    let totalUsers = overviewRow ? metricValue(overviewRow, 2) : 0;
+    let screenPageViews = overviewRow ? metricValue(overviewRow, 3) : 0;
+
+    if (!sessions && !activeUsers && !totalUsers && !screenPageViews && daily.length) {
+      for (const day of daily) {
+        sessions += day.sessions;
+        activeUsers += day.activeUsers;
+        screenPageViews += day.screenPageViews;
+      }
+      totalUsers = activeUsers;
+    }
+
     const data: Ga4DashboardSlice = {
       overview: {
-        sessions: overviewRow ? metricValue(overviewRow, 0) : 0,
-        activeUsers: overviewRow ? metricValue(overviewRow, 1) : 0,
-        totalUsers: overviewRow ? metricValue(overviewRow, 2) : 0,
-        screenPageViews: overviewRow ? metricValue(overviewRow, 3) : 0,
+        sessions,
+        activeUsers,
+        totalUsers,
+        screenPageViews,
         purchases,
       },
       daily,
