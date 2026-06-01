@@ -19,6 +19,9 @@ export default function AnalyticsProvider() {
     if (!initialized.current) {
       captureAttribution(pathname, search ? `?${search}` : "");
       initialized.current = true;
+      lastPath.current = fullPath;
+      // Initial page_view is sent by Ga4Script (gtag config). Avoid duplicate hit.
+      return;
     }
 
     if (lastPath.current === fullPath) return;

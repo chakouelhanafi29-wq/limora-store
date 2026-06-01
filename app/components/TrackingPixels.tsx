@@ -17,7 +17,6 @@ export default async function TrackingPixels() {
       facebookPixelId={settings?.facebook_pixel_id}
       tiktokPixelId={settings?.tiktok_pixel_id}
       snapchatPixelId={settings?.snapchat_pixel_id}
-      googleAnalyticsId={settings?.google_analytics_id}
     />
   );
 }

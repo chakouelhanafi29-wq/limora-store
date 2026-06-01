@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Tajawal } from "next/font/google";
 import Footer from "./components/SiteFooter";
 import AnalyticsProvider from "./components/AnalyticsProvider";
+import Ga4Script from "./components/Ga4Script";
 import TrackingPixels from "./components/TrackingPixels";
 import { getSiteConfig } from "@/lib/site/config";
 import { buildRootMetadata } from "@/lib/seo/metadata";
@@ -55,6 +56,7 @@ export default async function RootLayout({
         />
         {children}
         <Footer />
+        <Ga4Script />
         <TrackingPixels />
         <Suspense fallback={null}>
           <AnalyticsProvider />

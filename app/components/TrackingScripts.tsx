@@ -9,14 +9,12 @@ type Props = {
   facebookPixelId?: string | null;
   tiktokPixelId?: string | null;
   snapchatPixelId?: string | null;
-  googleAnalyticsId?: string | null;
 };
 
 export default function TrackingScripts({
   facebookPixelId,
   tiktokPixelId,
   snapchatPixelId,
-  googleAnalyticsId,
 }: Props) {
   const [shouldLoad, setShouldLoad] = useState(false);
 
@@ -38,25 +36,8 @@ export default function TrackingScripts({
 
   return (
     <>
-      {googleAnalyticsId && (
-        <>
-          <Script
-            src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
-            strategy="lazyOnload"
-            onLoad={onScriptsReady}
-          />
-          <Script id="ga4-init" strategy="lazyOnload" onReady={onScriptsReady}>{`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            window.gtag = gtag;
-            gtag('js', new Date());
-            gtag('config', '${googleAnalyticsId}', { send_page_view: false });
-          `}</Script>
-        </>
-      )}
-
       {facebookPixelId && (
-        <Script id="fb-pixel" strategy="lazyOnload" onReady={onScriptsReady}>{`
+        <Script id="fb-pixel" strategy="afterInteractive" onReady={onScriptsReady}>{`
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
           n.callMethod.apply(n,arguments):n.queue.push(arguments)};
