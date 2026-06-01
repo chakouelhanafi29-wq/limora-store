@@ -1,4 +1,5 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createLatin1GuardFetch } from "@/lib/http/byte-string";
 import {
   describeInvalidServiceRoleKey,
   getSupabaseServiceRoleKey,
@@ -21,5 +22,12 @@ export function createServiceRoleClient() {
 
   return createSupabaseClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: createLatin1GuardFetch(
+        fetch,
+        key,
+        "SUPABASE_SERVICE_ROLE_KEY",
+      ),
+    },
   });
 }

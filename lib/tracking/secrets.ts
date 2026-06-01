@@ -1,3 +1,4 @@
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { createServiceRoleClient } from "@/lib/supabase/service";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 import {
@@ -126,10 +127,12 @@ async function readTrackingSecretsViaServiceRole(): Promise<TrackingSecretsRow |
   return data as TrackingSecretsRow;
 }
 
-async function readTrackingSecretsViaAdminSession(): Promise<TrackingSecretsRow | null> {
+async function readTrackingSecretsViaAdminSession(
+  supabaseClient?: SupabaseClient,
+): Promise<TrackingSecretsRow | null> {
   if (!isSupabaseConfigured()) return null;
 
-  const supabase = await createClient();
+  const supabase = supabaseClient ?? (await createClient());
   const { data, error } = await supabase
     .from("tracking_secrets")
     .select(TRACKING_SECRETS_COLUMNS)
@@ -153,19 +156,22 @@ export async function getTrackingSecretsForServer(): Promise<TrackingSecretsRow 
 }
 
 /** Admin UI reads (authenticated admin RLS). */
-export async function getTrackingSecretsForAdmin(): Promise<TrackingSecretsRow | null> {
-  return readTrackingSecretsViaAdminSession();
+export async function getTrackingSecretsForAdmin(
+  supabaseClient?: SupabaseClient,
+): Promise<TrackingSecretsRow | null> {
+  return readTrackingSecretsViaAdminSession(supabaseClient);
 }
 
 export async function upsertTrackingSecretsForAdmin(
   update: TrackingSecretsUpdate,
+  supabaseClient?: SupabaseClient,
 ): Promise<{ error: string | null }> {
   if (!isSupabaseConfigured()) {
     return { error: "Supabase غير مُفعّل" };
   }
 
-  const supabase = await createClient();
-  const existing = await getTrackingSecretsForAdmin();
+  const supabase = supabaseClient ?? (await createClient());
+  const existing = await readTrackingSecretsViaAdminSession(supabase);
 
   const payload: TrackingSecretsUpdate & { updated_at: string } = {
     updated_at: new Date().toISOString(),
@@ -226,12 +232,13 @@ export async function clearTrackingSecretForAdmin(
     | "tiktok_events_access_token"
     | "snapchat_capi_access_token"
     | "ga4_service_account_json",
+  supabaseClient?: SupabaseClient,
 ): Promise<{ error: string | null }> {
   if (!isSupabaseConfigured()) {
     return { error: "Supabase غير مُفعّل" };
   }
 
-  const supabase = await createClient();
+  const supabase = supabaseClient ?? (await createClient());
   const { error } = await supabase
     .from("tracking_secrets")
     .update({ [field]: null, updated_at: new Date().toISOString() })

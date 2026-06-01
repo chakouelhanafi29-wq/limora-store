@@ -6,7 +6,14 @@ import {
 } from "@/lib/analytics/ga4/config";
 import { getGa4AdminSettingsSnapshot } from "@/lib/analytics/ga4/admin-settings";
 import { createClient, isAdminUser, isSupabaseConfigured } from "@/lib/supabase/server";
-import { upsertTrackingSecretsForAdmin, probeGa4ServiceAccountStorage } from "@/lib/tracking/secrets";
+import type { ByteStringViolation } from "@/lib/http/byte-string";
+import {
+  scanEnvKeysForByteString,
+  violationFromErrorMessage,
+} from "@/lib/http/byte-string";
+import { getSupabaseAnonKey } from "@/lib/supabase/env";
+import { upsertTrackingSecretsForAdmin } from "@/lib/tracking/secrets";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function GET() {
   if (!(await isAdminUser())) {
@@ -15,6 +22,7 @@ export async function GET() {
 
   const snapshot = await getGa4AdminSettingsSnapshot();
   const config = await getGa4Config();
+  const { probeGa4ServiceAccountStorage } = await import("@/lib/tracking/secrets");
   const storageProbe = await probeGa4ServiceAccountStorage();
 
   return NextResponse.json({
@@ -39,9 +47,52 @@ type Ga4SettingsBody = {
   clear_ga4_service_account?: boolean;
 };
 
-async function saveGa4Settings(body: Ga4SettingsBody) {
+type SaveGa4Result = {
+  error: string | null;
+  status: 200 | 400 | 500 | 503;
+  step?: string;
+  byteStringDiagnostic?: ByteStringViolation;
+  runtimeKeys?: ReturnType<typeof runtimeKeyProbe>;
+};
+
+function runtimeKeyProbe() {
+  function meta(raw: string | undefined) {
+    const value = raw?.trim() ?? "";
+    return {
+      length: value.length,
+      char0: value.length ? value.charCodeAt(0) : null,
+      prefix: value.slice(0, 4),
+    };
+  }
+
+  return {
+    publishable: meta(process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY),
+    anon: meta(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
+    serviceRole: meta(process.env.SUPABASE_SERVICE_ROLE_KEY),
+    resolvedAnonKey: meta(getSupabaseAnonKey()),
+  };
+}
+
+function logPostFailure(payload: Record<string, unknown>) {
+  console.error("[ga4-settings POST]", JSON.stringify(payload));
+}
+
+async function saveGa4Settings(body: Ga4SettingsBody): Promise<SaveGa4Result> {
   if (!isSupabaseConfigured()) {
-    return { error: "Supabase غير مُفعّل", status: 503 as const };
+    return { error: "Supabase غير مُفعّل", status: 503 };
+  }
+
+  const envViolations = scanEnvKeysForByteString();
+  if (envViolations.length > 0) {
+    const runtimeKeys = runtimeKeyProbe();
+    logPostFailure({ step: "env_scan", byteStringDiagnostic: envViolations[0], runtimeKeys });
+    return {
+      error: envViolations[0].valuePreview,
+      status: 500,
+      step: "env_scan",
+      byteStringDiagnostic: envViolations[0],
+      runtimeKeys,
+    };
   }
 
   const measurementId = body.measurementId?.trim() ?? "";
@@ -50,14 +101,14 @@ async function saveGa4Settings(body: Ga4SettingsBody) {
   if (measurementId && !isValidMeasurementId(measurementId)) {
     return {
       error: "Measurement ID يجب أن يبدأ بـ G- (مثال: G-XXXXXXXXXX)",
-      status: 400 as const,
+      status: 400,
     };
   }
 
   if (propertyId && !normalizeGa4PropertyId(propertyId)) {
     return {
       error: "Property ID يجب أن يكون أرقاماً فقط (من GA4 Property settings)",
-      status: 400 as const,
+      status: 400,
     };
   }
 
@@ -70,15 +121,78 @@ async function saveGa4Settings(body: Ga4SettingsBody) {
       if (!parsed.client_email || !parsed.private_key) {
         return {
           error: "JSON غير صالح — يجب أن يحتوي client_email و private_key",
-          status: 400 as const,
+          status: 400,
         };
       }
     } catch {
-      return { error: "JSON غير صالح", status: 400 as const };
+      return { error: "JSON غير صالح", status: 400 };
     }
   }
 
-  const supabase = await createClient();
+  let byteStringDiagnostic: ByteStringViolation | undefined;
+  const supabase = await createClient({
+    onByteStringViolation: (violation) => {
+      byteStringDiagnostic = violation;
+    },
+  });
+
+  const settingsResult = await updateSettings(
+    supabase,
+    measurementId,
+    propertyId,
+  );
+  if (settingsResult.error) {
+    return {
+      ...settingsResult,
+      byteStringDiagnostic:
+        settingsResult.byteStringDiagnostic ?? byteStringDiagnostic,
+      runtimeKeys: runtimeKeyProbe(),
+    };
+  }
+
+  if (body.clear_ga4_service_account) {
+    const { clearTrackingSecretForAdmin } = await import("@/lib/tracking/secrets");
+    const { error } = await clearTrackingSecretForAdmin(
+      "ga4_service_account_json",
+      supabase,
+    );
+    if (error) {
+      return {
+        error,
+        status: 500,
+        step: "clear_ga4_service_account",
+        byteStringDiagnostic:
+          violationFromErrorMessage(error) ?? byteStringDiagnostic,
+        runtimeKeys: runtimeKeyProbe(),
+      };
+    }
+  }
+
+  if (body.ga4_service_account_json !== undefined) {
+    const { error: secretsError } = await upsertTrackingSecretsForAdmin(
+      { ga4_service_account_json: body.ga4_service_account_json },
+      supabase,
+    );
+    if (secretsError) {
+      return {
+        error: secretsError,
+        status: 500,
+        step: "upsert_tracking_secrets",
+        byteStringDiagnostic:
+          violationFromErrorMessage(secretsError) ?? byteStringDiagnostic,
+        runtimeKeys: runtimeKeyProbe(),
+      };
+    }
+  }
+
+  return { error: null, status: 200 };
+}
+
+async function updateSettings(
+  supabase: SupabaseClient,
+  measurementId: string,
+  propertyId: string,
+): Promise<SaveGa4Result> {
   const { error: settingsError } = await supabase
     .from("settings")
     .update({
@@ -91,27 +205,16 @@ async function saveGa4Settings(body: Ga4SettingsBody) {
     const hint = settingsError.message.includes("ga4_property_id")
       ? " — شغّلي supabase/ga4-analytics-migration.sql"
       : "";
-    return { error: settingsError.message + hint, status: 500 as const };
+    return {
+      error: settingsError.message + hint,
+      status: 500,
+      step: "update_settings",
+      byteStringDiagnostic:
+        violationFromErrorMessage(settingsError.message) ?? undefined,
+    };
   }
 
-  if (body.clear_ga4_service_account) {
-    const { clearTrackingSecretForAdmin } = await import("@/lib/tracking/secrets");
-    const { error } = await clearTrackingSecretForAdmin("ga4_service_account_json");
-    if (error) {
-      return { error, status: 500 as const };
-    }
-  }
-
-  if (body.ga4_service_account_json !== undefined) {
-    const { error: secretsError } = await upsertTrackingSecretsForAdmin({
-      ga4_service_account_json: body.ga4_service_account_json,
-    });
-    if (secretsError) {
-      return { error: secretsError, status: 500 as const };
-    }
-  }
-
-  return { error: null, status: 200 as const };
+  return { error: null, status: 200 };
 }
 
 export async function POST(request: Request) {
@@ -119,11 +222,40 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = (await request.json()) as Ga4SettingsBody;
-  const result = await saveGa4Settings(body);
+  let body: Ga4SettingsBody;
+  try {
+    body = (await request.json()) as Ga4SettingsBody;
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+  }
+
+  let result: SaveGa4Result;
+  try {
+    result = await saveGa4Settings(body);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    const diagnostic =
+      (error as { byteStringDiagnostic?: ByteStringViolation })
+        .byteStringDiagnostic ?? violationFromErrorMessage(message);
+    return NextResponse.json(
+      {
+        error: message,
+        step: "uncaught",
+        byteStringDiagnostic: diagnostic,
+      },
+      { status: 500 },
+    );
+  }
 
   if (result.error) {
-    return NextResponse.json({ error: result.error }, { status: result.status });
+    const payload = {
+      error: result.error,
+      step: result.step,
+      byteStringDiagnostic: result.byteStringDiagnostic,
+      runtimeKeys: result.runtimeKeys ?? runtimeKeyProbe(),
+    };
+    logPostFailure(payload);
+    return NextResponse.json(payload, { status: result.status });
   }
 
   const snapshot = await getGa4AdminSettingsSnapshot();

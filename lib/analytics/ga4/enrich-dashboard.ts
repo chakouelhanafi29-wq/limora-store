@@ -80,8 +80,6 @@ export async function enrichDashboardWithGa4(
 
   const gaData = gaResult.data;
   const { sessions, activeUsers, totalUsers, screenPageViews } = gaData.overview;
-  const hasTraffic =
-    sessions > 0 || activeUsers > 0 || totalUsers > 0 || screenPageViews > 0;
 
   logAnalyticsRuntime("enrichDashboardWithGa4.afterFetch", {
     overview: {
@@ -90,20 +88,8 @@ export async function enrichDashboardWithGa4(
       sessions,
       screenPageViews,
     },
-    hasTraffic,
     traffic_totalVisitors_beforeMerge: dashboard.traffic.totalVisitors,
   });
-
-  if (!hasTraffic) {
-    logAnalyticsRuntime("enrichDashboardWithGa4.earlyExit", {
-      reason: "hasTraffic_false",
-      file: "lib/analytics/ga4/enrich-dashboard.ts",
-      overview: { totalUsers, activeUsers, sessions, screenPageViews },
-      traffic_totalVisitors: dashboard.traffic.totalVisitors,
-      note: "GA4 Data API connected but overview metrics are zero for this date range",
-    });
-    return dashboard;
-  }
 
   const merged = applyGa4ToDashboard(dashboard, gaData, orderList);
   logAnalyticsRuntime("enrichDashboardWithGa4.afterMerge", {
