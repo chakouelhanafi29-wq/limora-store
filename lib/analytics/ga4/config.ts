@@ -1,10 +1,15 @@
 import { getSettings } from "@/lib/supabase/queries";
-import { getTrackingSecretsForServer } from "@/lib/tracking/secrets";
+import {
+  getLastGa4ServiceAccountLoadSource,
+  getTrackingSecretsForServer,
+  type Ga4ServiceAccountLoadSource,
+} from "@/lib/tracking/secrets";
 
 export type Ga4Config = {
   measurementId: string | null;
   propertyId: string | null;
   serviceAccountJson: string | null;
+  serviceAccountLoadSource: Ga4ServiceAccountLoadSource;
 };
 
 function env(name: string): string | null {
@@ -23,15 +28,32 @@ export function isValidMeasurementId(value: string | null | undefined): boolean 
   return /^G-[A-Z0-9]+$/i.test(value.trim());
 }
 
-export function isGa4DataApiReady(config: Ga4Config): boolean {
-  return Boolean(config.propertyId && config.serviceAccountJson);
+function resolveServiceAccountJson(
+  secretsJson: string | null | undefined,
+): { json: string | null; source: Ga4ServiceAccountLoadSource } {
+  const fromDb = secretsJson?.trim();
+  if (fromDb) {
+    return { json: fromDb, source: getLastGa4ServiceAccountLoadSource() };
+  }
+
+  const fromEnv = env("GA4_SERVICE_ACCOUNT_JSON");
+  if (fromEnv) {
+    return { json: fromEnv, source: "env" };
+  }
+
+  return { json: null, source: "none" };
 }
 
-export async function getGa4Config(): Promise<Ga4Config> {
-  const [settings, secrets] = await Promise.all([
-    getSettings(),
-    getTrackingSecretsForServer(),
-  ]);
+async function buildGa4Config(
+  settings: {
+    google_analytics_id?: string | null;
+    ga4_property_id?: string | null;
+  } | null,
+  secrets: Awaited<ReturnType<typeof getTrackingSecretsForServer>>,
+): Promise<Ga4Config> {
+  const serviceAccount = resolveServiceAccountJson(
+    secrets?.ga4_service_account_json,
+  );
 
   return {
     measurementId:
@@ -43,9 +65,41 @@ export async function getGa4Config(): Promise<Ga4Config> {
     propertyId:
       normalizeGa4PropertyId(settings?.ga4_property_id) ||
       normalizeGa4PropertyId(env("GA4_PROPERTY_ID")),
-    serviceAccountJson:
-      secrets?.ga4_service_account_json?.trim() ||
-      env("GA4_SERVICE_ACCOUNT_JSON") ||
-      null,
+    serviceAccountJson: serviceAccount.json,
+    serviceAccountLoadSource: serviceAccount.source,
   };
+}
+
+export function isGa4DataApiReady(config: Ga4Config): boolean {
+  return Boolean(config.propertyId && config.serviceAccountJson);
+}
+
+/** Service-role probe (scripts / maintenance) — no admin session cookies. */
+export async function getGa4ConfigForServerProbe(): Promise<Ga4Config> {
+  const { getTrackingSecretsForServer } = await import("@/lib/tracking/secrets");
+  const { createServiceRoleClient } = await import("@/lib/supabase/service");
+  const service = createServiceRoleClient();
+
+  if (service) {
+    const [{ data: settings }, secrets] = await Promise.all([
+      service
+        .from("settings")
+        .select("google_analytics_id,ga4_property_id")
+        .eq("id", 1)
+        .maybeSingle(),
+      getTrackingSecretsForServer(),
+    ]);
+    return buildGa4Config(settings, secrets);
+  }
+
+  return buildGa4Config(null, null);
+}
+
+export async function getGa4Config(): Promise<Ga4Config> {
+  const [settings, secrets] = await Promise.all([
+    getSettings(),
+    getTrackingSecretsForServer(),
+  ]);
+
+  return buildGa4Config(settings, secrets);
 }

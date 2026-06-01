@@ -6,7 +6,7 @@ import {
 } from "@/lib/analytics/ga4/config";
 import { getGa4AdminSettingsSnapshot } from "@/lib/analytics/ga4/admin-settings";
 import { createClient, isAdminUser, isSupabaseConfigured } from "@/lib/supabase/server";
-import { upsertTrackingSecretsForAdmin } from "@/lib/tracking/secrets";
+import { upsertTrackingSecretsForAdmin, probeGa4ServiceAccountStorage } from "@/lib/tracking/secrets";
 
 export async function GET() {
   if (!(await isAdminUser())) {
@@ -15,9 +15,12 @@ export async function GET() {
 
   const snapshot = await getGa4AdminSettingsSnapshot();
   const config = await getGa4Config();
+  const storageProbe = await probeGa4ServiceAccountStorage();
 
   return NextResponse.json({
     ...snapshot,
+    serviceAccountJsonLoaded: Boolean(config.serviceAccountJson),
+    serviceAccountLoadSource: config.serviceAccountLoadSource,
     configReady: Boolean(config.propertyId && config.serviceAccountJson),
     pipeline: {
       measurementId: config.measurementId,
@@ -25,6 +28,7 @@ export async function GET() {
       hasServiceAccount: Boolean(config.serviceAccountJson),
       dataApiReady: Boolean(config.propertyId && config.serviceAccountJson),
     },
+    storageProbe,
   });
 }
 

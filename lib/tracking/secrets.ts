@@ -23,6 +23,21 @@ export type TrackingSecretsUpdate = {
   ga4_service_account_json?: string | null;
 };
 
+export type Ga4ServiceAccountLoadSource =
+  | "service_role_db"
+  | "admin_session_db"
+  | "env"
+  | "none";
+
+const TRACKING_SECRETS_COLUMNS =
+  "id, meta_capi_access_token, meta_test_event_code, tiktok_events_access_token, tiktok_test_event_code, snapchat_capi_access_token, snapchat_test_event_code, ga4_service_account_json, updated_at";
+
+let lastGa4LoadSource: Ga4ServiceAccountLoadSource = "none";
+
+export function getLastGa4ServiceAccountLoadSource(): Ga4ServiceAccountLoadSource {
+  return lastGa4LoadSource;
+}
+
 export function maskTrackingToken(token: string | null | undefined): string | null {
   if (!token?.trim()) return null;
   const trimmed = token.trim();
@@ -30,36 +45,92 @@ export function maskTrackingToken(token: string | null | undefined): string | nu
   return `••••${trimmed.slice(-4)}`;
 }
 
-export async function getTrackingSecretsForServer(): Promise<TrackingSecretsRow | null> {
-  const service = createServiceRoleClient();
-  if (service) {
-    const { data } = await service
-      .from("tracking_secrets")
-      .select("*")
-      .eq("id", 1)
-      .maybeSingle();
-    return (data as TrackingSecretsRow | null) ?? null;
-  }
-
-  if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("tracking_secrets")
-    .select("*")
-    .eq("id", 1)
-    .maybeSingle();
-  return (data as TrackingSecretsRow | null) ?? null;
+function pickSecret(
+  service: TrackingSecretsRow | null,
+  admin: TrackingSecretsRow | null,
+  key: keyof TrackingSecretsRow,
+): string | null {
+  const serviceValue = service?.[key];
+  const adminValue = admin?.[key];
+  if (typeof serviceValue === "string" && serviceValue.trim()) return serviceValue.trim();
+  if (typeof adminValue === "string" && adminValue.trim()) return adminValue.trim();
+  return null;
 }
 
-export async function getTrackingSecretsForAdmin(): Promise<TrackingSecretsRow | null> {
-  if (!isSupabaseConfigured()) return null;
-  const supabase = await createClient();
-  const { data } = await supabase
+function mergeTrackingSecrets(
+  service: TrackingSecretsRow | null,
+  admin: TrackingSecretsRow | null,
+): TrackingSecretsRow | null {
+  if (!service && !admin) return null;
+
+  const ga4FromService = service?.ga4_service_account_json?.trim() ?? "";
+  const ga4FromAdmin = admin?.ga4_service_account_json?.trim() ?? "";
+
+  if (ga4FromService) {
+    lastGa4LoadSource = "service_role_db";
+  } else if (ga4FromAdmin) {
+    lastGa4LoadSource = "admin_session_db";
+  }
+
+  return {
+    id: 1,
+    meta_capi_access_token: pickSecret(service, admin, "meta_capi_access_token"),
+    meta_test_event_code: pickSecret(service, admin, "meta_test_event_code"),
+    tiktok_events_access_token: pickSecret(service, admin, "tiktok_events_access_token"),
+    tiktok_test_event_code: pickSecret(service, admin, "tiktok_test_event_code"),
+    snapchat_capi_access_token: pickSecret(service, admin, "snapchat_capi_access_token"),
+    snapchat_test_event_code: pickSecret(service, admin, "snapchat_test_event_code"),
+    ga4_service_account_json: ga4FromService || ga4FromAdmin || null,
+    updated_at:
+      service?.updated_at ??
+      admin?.updated_at ??
+      new Date().toISOString(),
+  };
+}
+
+async function readTrackingSecretsViaServiceRole(): Promise<TrackingSecretsRow | null> {
+  const service = createServiceRoleClient();
+  if (!service) return null;
+
+  const { data, error } = await service
     .from("tracking_secrets")
-    .select("*")
+    .select(TRACKING_SECRETS_COLUMNS)
     .eq("id", 1)
     .maybeSingle();
-  return (data as TrackingSecretsRow | null) ?? null;
+
+  if (error || !data) return null;
+  return data as TrackingSecretsRow;
+}
+
+async function readTrackingSecretsViaAdminSession(): Promise<TrackingSecretsRow | null> {
+  if (!isSupabaseConfigured()) return null;
+
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("tracking_secrets")
+    .select(TRACKING_SECRETS_COLUMNS)
+    .eq("id", 1)
+    .maybeSingle();
+
+  if (error || !data) return null;
+  return data as TrackingSecretsRow;
+}
+
+/** Server reads: service role + authenticated admin session (merged). */
+export async function getTrackingSecretsForServer(): Promise<TrackingSecretsRow | null> {
+  lastGa4LoadSource = "none";
+
+  const [serviceRow, adminRow] = await Promise.all([
+    readTrackingSecretsViaServiceRole(),
+    readTrackingSecretsViaAdminSession(),
+  ]);
+
+  return mergeTrackingSecrets(serviceRow, adminRow);
+}
+
+/** Admin UI reads (authenticated admin RLS). */
+export async function getTrackingSecretsForAdmin(): Promise<TrackingSecretsRow | null> {
+  return readTrackingSecretsViaAdminSession();
 }
 
 export async function upsertTrackingSecretsForAdmin(
@@ -71,13 +142,7 @@ export async function upsertTrackingSecretsForAdmin(
 
   const service = createServiceRoleClient();
   const supabase = service ?? (await createClient());
-  const existing = service
-    ? ((await service
-        .from("tracking_secrets")
-        .select("*")
-        .eq("id", 1)
-        .maybeSingle()).data as TrackingSecretsRow | null)
-    : await getTrackingSecretsForAdmin();
+  const existing = await getTrackingSecretsForServer();
 
   const payload: TrackingSecretsUpdate & { updated_at: string } = {
     updated_at: new Date().toISOString(),
@@ -150,4 +215,27 @@ export async function clearTrackingSecretForAdmin(
     .update({ [field]: null, updated_at: new Date().toISOString() })
     .eq("id", 1);
   return { error: error?.message ?? null };
+}
+
+export async function probeGa4ServiceAccountStorage(): Promise<{
+  serviceRoleConfigured: boolean;
+  serviceRoleRowFound: boolean;
+  serviceRoleHasGa4: boolean;
+  adminSessionRowFound: boolean;
+  adminSessionHasGa4: boolean;
+  envHasGa4: boolean;
+}> {
+  const [serviceRow, adminRow] = await Promise.all([
+    readTrackingSecretsViaServiceRole(),
+    readTrackingSecretsViaAdminSession(),
+  ]);
+
+  return {
+    serviceRoleConfigured: Boolean(process.env.SUPABASE_SERVICE_ROLE_KEY?.trim()),
+    serviceRoleRowFound: Boolean(serviceRow),
+    serviceRoleHasGa4: Boolean(serviceRow?.ga4_service_account_json?.trim()),
+    adminSessionRowFound: Boolean(adminRow),
+    adminSessionHasGa4: Boolean(adminRow?.ga4_service_account_json?.trim()),
+    envHasGa4: Boolean(process.env.GA4_SERVICE_ACCOUNT_JSON?.trim()),
+  };
 }

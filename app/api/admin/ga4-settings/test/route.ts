@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getGa4Config, normalizeGa4PropertyId } from "@/lib/analytics/ga4/config";
+import { getGa4Config, normalizeGa4PropertyId, type Ga4Config } from "@/lib/analytics/ga4/config";
 import { testGa4DataApiConnection } from "@/lib/analytics/ga4/fetch-dashboard";
 import { isAdminUser } from "@/lib/supabase/server";
 
@@ -16,13 +16,14 @@ export async function POST(request: Request) {
   }
 
   const saved = await getGa4Config();
-  const config = {
+  const config: Ga4Config = {
     measurementId: saved.measurementId,
     propertyId:
       normalizeGa4PropertyId(body.propertyId) ||
       saved.propertyId,
     serviceAccountJson:
       body.serviceAccountJson?.trim() || saved.serviceAccountJson,
+    serviceAccountLoadSource: saved.serviceAccountLoadSource,
   };
 
   if (!config.propertyId) {
