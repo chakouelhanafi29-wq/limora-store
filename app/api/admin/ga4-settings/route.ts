@@ -19,6 +19,12 @@ export async function GET() {
   return NextResponse.json({
     ...snapshot,
     configReady: Boolean(config.propertyId && config.serviceAccountJson),
+    pipeline: {
+      measurementId: config.measurementId,
+      propertyId: config.propertyId,
+      hasServiceAccount: Boolean(config.serviceAccountJson),
+      dataApiReady: Boolean(config.propertyId && config.serviceAccountJson),
+    },
   });
 }
 

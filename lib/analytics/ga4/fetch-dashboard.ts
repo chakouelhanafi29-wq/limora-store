@@ -3,14 +3,11 @@ import { createGa4DataClient, ga4PropertyPath } from "./client";
 import { labelChannel, labelCountry, labelDevice } from "./labels";
 import type { Ga4Config } from "./config";
 import { isGa4DataApiReady } from "./config";
+import { formatGa4ReportDate } from "./dates";
 import type { AnalyticsCountRow } from "@/lib/types/analytics-dashboard";
 import type { Ga4DashboardSlice, Ga4FetchResult } from "./types";
 
 type IRow = protos.google.analytics.data.v1beta.IRow;
-
-function formatGa4Date(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
 
 function metricValue(row: IRow, index: number): number {
   const raw = row.metricValues?.[index]?.value;
@@ -51,7 +48,7 @@ export async function fetchGa4DashboardSlice(
     const client = createGa4DataClient(config.serviceAccountJson!);
     const property = ga4PropertyPath(config.propertyId!);
     const dateRanges = [
-      { startDate: formatGa4Date(start), endDate: formatGa4Date(end) },
+      { startDate: formatGa4ReportDate(start), endDate: formatGa4ReportDate(end) },
     ];
 
     const [
