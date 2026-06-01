@@ -1,6 +1,7 @@
 import type { AnalyticsDashboardData } from "@/lib/types/analytics-dashboard";
 import type { Order } from "@/lib/types/database";
 import type { Ga4DashboardSlice } from "./types";
+import { logAnalyticsRuntime } from "./runtime-log";
 
 function pct(numerator: number, denominator: number) {
   if (!denominator) return 0;
@@ -119,13 +120,29 @@ export function applyGa4ToDashboard(
   const start = new Date(dashboard.range.start);
   const end = new Date(dashboard.range.end);
 
+  const totalVisitors =
+    overview.totalUsers ||
+    overview.activeUsers ||
+    overview.sessions;
+
+  logAnalyticsRuntime("applyGa4ToDashboard.setTotalVisitors", {
+    file: "lib/analytics/ga4/merge-dashboard.ts",
+    line: 125,
+    overview: {
+      totalUsers: overview.totalUsers,
+      activeUsers: overview.activeUsers,
+      sessions: overview.sessions,
+    },
+    traffic_totalVisitors_in: dashboard.traffic.totalVisitors,
+    traffic_totalVisitors_out: totalVisitors,
+    zeroDespiteSessions:
+      overview.sessions > 0 && totalVisitors === 0,
+  });
+
   return {
     ...dashboard,
     traffic: {
-      totalVisitors:
-        overview.totalUsers ||
-        overview.activeUsers ||
-        overview.sessions,
+      totalVisitors,
       uniqueVisitors:
         overview.activeUsers || overview.totalUsers || overview.sessions,
       sessions: overview.sessions,

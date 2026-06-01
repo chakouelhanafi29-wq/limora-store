@@ -3,8 +3,17 @@ import { getGa4PipelineDebug } from "@/lib/analytics/ga4/pipeline-debug";
 import { parseDatePreset } from "@/lib/analytics/date-range";
 import { isAdminUser } from "@/lib/supabase/server";
 
+function isRuntimeDebugTokenAuthorized(request: Request): boolean {
+  const expected = process.env.ANALYTICS_RUNTIME_DEBUG_TOKEN?.trim();
+  if (!expected) return false;
+  const { searchParams } = new URL(request.url);
+  const token = searchParams.get("token")?.trim();
+  return Boolean(token && token === expected);
+}
+
 export async function GET(request: Request) {
-  if (!(await isAdminUser())) {
+  const tokenOk = isRuntimeDebugTokenAuthorized(request);
+  if (!tokenOk && !(await isAdminUser())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 

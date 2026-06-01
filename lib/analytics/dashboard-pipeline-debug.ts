@@ -1,5 +1,5 @@
 import { resolveDateRange, type DatePreset } from "@/lib/analytics/date-range";
-import { buildPipelineRuntimeSnapshot } from "@/lib/analytics/ga4/fetch-overview-debug";
+import { probeProductionAnalyticsRuntime } from "@/lib/analytics/ga4/production-runtime-probe";
 import { getAnalyticsDashboard } from "@/lib/analytics/dashboard";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server";
 
@@ -31,39 +31,29 @@ export async function loadAnalyticsDashboardPipelineDebug(
     eventsCount = eventCount ?? 0;
   }
 
-  const ga4Runtime = await buildPipelineRuntimeSnapshot(range.start, range.end);
+  const runtimeProbe = await probeProductionAnalyticsRuntime(
+    preset,
+    customStart,
+    customEnd,
+  );
   const finalDashboard = await getAnalyticsDashboard(
     preset,
     customStart,
     customEnd,
   );
 
+  const o = runtimeProbe.overview;
+
   return {
-    range: {
-      preset: range.preset,
-      label: range.label,
-      start: range.start.toISOString(),
-      end: range.end.toISOString(),
-    },
+    ...runtimeProbe,
     supabase: {
       ordersCount,
       eventsCount,
-      note: "cod.totalOrders comes from orders table. traffic.totalVisitors does not.",
     },
-    fetchGa4DashboardSlice: ga4Runtime.fetchGa4DashboardSlice,
-    overview: ga4Runtime.overview,
-    overview_totalUsers: ga4Runtime.overview?.totalUsers ?? null,
-    overview_activeUsers: ga4Runtime.overview?.activeUsers ?? null,
-    overview_sessions: ga4Runtime.overview?.sessions ?? null,
-    overview_screenPageViews: ga4Runtime.overview?.screenPageViews ?? null,
-    computedTotalVisitorsFromOverview:
-      ga4Runtime.computedTotalVisitorsFromOverview,
-    rawGa4OverviewResponse: ga4Runtime.rawOverview,
-    immediatelyBeforeAnalyticsDashboardRender: {
+    liveDashboardLoader: {
       traffic: {
         totalVisitors: finalDashboard.traffic.totalVisitors,
         sessions: finalDashboard.traffic.sessions,
-        uniqueVisitors: finalDashboard.traffic.uniqueVisitors,
       },
       cod: {
         totalOrders: finalDashboard.cod.totalOrders,
@@ -71,10 +61,12 @@ export async function loadAnalyticsDashboardPipelineDebug(
       },
       tracking_ga4: finalDashboard.tracking.ga4,
     },
-    zeroLine: {
-      file: "lib/analytics/ga4/merge-dashboard.ts",
-      line: 125,
-      expression: "totalVisitors: overview.totalUsers || overview.activeUsers",
+    summary: {
+      overview_totalUsers: o?.totalUsers ?? null,
+      overview_activeUsers: o?.activeUsers ?? null,
+      overview_sessions: o?.sessions ?? null,
+      traffic_totalVisitors:
+        finalDashboard.traffic.totalVisitors,
     },
   };
 }

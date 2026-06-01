@@ -3,7 +3,8 @@ import type { Order } from "@/lib/types/database";
 import { applyGa4ToDashboard } from "./merge-dashboard";
 import { fetchGa4DashboardSlice } from "./fetch-dashboard";
 import { formatGa4ReportDate } from "./dates";
-import { getGa4Config, isGa4DataApiReady } from "./config";
+import { getGa4Config, isGa4DataApiReady, type Ga4Config } from "./config";
+import { logAnalyticsRuntime } from "./runtime-log";
 
 function pipelineError(step: string, detail: string) {
   return `[ga4_pipeline] ${step}: ${detail}`;
@@ -13,8 +14,9 @@ export async function enrichDashboardWithGa4(
   dashboard: AnalyticsDashboardData,
   orderList: Order[],
   range: { start: Date; end: Date },
+  ga4ConfigOverride?: Ga4Config,
 ): Promise<AnalyticsDashboardData> {
-  const ga4Config = await getGa4Config();
+  const ga4Config = ga4ConfigOverride ?? (await getGa4Config());
   const ga4TrackingBase = {
     configured: Boolean(
       ga4Config.measurementId ||
@@ -29,6 +31,15 @@ export async function enrichDashboardWithGa4(
 
   dashboard.tracking.ga4 = { ...ga4TrackingBase };
 
+  logAnalyticsRuntime("enrichDashboardWithGa4.baseBeforeGa4", {
+    traffic_totalVisitors: dashboard.traffic.totalVisitors,
+    traffic_sessions: dashboard.traffic.sessions,
+    cod_totalOrders: dashboard.cod.totalOrders,
+    propertyId: ga4Config.propertyId,
+    dateStart: formatGa4ReportDate(range.start),
+    dateEnd: formatGa4ReportDate(range.end),
+  });
+
   if (!isGa4DataApiReady(ga4Config)) {
     const missing = !ga4Config.propertyId
       ? "propertyId"
@@ -37,6 +48,11 @@ export async function enrichDashboardWithGa4(
       "isGa4DataApiReady",
       `getGa4Config() missing ${missing} — admin visitors require GA4 Data API, not collect/gtag`,
     );
+    logAnalyticsRuntime("enrichDashboardWithGa4.earlyExit", {
+      reason: "isGa4DataApiReady_false",
+      missing,
+      traffic_totalVisitors: dashboard.traffic.totalVisitors,
+    });
     return dashboard;
   }
 
@@ -51,13 +67,29 @@ export async function enrichDashboardWithGa4(
       "fetchGa4DashboardSlice",
       gaResult.error ?? "unknown error",
     );
+    logAnalyticsRuntime("enrichDashboardWithGa4.earlyExit", {
+      reason: "fetchGa4DashboardSlice_failed",
+      error: gaResult.error,
+      traffic_totalVisitors: dashboard.traffic.totalVisitors,
+    });
     return dashboard;
   }
 
-  const { sessions, activeUsers, totalUsers, screenPageViews } =
-    gaResult.data.overview;
+  const gaData = gaResult.data;
+  const { sessions, activeUsers, totalUsers, screenPageViews } = gaData.overview;
   const hasTraffic =
     sessions > 0 || activeUsers > 0 || totalUsers > 0 || screenPageViews > 0;
+
+  logAnalyticsRuntime("enrichDashboardWithGa4.afterFetch", {
+    overview: {
+      totalUsers,
+      activeUsers,
+      sessions,
+      screenPageViews,
+    },
+    hasTraffic,
+    traffic_totalVisitors_beforeMerge: dashboard.traffic.totalVisitors,
+  });
 
   if (!hasTraffic) {
     dashboard.tracking.ga4.connected = false;
@@ -65,8 +97,21 @@ export async function enrichDashboardWithGa4(
       "fetchGa4DashboardSlice",
       `0 rows for properties/${ga4Config.propertyId} (${formatGa4ReportDate(range.start)}..${formatGa4ReportDate(range.end)}). overview={sessions:${sessions},activeUsers:${activeUsers},totalUsers:${totalUsers},screenPageViews:${screenPageViews}}`,
     );
+    logAnalyticsRuntime("enrichDashboardWithGa4.earlyExit", {
+      reason: "hasTraffic_false",
+      file: "lib/analytics/ga4/enrich-dashboard.ts",
+      line: 94,
+      overview: { totalUsers, activeUsers, sessions, screenPageViews },
+      traffic_totalVisitors: dashboard.traffic.totalVisitors,
+      note: "GA4 overview all zero — dashboard keeps base totalVisitors from analytics_events",
+    });
     return dashboard;
   }
 
-  return applyGa4ToDashboard(dashboard, gaResult.data, orderList);
+  const merged = applyGa4ToDashboard(dashboard, gaData, orderList);
+  logAnalyticsRuntime("enrichDashboardWithGa4.afterMerge", {
+    traffic_totalVisitors: merged.traffic.totalVisitors,
+    traffic_sessions: merged.traffic.sessions,
+  });
+  return merged;
 }

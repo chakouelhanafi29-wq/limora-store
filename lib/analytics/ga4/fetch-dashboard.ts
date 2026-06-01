@@ -6,6 +6,10 @@ import type { Ga4Config } from "./config";
 import { isGa4DataApiReady } from "./config";
 import { formatGa4ReportDate } from "./dates";
 import { normalizeGa4Overview } from "./normalize-overview";
+import {
+  logAnalyticsRuntime,
+  serializeGa4OverviewReport,
+} from "./runtime-log";
 import type { AnalyticsCountRow } from "@/lib/types/analytics-dashboard";
 import type { Ga4DashboardSlice, Ga4FetchResult } from "./types";
 
@@ -139,6 +143,11 @@ export async function fetchGa4DashboardSlice(
     ]);
 
     const overviewResponse = overviewReport[0];
+    logAnalyticsRuntime("fetchGa4DashboardSlice.rawGa4OverviewResponse", {
+      property,
+      dateRanges,
+      raw: serializeGa4OverviewReport(overviewResponse),
+    });
     const overviewRow = firstMetricRow(overviewResponse);
     const purchases =
       purchaseReport[0].rows?.reduce(
@@ -167,14 +176,24 @@ export async function fetchGa4DashboardSlice(
       labelChannel,
     );
 
+    const overviewBeforeNormalize = {
+      sessions: overviewRow ? metricValue(overviewRow, 0) : 0,
+      activeUsers: overviewRow ? metricValue(overviewRow, 1) : 0,
+      totalUsers: overviewRow ? metricValue(overviewRow, 2) : 0,
+      screenPageViews: overviewRow ? metricValue(overviewRow, 3) : 0,
+      purchases,
+    };
+    logAnalyticsRuntime("fetchGa4DashboardSlice.overviewBeforeNormalize", {
+      overview: overviewBeforeNormalize,
+      usedRow: overviewResponse?.rows?.[0]
+        ? "rows[0]"
+        : overviewResponse?.totals?.[0]
+          ? "totals[0]"
+          : "none",
+    });
+
     let data: Ga4DashboardSlice = {
-      overview: {
-        sessions: overviewRow ? metricValue(overviewRow, 0) : 0,
-        activeUsers: overviewRow ? metricValue(overviewRow, 1) : 0,
-        totalUsers: overviewRow ? metricValue(overviewRow, 2) : 0,
-        screenPageViews: overviewRow ? metricValue(overviewRow, 3) : 0,
-        purchases,
-      },
+      overview: overviewBeforeNormalize,
       daily,
       trafficSources,
       devices: rowsToCountMap(
@@ -198,6 +217,11 @@ export async function fetchGa4DashboardSlice(
     };
 
     data = normalizeGa4Overview(data);
+    logAnalyticsRuntime("fetchGa4DashboardSlice.overviewAfterNormalize", {
+      overview: data.overview,
+      dailyRows: data.daily.length,
+      channelSessionsSum: data.trafficSources.reduce((s, r) => s + r.count, 0),
+    });
 
     return { ok: true, data };
   } catch (error) {
