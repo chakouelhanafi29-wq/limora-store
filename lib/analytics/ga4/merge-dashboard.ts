@@ -122,8 +122,12 @@ export function applyGa4ToDashboard(
   return {
     ...dashboard,
     traffic: {
-      totalVisitors: overview.totalUsers || overview.activeUsers,
-      uniqueVisitors: overview.activeUsers,
+      totalVisitors:
+        overview.totalUsers ||
+        overview.activeUsers ||
+        overview.sessions,
+      uniqueVisitors:
+        overview.activeUsers || overview.totalUsers || overview.sessions,
       sessions: overview.sessions,
       pageViews: overview.screenPageViews,
       topLandingPages: ga.topPages.slice(0, 10),

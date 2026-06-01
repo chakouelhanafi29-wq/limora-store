@@ -5,6 +5,7 @@ import { labelChannel, labelCountry, labelDevice } from "./labels";
 import type { Ga4Config } from "./config";
 import { isGa4DataApiReady } from "./config";
 import { formatGa4ReportDate } from "./dates";
+import { normalizeGa4Overview } from "./normalize-overview";
 import type { AnalyticsCountRow } from "@/lib/types/analytics-dashboard";
 import type { Ga4DashboardSlice, Ga4FetchResult } from "./types";
 
@@ -159,35 +160,23 @@ export async function fetchGa4DashboardSlice(
       };
     });
 
-    let sessions = overviewRow ? metricValue(overviewRow, 0) : 0;
-    let activeUsers = overviewRow ? metricValue(overviewRow, 1) : 0;
-    let totalUsers = overviewRow ? metricValue(overviewRow, 2) : 0;
-    let screenPageViews = overviewRow ? metricValue(overviewRow, 3) : 0;
+    const trafficSources = rowsToCountMap(
+      channelReport[0].rows ?? [],
+      0,
+      0,
+      labelChannel,
+    );
 
-    if (!sessions && !activeUsers && !totalUsers && !screenPageViews && daily.length) {
-      for (const day of daily) {
-        sessions += day.sessions;
-        activeUsers += day.activeUsers;
-        screenPageViews += day.screenPageViews;
-      }
-      totalUsers = activeUsers;
-    }
-
-    const data: Ga4DashboardSlice = {
+    let data: Ga4DashboardSlice = {
       overview: {
-        sessions,
-        activeUsers,
-        totalUsers,
-        screenPageViews,
+        sessions: overviewRow ? metricValue(overviewRow, 0) : 0,
+        activeUsers: overviewRow ? metricValue(overviewRow, 1) : 0,
+        totalUsers: overviewRow ? metricValue(overviewRow, 2) : 0,
+        screenPageViews: overviewRow ? metricValue(overviewRow, 3) : 0,
         purchases,
       },
       daily,
-      trafficSources: rowsToCountMap(
-        channelReport[0].rows ?? [],
-        0,
-        0,
-        labelChannel,
-      ),
+      trafficSources,
       devices: rowsToCountMap(
         deviceReport[0].rows ?? [],
         0,
@@ -207,6 +196,8 @@ export async function fetchGa4DashboardSlice(
         (key) => key,
       ),
     };
+
+    data = normalizeGa4Overview(data);
 
     return { ok: true, data };
   } catch (error) {
