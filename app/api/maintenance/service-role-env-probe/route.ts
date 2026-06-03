@@ -28,5 +28,9 @@ export async function GET(request: Request) {
     length: raw?.length ?? null,
     deploymentId: process.env.VERCEL_DEPLOYMENT_ID ?? null,
     vercelEnv: process.env.VERCEL_ENV ?? null,
+    vercelUrl: process.env.VERCEL_URL ?? null,
+    vercelGitCommitSha: process.env.VERCEL_GIT_COMMIT_SHA ?? null,
+    vercelProjectId: process.env.VERCEL_PROJECT_ID ?? null,
+    source: "process.env.SUPABASE_SERVICE_ROLE_KEY only — no app override in repo",
   });
 }
