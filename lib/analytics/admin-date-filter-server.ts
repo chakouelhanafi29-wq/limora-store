@@ -32,6 +32,8 @@ export async function getAdminAnalyticsInitialData() {
       totalRevenue: data.cod.totalRevenue,
     },
     ga4: data.tracking.ga4,
+    runtimeTrace_note:
+      "See [analytics-runtime] ga4.runtimeTrace.analytics in Vercel logs from enrichDashboardWithGa4",
   });
 
   return data;

@@ -19,6 +19,7 @@ import {
 } from "@/lib/http/byte-string";
 import { getSupabaseAnonKey } from "@/lib/supabase/env";
 import { upsertTrackingSecretsForAdmin } from "@/lib/tracking/secrets";
+import { captureGa4ConfigRuntimeTrace } from "@/lib/analytics/ga4/runtime-trace";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export async function GET() {
@@ -26,8 +27,14 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const snapshot = await getGa4AdminSettingsSnapshot();
   const config = await getGa4Config();
+  const { getTrackingSecretsForServer } = await import("@/lib/tracking/secrets");
+  const secrets = await getTrackingSecretsForServer();
+  const runtimeTrace = await captureGa4ConfigRuntimeTrace("ga4-settings", {
+    config,
+    secrets,
+  });
+  const snapshot = await getGa4AdminSettingsSnapshot();
   const { probeGa4ServiceAccountStorage } = await import("@/lib/tracking/secrets");
   const storageProbe = await probeGa4ServiceAccountStorage();
 
@@ -43,6 +50,7 @@ export async function GET() {
       dataApiReady: Boolean(config.propertyId && config.serviceAccountJson),
     },
     storageProbe,
+    runtimeTrace,
   });
 }
 

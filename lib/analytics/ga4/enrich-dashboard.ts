@@ -5,6 +5,7 @@ import { fetchGa4DashboardSlice } from "./fetch-dashboard";
 import { formatGa4ReportDate } from "./dates";
 import { getGa4Config, isGa4DataApiReady, type Ga4Config } from "./config";
 import { logAnalyticsRuntime } from "./runtime-log";
+import { traceEnrichGa4Config } from "./runtime-trace";
 
 function pipelineError(step: string, detail: string) {
   return `[ga4_pipeline] ${step}: ${detail}`;
@@ -17,6 +18,7 @@ export async function enrichDashboardWithGa4(
   ga4ConfigOverride?: Ga4Config,
 ): Promise<AnalyticsDashboardData> {
   const ga4Config = ga4ConfigOverride ?? (await getGa4Config());
+  await traceEnrichGa4Config(ga4Config);
   const ga4TrackingBase = {
     configured: Boolean(
       ga4Config.measurementId ||
