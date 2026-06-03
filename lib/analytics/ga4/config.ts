@@ -44,13 +44,13 @@ function resolveServiceAccountJson(
   return { json: null, source: "none" };
 }
 
-async function buildGa4Config(
+function buildGa4Config(
   settings: {
     google_analytics_id?: string | null;
     ga4_property_id?: string | null;
   } | null,
   secrets: Awaited<ReturnType<typeof getTrackingSecretsForServer>>,
-): Promise<Ga4Config> {
+): Ga4Config {
   const serviceAccount = resolveServiceAccountJson(
     secrets?.ga4_service_account_json,
   );
@@ -101,5 +101,11 @@ export async function getGa4Config(): Promise<Ga4Config> {
     getTrackingSecretsForServer(),
   ]);
 
-  return buildGa4Config(settings, secrets);
+  const config = buildGa4Config(settings, secrets);
+  if (isGa4DataApiReady(config)) return config;
+
+  const viaServiceRole = await getGa4ConfigForServerProbe();
+  if (isGa4DataApiReady(viaServiceRole)) return viaServiceRole;
+
+  return config;
 }

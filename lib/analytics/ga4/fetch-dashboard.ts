@@ -16,16 +16,25 @@ import type { Ga4DashboardSlice, Ga4FetchResult } from "./types";
 type IRow = Protos.google.analytics.data.v1beta.IRow;
 type IRunReportResponse = Protos.google.analytics.data.v1beta.IRunReportResponse;
 
-/** Dimensionless metric reports return values in `totals`, not `rows`. */
-function firstMetricRow(report: IRunReportResponse | null | undefined): IRow | undefined {
-  if (!report) return undefined;
-  return report.rows?.[0] ?? report.totals?.[0];
-}
-
 function metricValue(row: IRow, index: number): number {
   const raw = row.metricValues?.[index]?.value;
   const n = Number(raw ?? 0);
   return Number.isFinite(n) ? n : 0;
+}
+
+/** Dimensionless TOTAL reports put aggregates in `totals`; `rows[0]` is often empty or zero. */
+function overviewMetricRow(
+  report: IRunReportResponse | null | undefined,
+): IRow | undefined {
+  if (!report) return undefined;
+  const totalRow = report.totals?.[0];
+  const dataRow = report.rows?.[0];
+  if (totalRow && dataRow) {
+    const totalSessions = metricValue(totalRow, 0);
+    const rowSessions = metricValue(dataRow, 0);
+    return totalSessions >= rowSessions ? totalRow : dataRow;
+  }
+  return totalRow ?? dataRow;
 }
 
 function dimensionValue(row: IRow, index: number): string {
@@ -148,7 +157,7 @@ export async function fetchGa4DashboardSlice(
       dateRanges,
       raw: serializeGa4OverviewReport(overviewResponse),
     });
-    const overviewRow = firstMetricRow(overviewResponse);
+    const overviewRow = overviewMetricRow(overviewResponse);
     const purchases =
       purchaseReport[0].rows?.reduce(
         (sum, row) => sum + metricValue(row, 0),
@@ -185,10 +194,12 @@ export async function fetchGa4DashboardSlice(
     };
     logAnalyticsRuntime("fetchGa4DashboardSlice.overviewBeforeNormalize", {
       overview: overviewBeforeNormalize,
-      usedRow: overviewResponse?.rows?.[0]
-        ? "rows[0]"
-        : overviewResponse?.totals?.[0]
-          ? "totals[0]"
+      usedRow: overviewResponse?.totals?.[0]
+        ? overviewResponse?.rows?.[0]
+          ? "totals[0]|rows[0]"
+          : "totals[0]"
+        : overviewResponse?.rows?.[0]
+          ? "rows[0]"
           : "none",
     });
 

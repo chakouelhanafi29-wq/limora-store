@@ -1,6 +1,7 @@
 import type { AnalyticsDashboardData } from "@/lib/types/analytics-dashboard";
 import type { Order } from "@/lib/types/database";
 import type { Ga4DashboardSlice } from "./types";
+import { formatGa4ReportDate } from "./dates";
 import { logAnalyticsRuntime } from "./runtime-log";
 
 function pct(numerator: number, denominator: number) {
@@ -25,7 +26,7 @@ function fillDailyVisitors(
   endDay.setHours(23, 59, 59, 999);
 
   while (cursor <= endDay) {
-    const key = cursor.toISOString().slice(0, 10);
+    const key = formatGa4ReportDate(cursor);
     if (!map.has(key)) {
       map.set(key, { visitors: 0, pageViews: 0 });
     }
