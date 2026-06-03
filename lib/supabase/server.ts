@@ -84,9 +84,7 @@ export async function createAdminClient(options: CreateClientOptions = {}) {
   return createClient(options);
 }
 
-export async function isAdminUser() {
-  if (!isSupabaseConfigured()) return false;
-  const supabase = await createClient();
+export async function isAdminWithClient(supabase: SupabaseClient): Promise<boolean> {
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -99,4 +97,10 @@ export async function isAdminUser() {
     .single();
 
   return Boolean(data);
+}
+
+export async function isAdminUser() {
+  if (!isSupabaseConfigured()) return false;
+  const supabase = await createClient();
+  return isAdminWithClient(supabase);
 }
